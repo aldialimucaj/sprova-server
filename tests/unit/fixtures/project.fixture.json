@@ -1,0 +1,19 @@
+{
+    "initialObjects": [
+        {
+            "project": 1
+        },
+        {
+            "project": 2
+        }
+    ],
+    "project1": {
+        "title": "great project"
+    },
+    "project2": {
+        "title": "need to change project"
+    },
+    "project3": {
+        "title": "need to delete project"
+    }
+}

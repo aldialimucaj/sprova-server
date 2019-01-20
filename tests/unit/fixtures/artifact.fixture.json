@@ -1,0 +1,19 @@
+{
+    "initialObjects": [
+        {
+            "artifact": 1
+        },
+        {
+            "artifact": 2
+        }
+    ],
+    "artifact1": {
+        "title": "great artifact"
+    },
+    "artifact2": {
+        "title": "need to change artifact"
+    },
+    "artifact3": {
+        "title": "need to delete artifact"
+    }
+}

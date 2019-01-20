@@ -1,0 +1,14 @@
+{
+  "name": "sprova-server",
+  "version": "0.0.1",
+  "description": "Sprova Server Project",
+  "title": "Sprova Server REST API Documentation",
+  "order": [
+    "GetUser",
+    "PostUser"
+  ],
+  "template": {
+  	"withCompare": true,
+  	"withGenerator": true
+  }
+}

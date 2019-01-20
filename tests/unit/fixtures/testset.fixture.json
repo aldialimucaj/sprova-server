@@ -1,0 +1,19 @@
+{
+    "initialObjects": [
+        {
+            "testSet": 1
+        },
+        {
+            "testSet": 2
+        }
+    ],
+    "testSet1": {
+        "title": "great testSet"
+    },
+    "testSet2": {
+        "title": "need to change testSet"
+    },
+    "testSet3": {
+        "title": "need to delete testSet"
+    }
+}

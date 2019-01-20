@@ -1,0 +1,151 @@
+{
+    "initialObjects": [
+        {
+            "title": "Release 1.0",
+            "description": "Release 1.0",
+            "projectId": "5af582d1dccd6600137334a0",
+            "testCases": [
+                "5af584dcdccd6600137334a4",
+                "5af58502dccd6600137334a5",
+                "5af5851ddccd6600137334a6"
+            ],
+            "status": "Active",
+            "extraFields": [
+                {
+                    "title": "Lib 1",
+                    "type": "String",
+                    "key": "lib1"
+                },
+                {
+                    "title": "Lib 2",
+                    "type": "String",
+                    "key": "lib2"
+                }
+            ],
+            "lib1": "value1.0",
+            "lib2": "value1.0"
+        },
+        {
+            "title": "Release 2.0",
+            "description": "Release 2.0",
+            "projectId": "5af582d1dccd6600137334a0",
+            "testCases": [
+                "5af583eadccd6600137334a1",
+                "5af58421dccd6600137334a2"
+            ],
+            "status": "Active",
+            "extraFields": [
+                {
+                    "title": "Lib 1",
+                    "type": "String",
+                    "key": "lib1"
+                },
+                {
+                    "title": "Lib 2",
+                    "type": "String",
+                    "key": "lib2"
+                }
+            ],
+            "lib1": "value2.0",
+            "lib2": "value2.0"
+        }
+    ],
+    "cycle1": {
+        "title": "Release 1.0",
+        "description": "Release 1.0",
+        "projectId": "5af582d1dccd6600137334a0",
+        "testCases": [
+            "5af583eadccd6600137334a1",
+            "5af58421dccd6600137334a2",
+            "5af58478dccd6600137334a3",
+            "5af584dcdccd6600137334a4",
+            "5af58502dccd6600137334a5",
+            "5af5851ddccd6600137334a6"
+        ],
+        "status": "Active",
+        "extraFields": [
+            {
+                "title": "Lib 1",
+                "type": "String",
+                "key": "lib1"
+            },
+            {
+                "title": "Lib 2",
+                "type": "String",
+                "key": "lib2"
+            }
+        ],
+        "lib1": "value1.0",
+        "lib2": "value1.0"
+    },
+    "cycle2": {
+        "title": "Release 2.0",
+        "description": "Release 2.0",
+        "projectId": "5af582d1dccd6600137334a0",
+        "testCases": [
+            "5af583eadccd6600137334a1",
+            "5af58421dccd6600137334a2",
+            "5af58478dccd6600137334a3",
+            "5af584dcdccd6600137334a4",
+            "5af58502dccd6600137334a5",
+            "5af5851ddccd6600137334a6"
+        ],
+        "status": "Active",
+        "extraFields": [
+            {
+                "title": "Lib 1",
+                "type": "String",
+                "key": "lib1"
+            },
+            {
+                "title": "Lib 2",
+                "type": "String",
+                "key": "lib2"
+            }
+        ],
+        "lib1": "value2.0",
+        "lib2": "value2.0"
+    },
+    "cycle3": {
+        "title": "Release 2.0",
+        "description": "Release 2.0",
+        "projectId": "5af582d1dccd6600137334a0",
+        "testCases": [],
+        "status": "Active",
+        "extraFields": [
+            {
+                "title": "Lib 1",
+                "type": "String",
+                "key": "lib1"
+            },
+            {
+                "title": "Lib 2",
+                "type": "String",
+                "key": "lib2"
+            }
+        ],
+        "lib1": "value2.0",
+        "lib2": "value2.0"
+    },
+    "cycle4": {
+        "title": "Release change me",
+        "description": "Release ",
+        "projectId": "5af582d1dccd6600137334a0",
+        "testCases": [],
+        "status": "Active",
+        "extraFields": [
+            {
+                "title": "Lib 1",
+                "type": "String",
+                "key": "lib1"
+            },
+            {
+                "title": "Lib 2",
+                "type": "String",
+                "key": "lib2"
+            }
+        ],
+        "lib1": "value2.0",
+        "lib2": "value2.0"
+    }
+}

@@ -1,0 +1,37 @@
+{
+    "initialObjects": [
+        {
+            "testset-execution": 1
+        },
+        {
+            "testset-execution": 2
+        }
+    ],
+    "fixture1testsets": [
+        {
+            "testset": 1
+        },
+        {
+            "testset": 2
+        }
+    ],
+    "fixture1testcases": [
+        {
+            "testcase": 1,
+            "testSteps": []
+        },
+        {
+            "testcase": 2,
+            "testSteps": []
+        }
+    ],
+    "testSetExecution1": {
+        "title": "great testset-execution"
+    },
+    "testSetExecution2": {
+        "title": "need to change testset-execution"
+    },
+    "testSetExecution3": {
+        "title": "need to delete testset-execution"
+    }
+}

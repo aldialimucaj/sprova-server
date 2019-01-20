@@ -1,0 +1,20 @@
+{
+    "user1": {
+        "username": "admin",
+        "password": "76106072fec2dfd0ffd323154df459f9e90f1e58e66aba0c0282996278a4f4baad4802f6718765d589b0fe55333d73eb2fc898b31aaf1ecc61c4657e6101f01c",
+        "firstname": "Administrator",
+        "lastname": "Administrator",
+        "status": "active",
+        "email": "admin",
+        "admin": true
+    },
+    "user2": {
+        "username": "foo.bar",
+        "password": "76106072fec2dfd0ffd323154df459f9e90f1e58e66aba0c0282996278a4f4baad4802f6718765d589b0fe55333d73eb2fc898b31aaf1ecc61c4657e6101f01c",
+        "firstname": "foo",
+        "lastname": "bar",
+        "status": "active",
+        "email": "admin",
+        "admin": true
+    }
+}

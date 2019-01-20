@@ -1,0 +1,18 @@
+{
+    "logLevel": "warn",
+    "db": {
+        "host": "mongodb",
+        "port": 27017,
+        "name": "sprova"
+    },
+    "mongo": {
+        "reconnectTries": 60,
+        "reconnectInterval": 1000,
+        "autoReconnect": true,
+        "useNewUrlParser": true,
+        "auth": {
+            "user": "sprova",
+            "password": "sprova"
+        }
+    }
+}

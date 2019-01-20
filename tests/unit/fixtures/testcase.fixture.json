@@ -1,0 +1,19 @@
+{
+    "initialObjects": [
+        {
+            "testcase": 1
+        },
+        {
+            "testcase": 2
+        }
+    ],
+    "testcase1": {
+        "title": "great testcase"
+    },
+    "testcase2": {
+        "title": "need to change testcase"
+    },
+    "testcase3": {
+        "title": "need to delete testcase"
+    }
+}
