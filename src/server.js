@@ -65,7 +65,7 @@ const authRouter = new Router();
       log.info("server connecting to database");
       db = await databaseManager.connect();
       if (db) {
-        log.info("database connection established");
+        log.info("successfully established database connection");
       } else {
         await utils.timeout(1000);
       }

@@ -26,26 +26,28 @@ class CycleService {
         return await Cycles.findOne({ _id });
     }
 
-    async getCycleTestCases(id) {
-        const _id = ObjectId(id);
-
+    async getCycleTestCases(cycleId, query, options) {
+        const _id = ObjectId(cycleId);
         let cycle = await Cycles.findOne({ _id });
-        return await TestCases.find({ _id: { $in: cycle.testCases } }).toArray();
+        const extraQuery = Object.assign(query, { _id: { $in: cycle.testCases } });
+
+        return await TestCases.find(extraQuery, options).toArray();
     }
 
     /**
      * Fetch test case statistics about executions
      * 
-     * @param {*} id 
+     * @param {*} cycleId 
      */
-    async getTestCaseStats(id) {
+    async getTestCasesStats(cycleId, query, options) {
         var result;
-        const _id = ObjectId(id);
+        const _id = ObjectId(cycleId);
 
         try {
             var cycle = await Cycles.findOne({ _id });
             const testCasesIds = cycle.testCases.map(tc => ObjectId(tc));
-            var testCases = await TestCases.find({ _id: { $in: testCasesIds } }).toArray();
+            const extraQuery = Object.assign(query, { _id: { $in: testCasesIds } });
+            var testCases = await TestCases.find(extraQuery, options).toArray();
             await Promise.all(testCases.map(async tc => {
                 tc.executionsStats = await Executions.aggregate([
                     {

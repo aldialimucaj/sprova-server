@@ -11,9 +11,8 @@ class Authenticator {
 
     async init() {
         try {
-            log.info('initizalie Authenticator');
             Users = await this.db.collection('users');
-            log.info('initizalization of Authenticator was successful');
+            log.info('successfully initialized Authenticator');
             return true;
         } catch (error) {
             log.error(error);

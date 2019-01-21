@@ -28,8 +28,8 @@ class CycleRestApi {
      * @apiSuccess {Array} - list of cycles
      */
     async getCycles(ctx) {
-        const options = formatOptionsFromParams(ctx.query);
         const query = formatQueryFromParams(ctx.query);
+        const options = formatOptionsFromParams(ctx.query);
         ctx.body = await this.cycleService.getCycles(query, options);
     }
 
@@ -62,7 +62,10 @@ class CycleRestApi {
     */
     async getCycleTestCases(ctx) {
         const id = ctx.params.id;
-        ctx.body = await this.cycleService.getCycleTestCases(id);
+        const query = formatQueryFromParams(ctx.query);
+        const options = formatOptionsFromParams(ctx.query);
+
+        ctx.body = await this.cycleService.getCycleTestCases(id, query, options);
     }
 
     /**
@@ -73,9 +76,12 @@ class CycleRestApi {
      * 
      * @apiSuccess {Array} - list of test cases
      */
-    async getTestCaseStats(ctx) {
+    async getTestCasesStats(ctx) {
         const id = ctx.params.id;
-        ctx.body = await this.cycleService.getTestCaseStats(id);
+        const query = formatQueryFromParams(ctx.query);
+        const options = formatOptionsFromParams(ctx.query);
+
+        ctx.body = await this.cycleService.getTestCasesStats(id, query, options);
     }
 
     // ============================================================================
@@ -153,7 +159,7 @@ class CycleRestApi {
         this.router.get('/cycles', this.getCycles.bind(this));
         this.router.get('/cycles/:id', this.getCycle.bind(this));
         this.router.get('/cycles/:id/testcases', this.getCycleTestCases.bind(this));
-        this.router.get('/cycles/:id/testcasestats', this.getTestCaseStats.bind(this));
+        this.router.get('/cycles/:id/testcasesstats', this.getTestCasesStats.bind(this));
 
         this.router.post('/cycles', this.postCycle.bind(this));
 
