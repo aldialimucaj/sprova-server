@@ -1,5 +1,6 @@
 const log = require('../helpers/log');
 const ArtifactService = require('../services/artifact.service');
+const { formatQueryFromParams, formatOptionsFromParams } = require('../helpers/utils');
 
 class ArtifactRestApi {
     constructor(router, db) {
@@ -26,8 +27,10 @@ class ArtifactRestApi {
      * @apiSuccess {Array} - list of artifacts
      */
     async getArtifacts(ctx) {
-        const { limit, skip, sort } = ctx.params;
-        ctx.body = await this.artifactService.getArtifacts({}, { limit, skip, sort });
+        const query = formatQueryFromParams(ctx.query);
+        const options = formatOptionsFromParams(ctx.query);
+
+        ctx.body = await this.artifactService.getArtifacts(query, options);
     }
 
     /**

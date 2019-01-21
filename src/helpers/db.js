@@ -16,8 +16,7 @@ class DatabaseManager {
             log.info('successfully connected to db %s', this.connectUrl);
             return this.db;
         } catch (e) {
-            log.error('could not connect to db %s', this.connectUrl)
-            log.error(e)
+            log.error('%s at %s', e.message, this.connectUrl);
             return null;
         }
     }

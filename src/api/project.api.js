@@ -1,5 +1,6 @@
-const ProjectService = require('../services/project.service');
 const log = require('../helpers/log');
+const ProjectService = require('../services/project.service');
+const { formatQueryFromParams, formatOptionsFromParams } = require('../helpers/utils');
 
 class ProjectRestApi {
 
@@ -27,8 +28,10 @@ class ProjectRestApi {
      * @apiSuccess {Array} - list of projects
      */
     async getProjects(ctx) {
-        const { limit, skip, sort } = ctx.params;
-        ctx.body = await this.projectService.getProjects({}, { limit, skip, sort });
+        const query = formatQueryFromParams(ctx.query);
+        const options = formatOptionsFromParams(ctx.query);
+
+        ctx.body = await this.projectService.getProjects(query, options);
     }
 
     /**

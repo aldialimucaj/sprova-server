@@ -1,5 +1,6 @@
-const CycleService = require('../services/cycle.service');
 const log = require('../helpers/log');
+const CycleService = require('../services/cycle.service');
+const { formatQueryFromParams, formatOptionsFromParams } = require('../helpers/utils');
 
 class CycleRestApi {
 
@@ -12,23 +13,24 @@ class CycleRestApi {
     // ============================================================================
 
     /**
- * @api {get} /cycles Request cycles
- * 
- * @apiExample {curl} Example usage:
- *     curl -i http://localhost/api/cycles?limit=10&skip=0
- * 
- * @apiParam {Number} limit limit result number
- * @apiParam {Number} skip skip first N results
- * @apiParam {Object} sort sort by field ie. { title: 1 }
- * 
- * @apiName getCycles
- * @apiGroup Cycles
- * 
- * @apiSuccess {Array} - list of cycles
- */
+     * @api {get} /cycles Request cycles
+     * 
+     * @apiExample {curl} Example usage:
+     *     curl -i http://localhost/api/cycles?limit=10&skip=0
+     * 
+     * @apiParam {Number} limit limit result number
+     * @apiParam {Number} skip skip first N results
+     * @apiParam {Object} sort sort by field ie. { title: 1 }
+     * 
+     * @apiName getCycles
+     * @apiGroup Cycles
+     * 
+     * @apiSuccess {Array} - list of cycles
+     */
     async getCycles(ctx) {
-        const { limit, skip, sort } = ctx.params;
-        ctx.body = await this.cycleService.getCycles({}, { limit, skip, sort });
+        const options = formatOptionsFromParams(ctx.query);
+        const query = formatQueryFromParams(ctx.query);
+        ctx.body = await this.cycleService.getCycles(query, options);
     }
 
     /**

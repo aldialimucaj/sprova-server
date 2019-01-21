@@ -14,24 +14,11 @@ class TestCaseService {
      * Fetch test cases belonging to project
      * 
      * @param {*} projectId project ID. optional if not set all test cases from all projects are returned
-     * @param {boolean} withParents if also parents should be returned
      * @param {*} options options for the find request
+     * @param {boolean} withParents if also parents should be returned
      */
-    async getTestCases(params, withParents, options) {
+    async getTestCases(query, options, withParents) {
         let result;
-        let query = {};
-
-        if (params && params.projectId) {
-            query.projectId = ObjectId(params.projectId);
-        }
-
-        if (params && params.cycleId) {
-            query.cycleId = ObjectId(params.cycleId);
-        }
-
-        if (params && params.testSetId) {
-            query.testSetId = ObjectId(params.testSetId);
-        }
 
         result = await TestCases.find(query, options).toArray();
         if (withParents) {

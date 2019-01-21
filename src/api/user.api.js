@@ -1,5 +1,6 @@
 const log = require('../helpers/log');
 const UserService = require('../services/user.service');
+const { formatQueryFromParams, formatOptionsFromParams } = require('../helpers/utils');
 
 class UserRestApi {
     constructor(router, db) {
@@ -11,7 +12,9 @@ class UserRestApi {
     // ============================================================================
 
     async getUsers(ctx) {
-        const { query, options } = ctx.request.body;
+        const query = formatQueryFromParams(ctx.query);
+        const options = formatOptionsFromParams(ctx.query);
+
         ctx.body = await this.userService.getUsers(query, options);
     }
 

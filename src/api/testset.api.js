@@ -1,4 +1,5 @@
 const log = require('../helpers/log');
+const { formatQueryFromParams, formatOptionsFromParams } = require('../helpers/utils');
 const TestSetService = require('../services/testset.service');
 
 class TestSetRestApi {
@@ -27,16 +28,10 @@ class TestSetRestApi {
      * @apiSuccess {Array} - list of testSets
      */
     async getTestSets(ctx) {
-        const {
-            limit,
-            skip,
-            sort
-        } = ctx.params;
-        ctx.body = await this.testSetService.getTestSets({}, {
-            limit,
-            skip,
-            sort
-        });
+        const query = formatQueryFromParams(ctx.query);
+        const options = formatOptionsFromParams(ctx.query);
+
+        ctx.body = await this.testSetService.getTestSets(query, options);
     }
 
     /**

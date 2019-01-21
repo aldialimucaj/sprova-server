@@ -1,5 +1,5 @@
-const _ = require('lodash');
 const log = require('../helpers/log');
+const { formatQueryFromParams, formatOptionsFromParams } = require('../helpers/utils');
 const TestCaseService = require('../services/testcase.service');
 
 class TestCaseRestApi {
@@ -28,14 +28,11 @@ class TestCaseRestApi {
      * @apiSuccess {Array} - list of testcases
      */
     async getTestCases(ctx) {
-        const { projectId, cycleId, testSetId, withParent, limit, skip, sort } = ctx.params;
-        let params = { projectId, cycleId, testSetId };
-        params = _.omitBy(params, _.isUndefined);
-        if (_.isEmpty(params, true)) {
-            params = null;
-        }
+        const options = formatOptionsFromParams(ctx.query);
+        const query = formatQueryFromParams(ctx.query);
+        const withParent = !!ctx.query.withParent;
 
-        ctx.body = await this.testCaseService.getTestCases(params, withParent, { limit, skip, sort });
+        ctx.body = await this.testCaseService.getTestCases(query, options, withParent);
     }
 
     /**
@@ -55,7 +52,7 @@ class TestCaseRestApi {
      */
     async getTestCase(ctx) {
         const id = ctx.params.id;
-        const withParent = ctx.params.withParent && ctx.params.withParent.toLowerCase() === 'true';
+        const withParent = ctx.query.withParent && ctx.query.withParent.toLowerCase() === 'true';
         ctx.body = await this.testCaseService.getTestCase(id, withParent);
     }
 

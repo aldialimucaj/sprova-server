@@ -1,4 +1,5 @@
 const ExecutionService = require('../services/execution.service');
+const { formatQueryFromParams, formatOptionsFromParams } = require('../helpers/utils');
 const log = require('../helpers/log');
 
 class ExecutionRestApi {
@@ -27,8 +28,10 @@ class ExecutionRestApi {
      * @apiSuccess {Array} - list of executions
      */
     async getExecutions(ctx) {
-        const { limit, skip, sort } = ctx.params;
-        ctx.body = await this.executionService.getExecutions(null, { limit, skip, sort });
+        const query = formatQueryFromParams(ctx.query);
+        const options = formatOptionsFromParams(ctx.query);
+        
+        ctx.body = await this.executionService.getExecutions(query, options);
     }
 
     /**
@@ -138,20 +141,20 @@ class ExecutionRestApi {
         ctx.body = await this.executionService.putStepUpdate(id, stepIdx, value);
     }
 
-     /**
-     * @api {put} /executions/:id/steps/:stepIdx/status Edit execution step status
-     * 
-     * @apiExample {curl} Example usage:
-     *     curl -X PUT -d '{"status":"SUCCESSFUL"}' -H "Content-Type: application/json" http://localhost/api/executions/5af582d1dccd6600137334a0/steps/0
-     * 
-     * @apiName putStepStatus
-     * @apiGroup Executions
-     * 
-     * @apiParam {Number} id execution's unique ID.
-     * 
-     * @apiSuccess {Number} ok 1 if successful; 0 if  unsuccessful
-     * @apiSuccess {String} _id ID of edited element
-     */
+    /**
+    * @api {put} /executions/:id/steps/:stepIdx/status Edit execution step status
+    * 
+    * @apiExample {curl} Example usage:
+    *     curl -X PUT -d '{"status":"SUCCESSFUL"}' -H "Content-Type: application/json" http://localhost/api/executions/5af582d1dccd6600137334a0/steps/0
+    * 
+    * @apiName putStepStatus
+    * @apiGroup Executions
+    * 
+    * @apiParam {Number} id execution's unique ID.
+    * 
+    * @apiSuccess {Number} ok 1 if successful; 0 if  unsuccessful
+    * @apiSuccess {String} _id ID of edited element
+    */
     async putStepStatus(ctx) {
         const id = ctx.params.id;
         const stepIdx = ctx.params.stepIdx;

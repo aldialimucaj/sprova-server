@@ -59,7 +59,7 @@ describe('testcase : service', () => {
     });
 
     it('should return limited testcases', async () => {
-      const result = await to.getTestCases(null, false, { limit: 1 });
+      const result = await to.getTestCases({}, { limit: 1 }, false);
       expect(result).to.be.an('array');
       expect(result).to.have.lengthOf(1);
     });
