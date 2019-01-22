@@ -107,7 +107,7 @@ class ProjectRestApi {
      */
     async postProject(ctx) {
         const value = ctx.request.body;
-        value.user = ctx.params.user;
+        value.user = ctx.state.user;
         ctx.body = await this.projectService.postProject(value);
         ctx.status = 201;
     }
@@ -131,7 +131,7 @@ class ProjectRestApi {
     async putProject(ctx) {
         const id = ctx.params.id;
         const value = ctx.request.body;
-        value.user = ctx.params.user;
+        value.user = ctx.state.user;
         ctx.body = await this.projectService.putProject(id, value);
     }
 

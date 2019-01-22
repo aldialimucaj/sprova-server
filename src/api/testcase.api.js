@@ -30,9 +30,9 @@ class TestCaseRestApi {
     async getTestCases(ctx) {
         const options = formatOptionsFromParams(ctx.query);
         const query = formatQueryFromParams(ctx.query);
-        const withParent = !!ctx.query.withParent;
+        const withParentFlag = !!ctx.query.withParentFlag;
 
-        ctx.body = await this.testCaseService.getTestCases(query, options, withParent);
+        ctx.body = await this.testCaseService.getTestCases(query, options, withParentFlag);
     }
 
     /**
@@ -45,15 +45,15 @@ class TestCaseRestApi {
      * @apiGroup TestCases
      * 
      * @apiParam {Number} id testcase's unique ID.
-     * @apiParam {String} withParent if parents should be included
+     * @apiParam {String} withParentFlag if parents should be included
      * 
      * @apiSuccess {String} title
      * @apiSuccess {String} description
      */
     async getTestCase(ctx) {
         const id = ctx.params.id;
-        const withParent = ctx.query.withParent && ctx.query.withParent.toLowerCase() === 'true';
-        ctx.body = await this.testCaseService.getTestCase(id, withParent);
+        const withParentFlag = ctx.query.withParentFlag && ctx.query.withParentFlag.toLowerCase() === 'true';
+        ctx.body = await this.testCaseService.getTestCase(id, withParentFlag);
     }
 
     // ============================================================================
@@ -72,7 +72,7 @@ class TestCaseRestApi {
      */
     async postTestCase(ctx) {
         const value = ctx.request.body;
-        value.user = ctx.params.user;
+        value.user = ctx.state.user;
         ctx.body = await this.testCaseService.postTestCase(value);
         ctx.status = 201;
     }
@@ -98,7 +98,7 @@ class TestCaseRestApi {
     async putTestCase(ctx) {
         const id = ctx.params.id;
         const value = ctx.request.body;
-        value.user = ctx.params.user;
+        value.user = ctx.state.user;
         ctx.body = await this.testCaseService.putTestCase(id, value);
     }
 

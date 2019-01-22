@@ -74,6 +74,25 @@ class TestSetExecutionRestApi {
         ctx.body = await this.testSetExecutionService.getNextPendingTest(id);
     }
 
+    /**
+     * @api {get} /testset-executions/:id/has-pending Request testSetExecution if it has a pending test
+     * 
+     * @apiExample {curl} Example usage:
+     *     curl -i http://localhost/api/testset-executions/5af582d1dccd6600137334a0/has-pending
+     * 
+     * @apiName hasPendingTest
+     * @apiGroup TestSetExecutions
+     * 
+     * @apiParam {Number} id testSetExecution's unique ID.
+     * 
+     * @apiSuccess {String} title
+     * @apiSuccess {String} description
+     */
+    async hasPendingTest(ctx) {
+        const id = ctx.params.id;
+        ctx.body = await this.testSetExecutionService.hasPendingTest(id);
+    }
+
     // ============================================================================
 
     /**
@@ -90,7 +109,7 @@ class TestSetExecutionRestApi {
      */
     async postTestSetExecution(ctx) {
         const value = ctx.request.body;
-        value.user = ctx.params.user;
+        value.user = ctx.state.user;
         ctx.body = await this.testSetExecutionService.postTestSetExecution(value);
         ctx.status = 201;
     }
@@ -115,7 +134,7 @@ class TestSetExecutionRestApi {
     async putTestSetExecution(ctx) {
         const id = ctx.params.id;
         const value = ctx.request.body;
-        value.user = ctx.params.user;
+        value.user = ctx.state.user;
         ctx.body = await this.testSetExecutionService.putTestSetExecution(id, value);
     }
 
@@ -148,10 +167,11 @@ class TestSetExecutionRestApi {
         this.router.get('/testset-executions', this.getTestSetExecutions.bind(this));
         this.router.get('/testset-executions/:id', this.getTestSetExecution.bind(this));
         this.router.get('/testset-executions/:id/next-pending', this.getNextPendingTest.bind(this));
+        this.router.get('/testset-executions/:id/has-pending', this.hasPendingTest.bind(this));
 
         this.router.put('/testset-executions/:id', this.putTestSetExecution.bind(this));
         
-        this.router.post('/testset-executions', this.testSetExecutionService.postTestSetExecution.bind(this));
+        this.router.post('/testset-executions', this.postTestSetExecution.bind(this));
 
         this.router.del('/testset-executions/:id', this.delTestSetExecution.bind(this));
     }

@@ -100,7 +100,7 @@ class CycleRestApi {
     */
     async postCycle(ctx) {
         const value = ctx.request.body;
-        value.user = ctx.params.user;
+        value.user = ctx.state.user;
         ctx.body = await this.cycleService.postCycle(value);
     }
 
@@ -124,7 +124,7 @@ class CycleRestApi {
     async putCycle(ctx) {
         const id = ctx.params.id;
         const value = ctx.request.body;
-        value.user = ctx.params.user;
+        value.user = ctx.state.user;
         ctx.body = await this.cycleService.putCycle(id, value);
     }
 

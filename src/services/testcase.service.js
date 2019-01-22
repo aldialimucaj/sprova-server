@@ -15,13 +15,13 @@ class TestCaseService {
      * 
      * @param {*} projectId project ID. optional if not set all test cases from all projects are returned
      * @param {*} options options for the find request
-     * @param {boolean} withParents if also parents should be returned
+     * @param {boolean} withParentFlagFlag if also parents should be returned
      */
-    async getTestCases(query, options, withParents) {
+    async getTestCases(query, options, withParentFlagFlag) {
         let result;
 
         result = await TestCases.find(query, options).toArray();
-        if (withParents) {
+        if (withParentFlagFlag) {
             for (let t of result) {
                 t.isParent = await TestCases.countDocuments({ parentId: t._id }) > 0;
             }
@@ -33,13 +33,13 @@ class TestCaseService {
     /**
      * 
      * @param {*} id 
-     * @param {boolean} withParents if also parents should be returned
+     * @param {boolean} withParentFlagFlag if also parents should be returned
      */
-    async getTestCase(id, withParents) {
+    async getTestCase(id, withParentFlagFlag) {
         const _id = ObjectId(id);
         let result;
-        if (withParents) {
-            result = this.getTestCaseWithParents(id);
+        if (withParentFlagFlag) {
+            result = this.getTestCasewithParentFlagFlag(id);
         } else {
             result = await TestCases.findOne({ _id })
         }
@@ -52,13 +52,13 @@ class TestCaseService {
      * 
      * @param {*} id test case id
      */
-    async getTestCaseWithParents(id) {
+    async getTestCasewithParentFlagFlag(id) {
         var result;
         const _id = ObjectId(id);
 
         result = await TestCases.findOne({ _id });
         if (result.parentId && result.parentId.toString) {
-            let parent = await this.getTestCaseWithParents({ params: { id: result.parentId.toString() } });
+            let parent = await this.getTestCasewithParentFlagFlag({ params: { id: result.parentId.toString() } });
             result.parent = parent;
         }
 

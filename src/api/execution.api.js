@@ -69,7 +69,7 @@ class ExecutionRestApi {
      */
     async postExecution(ctx) {
         const value = ctx.request.body;
-        value.user = ctx.params.user;
+        value.user = ctx.state.user;
         ctx.body = await this.executionService.postExecution(value);
         ctx.status = 201;
     }
@@ -94,7 +94,7 @@ class ExecutionRestApi {
     async putExecution(ctx) {
         const id = ctx.params.id;
         const value = ctx.request.body;
-        value.user = ctx.params.user;
+        value.user = ctx.state.user;
         ctx.body = await this.executionService.putExecution(id, value);
     }
 
@@ -115,7 +115,7 @@ class ExecutionRestApi {
     async putExecutionStatus(ctx) {
         const id = ctx.params.id;
         const value = ctx.request.body;
-        value.user = ctx.params.user;
+        value.user = ctx.state.user;
         ctx.body = await this.executionService.putExecutionStatus(id, value);
     }
 
@@ -182,7 +182,7 @@ class ExecutionRestApi {
         const id = ctx.params.id;
         const stepIdx = ctx.params.stepIdx;
         const value = ctx.request.body;
-        value.user = ctx.params.user;
+        value.user = ctx.state.user;
 
         ctx.body = await this.executionService.putStepUpdateArtifact(id, stepIdx, value);
     }

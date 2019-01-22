@@ -68,7 +68,7 @@ class ArtifactRestApi {
      */
     async postArtifact(ctx) {
         const value = ctx.request.body;
-        value.user = ctx.params.user;
+        value.user = ctx.state.user;
         ctx.body = await this.artifactService.postArtifact(value);
         ctx.status = 201;
     }
@@ -92,7 +92,7 @@ class ArtifactRestApi {
     async putArtifact(ctx) {
         const id = ctx.params.id;
         const value = ctx.request.body;
-        value.user = ctx.params.user;
+        value.user = ctx.state.user;
         ctx.body = await this.artifactService.putArtifact(id, value);
     }
 

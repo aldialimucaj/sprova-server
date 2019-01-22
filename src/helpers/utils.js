@@ -76,6 +76,30 @@ function formatIDs(value) {
     for (const key of keys) {
         if (key.endsWith('Id') && ObjectId.isValid(result[key])) {
             result[key] = ObjectId(result[key]);
+        } else if (key.endsWith('Id') && result[key] === 'null') {
+            result[key] = null;
+        }
+    }
+
+    return result;
+}
+
+/**
+ * Format sort elements from get call parameters input
+ * 
+ * @param {*} value sort elements
+ */
+function formatSortElements(value) {
+    const result = {};
+    const keys = Object.keys(value);
+    for (const key of keys) {
+        const sortValue = value[key];
+        if (sortValue == '-1' || sortValue == 'DESC') {
+            result[key] = -1;
+        } else if (sortValue == '1' || sortValue == 'ASC') {
+            result[key] = 1;
+        } else {
+            throw new Error('Unkown sorting order');
         }
     }
 
@@ -94,6 +118,18 @@ function formatQueryFromParams(value) {
     delete result.limit;
     delete result.skip;
     delete result.sort;
+    delete result.withParentFlag;
+
+    // check for bolean values
+    // TODO: dont like this. refactor!
+    const keys = Object.keys(result);
+    for (const key of keys) {
+        if (result[key] === 'true') {
+            result[key] = true;
+        } else if (result[key] === 'false') {
+            result[key] = false;
+        }
+    }
     // the rest are generic parameters and should be whitelisted
 
     return formatIDs(result);
@@ -106,7 +142,15 @@ function formatQueryFromParams(value) {
  */
 function formatOptionsFromParams(value) {
     const { limit, skip, sort } = value;
-    const options = { limit: Number(limit), skip: Number(skip), sort };
+    const options = { limit: Number(limit), skip: Number(skip) };
+    if (sort) {
+        try {
+            const sortValue = JSON.parse(sort);
+            options.sort = formatSortElements(sortValue);
+        } catch (error) {
+            throw new Error('formatOptionsFromParams > ' + error.message);
+        }
+    }
 
     return _.omitBy(options, _.isUndefined);
 }

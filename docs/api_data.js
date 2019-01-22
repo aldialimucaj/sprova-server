@@ -1723,7 +1723,7 @@ define({ "api": [
             "group": "Parameter",
             "type": "String",
             "optional": false,
-            "field": "withParent",
+            "field": "withParentFlag",
             "description": "<p>if parents should be included</p>"
           }
         ]

@@ -105,7 +105,7 @@ class TestSetRestApi {
      */
     async postTestSet(ctx) {
         const value = ctx.request.body;
-        value.user = ctx.params.user;
+        value.user = ctx.state.user;
         ctx.body = await this.testSetService.postTestSet(value);
         ctx.status = 201;
     }
@@ -129,7 +129,7 @@ class TestSetRestApi {
     async putTestSet(ctx) {
         const id = ctx.params.id;
         const value = ctx.request.body;
-        value.user = ctx.params.user;
+        value.user = ctx.state.user;
         ctx.body = await this.testSetService.putTestSet(id, value);
     }
 

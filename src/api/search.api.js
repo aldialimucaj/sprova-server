@@ -174,7 +174,7 @@ class SearchRestApi {
      */
     async findTestSets(ctx) {
         const value = ctx.request.body;
-        value.user = ctx.params.user;
+        value.user = ctx.state.user;
         ctx.body = await this.testSetService.findTestSets(value);
     }
 
