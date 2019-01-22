@@ -94,9 +94,9 @@ function formatSortElements(value) {
     const keys = Object.keys(value);
     for (const key of keys) {
         const sortValue = value[key];
-        if (sortValue == '-1' || sortValue == 'DESC') {
+        if (sortValue === '-1' || sortValue === 'DESC') {
             result[key] = -1;
-        } else if (sortValue == '1' || sortValue == 'ASC') {
+        } else if (sortValue === '1' || sortValue === 'ASC') {
             result[key] = 1;
         } else {
             throw new Error('Unkown sorting order');

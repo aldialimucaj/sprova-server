@@ -31,7 +31,13 @@ class CycleService {
         let cycle = await Cycles.findOne({ _id });
         const extraQuery = Object.assign(query, { _id: { $in: cycle.testCases } });
 
-        return await TestCases.find(extraQuery, options).toArray();
+        let result = await TestCases.find(extraQuery, options).toArray();
+        // TODO: dont make default case to count childrent
+        for (let t of result) {
+            t.isParent = await TestCases.countDocuments({ parentId: t._id }) > 0;
+        }
+
+        return result;
     }
 
     /**

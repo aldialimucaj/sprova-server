@@ -15,13 +15,13 @@ class TestCaseService {
      * 
      * @param {*} projectId project ID. optional if not set all test cases from all projects are returned
      * @param {*} options options for the find request
-     * @param {boolean} withParentFlagFlag if also parents should be returned
+     * @param {boolean} withParentFlag if also parents should be returned
      */
-    async getTestCases(query, options, withParentFlagFlag) {
+    async getTestCases(query, options, withParentFlag) {
         let result;
 
         result = await TestCases.find(query, options).toArray();
-        if (withParentFlagFlag) {
+        if (withParentFlag) {
             for (let t of result) {
                 t.isParent = await TestCases.countDocuments({ parentId: t._id }) > 0;
             }
@@ -33,13 +33,13 @@ class TestCaseService {
     /**
      * 
      * @param {*} id 
-     * @param {boolean} withParentFlagFlag if also parents should be returned
+     * @param {boolean} withParentFlag if also parents should be returned
      */
-    async getTestCase(id, withParentFlagFlag) {
+    async getTestCase(id, withParentFlag) {
         const _id = ObjectId(id);
         let result;
-        if (withParentFlagFlag) {
-            result = this.getTestCasewithParentFlagFlag(id);
+        if (withParentFlag) {
+            result = this.getTestCasewithParentFlag(id);
         } else {
             result = await TestCases.findOne({ _id })
         }
@@ -52,13 +52,13 @@ class TestCaseService {
      * 
      * @param {*} id test case id
      */
-    async getTestCasewithParentFlagFlag(id) {
+    async getTestCasewithParentFlag(id) {
         var result;
         const _id = ObjectId(id);
 
         result = await TestCases.findOne({ _id });
         if (result.parentId && result.parentId.toString) {
-            let parent = await this.getTestCasewithParentFlagFlag({ params: { id: result.parentId.toString() } });
+            let parent = await this.getTestCasewithParentFlag({ params: { id: result.parentId.toString() } });
             result.parent = parent;
         }
 
