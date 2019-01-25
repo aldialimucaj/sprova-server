@@ -182,6 +182,7 @@ class ExecutionRestApi {
         const id = ctx.params.id;
         const stepIdx = ctx.params.stepIdx;
         const value = ctx.request.body;
+        value.files = ctx.request.files;
         value.user = ctx.state.user;
 
         ctx.body = await this.executionService.putStepUpdateArtifact(id, stepIdx, value);
@@ -224,7 +225,7 @@ class ExecutionRestApi {
         this.router.put('/executions/:id/status', this.putExecutionStatus.bind(this));
         this.router.put('/executions/:id/steps/:stepIdx', this.putStepUpdate.bind(this));
         this.router.put('/executions/:id/steps/:stepIdx/status', this.putStepStatus.bind(this));
-        this.router.put('/executions/:id/steps/:stepIdx/executions', this.putStepUpdateArtifact.bind(this));
+        this.router.put('/executions/:id/steps/:stepIdx/artifacts', this.putStepUpdateArtifact.bind(this));
 
         this.router.del('/executions/:id', this.delExecution.bind(this));
     }
