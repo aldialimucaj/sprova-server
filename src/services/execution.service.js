@@ -1,11 +1,13 @@
 const ObjectId = require('mongodb').ObjectId;
 const utils = require('../helpers/utils');
-const { ExecutionStatus, ExecutionType } = require('../helpers/enums');
+const { ExecutionStatus, ExecutionType, ArtifactType } = require('../helpers/enums');
 const { formatInsert, formatUpdate, formatRemove } = require('../helpers/utils');
 
 var Executions = undefined;
+var Artifacts = undefined;
 var Cycles = undefined;
 var TestCases = undefined;
+
 
 class ExecutionService {
 
@@ -13,6 +15,7 @@ class ExecutionService {
         Executions = db.collection('executions');
         Cycles = db.collection('cycles');
         TestCases = db.collection('testcases');
+        Artifacts = db.collection('artifacts');
     }
 
     // ============================================================================
@@ -110,7 +113,7 @@ class ExecutionService {
      * @param {String} id Execution id
      * @param {*} value files object { files: [] }
      */
-    async putStepUpdateArtifact(id, value) {
+    async putStepUpdateArtifact(id, stepIdx, value) {
         var result = { files: [] };
         const _id = ObjectId(id);
         try {
@@ -119,10 +122,15 @@ class ExecutionService {
             const artifactsPath = utils.executionToPath(execution, cycle.projectId);
 
             const files = value.files || {};
-            for (let key in files) {
-                const fileName = utils.saveArtifact(files[key], artifactsPath);
+            for (let file of files) {
+                const filePath = utils.saveArtifact(file, artifactsPath);
+                const artifact = { title: file.name, filestype: ArtifactType.Execution, executionId: execution._id, filePath, cycleId: execution.cycleId }
+                artifact.createdAt = new Date();
+                artifact.updatedAt = new Date();
+
+                const artifactResult = await Artifacts.insertOne(artifact);
                 result.ok = 1;
-                result.files.push({ filename: files[key].name, fullPath: fileName, success: true });
+                result.files.push({ _id: artifactResult.insertedId, filename: file.name, filePath, success: true });
             }
         } catch (e) {
             result = e;

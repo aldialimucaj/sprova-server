@@ -1,6 +1,7 @@
 const { name, version } = require('../package.json');
 const config = require('./config/index');
 
+const path = require('path');
 const Koa = require('koa');
 const Router = require('koa-router');
 const json = require('koa-json')
@@ -135,7 +136,7 @@ app
   .use(json())
   .use(async (ctx) => {
     if (ctx.path.startsWith('/data/artifacts')) {
-      await send(ctx, ctx.path, { root: __dirname });
+      await send(ctx, ctx.path, { root: path.join(__dirname, '..') });
     }
   })
   .use(apiRouter.allowedMethods())

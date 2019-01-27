@@ -1,3 +1,9 @@
+const ArtifactType = Object.freeze({
+    Execution: 'EXECUTION',
+    TestCase: 'TESTCASE'
+});
+
+
 const CycleStatus = Object.freeze({
     Active: 'ACTIVE',
     Abandoned: 'ABANDONED',
@@ -38,11 +44,12 @@ const ExecutionType = Object.freeze({
     ManualAutomated: "MANUAL_AUTOMATED"
 });
 
-module.exports = { 
+module.exports = {
+    ArtifactType,
     CycleStatus,
     TestSetStatus,
-    ExecutionStatus, 
-    TestSetExecutionStatus, 
+    ExecutionStatus,
+    TestSetExecutionStatus,
     TestStepStatus,
-    ExecutionType 
+    ExecutionType
 };
