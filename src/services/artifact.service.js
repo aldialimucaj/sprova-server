@@ -1,4 +1,5 @@
 const ObjectId = require('mongodb').ObjectId;
+const utils = require('../helpers/utils');
 const { formatInsert, formatUpdate, formatRemove } = require('../helpers/utils');
 var Artifacts = undefined;
 
@@ -30,12 +31,17 @@ class ArtifactService {
     // ============================================================================
 
     async postArtifact(value) {
-        delete value._id;
-        // testCaseId comes in as string
-        value.testCaseId = ObjectId(value.testCaseId);
+        let result = {};
+        const artifactsPath = utils.cycleToPath(value);
 
-        value.createdAt = new Date();
-        value.updatedAt = new Date();
+        const artifact = { title: value.name };
+        artifact.createdAt = new Date();
+        artifact.updatedAt = new Date();
+        
+        const filePath = utils.saveArtifact(value, artifactsPath);
+        const artifactResult = await Artifacts.insertOne(artifact);
+        result.ok = 1;
+        result.files.push({ _id: artifactResult.insertedId, filename: value.name, filePath, success: true });
 
         const response = await Artifacts.insertOne(value);
 

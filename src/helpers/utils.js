@@ -207,6 +207,37 @@ function executionToPath(execution, projectId) {
     return fullPath;
 }
 
+/**
+ * Returns full path for execution. Usually used to save artifacts.
+ * 
+ * @param {TestCase} testcase object
+ * @param {ObjectId} projectId 
+ * @returns {string} full path
+ */
+function testCaseToPath(testCase, projectId) {
+    const projectPath = path.join(PROJECTS, projectId.toString());
+    const cyclesPath = path.join(CYCLES, testCase.cycleId.toString());
+    const testsPath = path.join(TESTS, testCase.testCaseId.toString());
+    const executionsPath = path.join(EXECUTIONS, testCase._id.toString());
+    const fullPath = path.join(projectPath, cyclesPath, testsPath, executionsPath);
+
+    return fullPath;
+}
+
+/**
+ * Returns full path for execution. Usually used to save artifacts.
+ * 
+ * @param {Cycle} cycle object
+ * @returns {string} full path
+ */
+function cycleToPath(cycle) {
+    const projectPath = path.join(PROJECTS, cycle.projectId.toString());
+    const cyclesPath = path.join(CYCLES, cycle._id.toString());
+    const fullPath = path.join(projectPath, cyclesPath);
+
+    return fullPath;
+}
+
 
 // ============================================================================
 // Util functions. TODO refactor this!
@@ -227,4 +258,6 @@ exports.formatOptionsFromParams = formatOptionsFromParams;
 exports.sha512 = sha512;
 exports.saveArtifact = saveArtifact;
 exports.executionToPath = executionToPath;
+exports.testCaseToPath = testCaseToPath;
+exports.cycleToPath = cycleToPath;
 exports.timeout = timeout;
