@@ -67,10 +67,15 @@ class ArtifactRestApi {
      * @apiSuccess {String} _id ID of newly added element
      */
     async postArtifact(ctx) {
-        const value = ctx.request.body;
-        value.user = ctx.state.user;
-        ctx.body = await this.artifactService.postArtifact(value);
-        ctx.status = 201;
+        try{
+            const value = formatQueryFromParams(JSON.parse(ctx.request.body.value));
+            value.user = ctx.state.user;
+            const file = ctx.request.files.file;
+            ctx.body = await this.artifactService.postArtifact(value, file);
+            ctx.status = 201;
+        }catch(e) {
+            throw new Error(e);
+        }
     }
 
     // ============================================================================

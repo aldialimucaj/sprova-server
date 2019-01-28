@@ -1,8 +1,16 @@
+const DbType = Object.freeze({
+    Artifacts: 'ARTIFACTS',
+    Projects: 'PROJECTS',
+    Cylcles: 'CYCLES',
+    Executions: 'EXECUTIONS',
+    TestSets: 'TESTSETS',
+    TestCases: 'TESTCASES'
+});
+
 const ArtifactType = Object.freeze({
     Execution: 'EXECUTION',
     TestCase: 'TESTCASE'
 });
-
 
 const CycleStatus = Object.freeze({
     Active: 'ACTIVE',
@@ -45,6 +53,7 @@ const ExecutionType = Object.freeze({
 });
 
 module.exports = {
+    DbType,
     ArtifactType,
     CycleStatus,
     TestSetStatus,

@@ -8,7 +8,9 @@ const ARTIFACTS_DIR = DATA_DIR + path.sep + 'artifacts'
 const PROJECTS = 'projects';
 const CYCLES = 'cycles';
 const TESTS = 'tests';
+const TEST_CASES = 'testcases';
 const EXECUTIONS = 'executions';
+const { DbType } = require('./enums');
 
 
 /**
@@ -227,15 +229,30 @@ function testCaseToPath(testCase, projectId) {
 /**
  * Returns full path for execution. Usually used to save artifacts.
  * 
- * @param {Cycle} cycle object
+ * @param {Cycle} value object
  * @returns {string} full path
  */
-function cycleToPath(cycle) {
-    const projectPath = path.join(PROJECTS, cycle.projectId.toString());
-    const cyclesPath = path.join(CYCLES, cycle._id.toString());
-    const fullPath = path.join(projectPath, cyclesPath);
+function defineArtifactPath(value) {
+    let subPaths = [];
 
-    return fullPath;
+    if (value.projectId) {
+        const projectPath = path.join(DbType.Projects.toLowerCase(), value.projectId.toString());
+        subPaths = subPaths.concat(projectPath);
+    }
+    if (value.cycleId) {
+        const cyclesPath = path.join(DbType.Cylcles.toLowerCase(), value.cycleId.toString());
+        subPaths = subPaths.concat(cyclesPath);
+    }
+    if (value.testCaseId) {
+        const testCasePath = path.join(DbType.TestCases.toLowerCase(), value.testCaseId.toString());
+        subPaths = subPaths.concat(testCasePath);
+    }
+    if (value.executionId) {
+        const executionsPath = path.join(DbType.Executions.toLowerCase(), value.executionId.toString());
+        subPaths = subPaths.concat(executionsPath);
+    }
+
+    return path.join(...subPaths);
 }
 
 
@@ -259,5 +276,5 @@ exports.sha512 = sha512;
 exports.saveArtifact = saveArtifact;
 exports.executionToPath = executionToPath;
 exports.testCaseToPath = testCaseToPath;
-exports.cycleToPath = cycleToPath;
+exports.defineArtifactPath = defineArtifactPath;
 exports.timeout = timeout;

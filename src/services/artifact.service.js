@@ -30,22 +30,18 @@ class ArtifactService {
 
     // ============================================================================
 
-    async postArtifact(value) {
+    async postArtifact(value, file) {
         let result = {};
-        const artifactsPath = utils.cycleToPath(value);
+        const artifactsPath = utils.defineArtifactPath(value);
 
-        const artifact = { title: value.name };
+        const artifact = { title: file.name, type: file.type, filePath: artifactsPath };
         artifact.createdAt = new Date();
         artifact.updatedAt = new Date();
-        
-        const filePath = utils.saveArtifact(value, artifactsPath);
+
+        const filePath = utils.saveArtifact(file, artifactsPath);
         const artifactResult = await Artifacts.insertOne(artifact);
-        result.ok = 1;
-        result.files.push({ _id: artifactResult.insertedId, filename: value.name, filePath, success: true });
 
-        const response = await Artifacts.insertOne(value);
-
-        return formatInsert(response);
+        return formatInsert(artifactResult);
     }
 
     // ============================================================================
