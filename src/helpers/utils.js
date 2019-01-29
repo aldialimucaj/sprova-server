@@ -76,10 +76,14 @@ function formatIDs(value) {
     const result = Object.assign({}, value);
     const keys = Object.keys(value);
     for (const key of keys) {
-        if (key.endsWith('Id') && ObjectId.isValid(result[key])) {
+        if ((key.endsWith('Id') || key === '_id') && ObjectId.isValid(result[key])) {
             result[key] = ObjectId(result[key]);
         } else if (key.endsWith('Id') && result[key] === 'null') {
             result[key] = null;
+        } else if (_.isObject(result[key]) && !_.isArray(result[key])) {
+            result[key] = formatIDs(result[key]);
+        }else if (_.isArray(result[key])) {
+            result[key] = result[key].map(e => formatIDs(e));
         }
     }
 
@@ -181,15 +185,18 @@ function sha512(password, key = '') {
  * @returns {string} full destination path
  */
 function saveArtifact(file, dstPath) {
-    const folderPath = path.join(ARTIFACTS_DIR, dstPath);
-    const filePath = path.join(folderPath, file.name);
-    fs.ensureDirSync(folderPath);
+    let result;
+    if(!_.isEmpty(file) && dstPath) {
+        const folderPath = path.join(ARTIFACTS_DIR, dstPath);
+        result = path.join(folderPath, file.name);
+        fs.ensureDirSync(folderPath);
+        
+        const reader = fs.createReadStream(file.path);
+        const writer = fs.createWriteStream(result);
+        reader.pipe(writer);
+    }
 
-    const reader = fs.createReadStream(file.path);
-    const writer = fs.createWriteStream(filePath);
-    reader.pipe(writer);
-
-    return filePath;
+    return result;
 }
 
 /**

@@ -34,7 +34,7 @@ class ArtifactService {
         let result = {};
         const artifactsPath = utils.defineArtifactPath(value);
 
-        const artifact = { title: file.name, type: file.type, filePath: artifactsPath };
+        const artifact = { title: value.title, type: file.type, filePath: artifactsPath };
         artifact.createdAt = new Date();
         artifact.updatedAt = new Date();
 

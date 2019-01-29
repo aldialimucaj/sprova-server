@@ -1,5 +1,5 @@
 const log = require('../helpers/log');
-const { formatQueryFromParams, formatOptionsFromParams } = require('../helpers/utils');
+const { formatQueryFromParams, formatOptionsFromParams, formatIDs } = require('../helpers/utils');
 const TestCaseService = require('../services/testcase.service');
 
 class TestCaseRestApi {
@@ -71,8 +71,9 @@ class TestCaseRestApi {
      * @apiSuccess {String} _id ID of newly added element
      */
     async postTestCase(ctx) {
-        const value = ctx.request.body;
+        let value = ctx.request.body;
         value.user = ctx.state.user;
+        value = formatIDs(value);
         ctx.body = await this.testCaseService.postTestCase(value);
         ctx.status = 201;
     }
@@ -97,8 +98,9 @@ class TestCaseRestApi {
      */
     async putTestCase(ctx) {
         const id = ctx.params.id;
-        const value = ctx.request.body;
+        let value = ctx.request.body;
         value.user = ctx.state.user;
+        value = formatIDs(value);
         ctx.body = await this.testCaseService.putTestCase(id, value);
     }
 

@@ -75,7 +75,7 @@ describe('artifact : service', () => {
 
   describe('postArtifacts', () => {
     it('should save artifact', async () => {
-      const result = await to.postArtifact(fixtures.artifact1);
+      const result = await to.postArtifact(fixtures.artifact1, {});
       expect(result).to.be.an('object');
       expect(result.ok).to.be.eql(1);
       expect(result._id).to.not.be.undefined;
