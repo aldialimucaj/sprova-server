@@ -82,7 +82,7 @@ function formatIDs(value) {
             result[key] = null;
         } else if (_.isObject(result[key]) && !_.isArray(result[key])) {
             result[key] = formatIDs(result[key]);
-        }else if (_.isArray(result[key])) {
+        } else if (_.isArray(result[key])) {
             result[key] = result[key].map(e => formatIDs(e));
         }
     }
@@ -186,17 +186,25 @@ function sha512(password, key = '') {
  */
 function saveArtifact(file, dstPath) {
     let result;
-    if(!_.isEmpty(file) && dstPath) {
+    if (!_.isEmpty(file) && dstPath) {
         const folderPath = path.join(ARTIFACTS_DIR, dstPath);
         result = path.join(folderPath, file.name);
         fs.ensureDirSync(folderPath);
-        
+
         const reader = fs.createReadStream(file.path);
         const writer = fs.createWriteStream(result);
         reader.pipe(writer);
     }
 
     return result;
+}
+
+/**
+ * Read artifact content form fs and return a stream
+ * @param {*} artifact 
+ */
+function readArtifact(artifact) {
+    return fs.createReadStream(artifact.filePath);
 }
 
 /**
@@ -281,6 +289,7 @@ exports.formatQueryFromParams = formatQueryFromParams;
 exports.formatOptionsFromParams = formatOptionsFromParams;
 exports.sha512 = sha512;
 exports.saveArtifact = saveArtifact;
+exports.readArtifact = readArtifact;
 exports.executionToPath = executionToPath;
 exports.testCaseToPath = testCaseToPath;
 exports.defineArtifactPath = defineArtifactPath;

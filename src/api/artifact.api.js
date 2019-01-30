@@ -49,7 +49,8 @@ class ArtifactRestApi {
      */
     async getArtifact(ctx) {
         const id = ctx.params.id;
-        ctx.body = await this.artifactService.getArtifact(id);
+        const query = formatQueryFromParams(ctx.query);
+        ctx.body = await this.artifactService.getArtifact(id, query.download);
     }
 
     // ============================================================================

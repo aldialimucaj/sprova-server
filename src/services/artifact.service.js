@@ -14,9 +14,14 @@ class ArtifactService {
         return await Artifacts.find(query, options).toArray();
     }
 
-    async getArtifact(id) {
+    async getArtifact(id, download) {
         const _id = ObjectId(id);
-        return await Artifacts.findOne({ _id });
+        const artifact = await Artifacts.findOne({ _id });
+        if(download) {
+            return utils.readArtifact(artifact);
+        } else {
+            return artifact;
+        }
     }
 
     // ============================================================================
@@ -33,15 +38,18 @@ class ArtifactService {
     async postArtifact(value, file) {
         let result = {};
         const artifactsPath = utils.defineArtifactPath(value);
+        const filePath = utils.saveArtifact(file, artifactsPath);
+        const artifact = { title: value.title, type: file.type, filePath };
 
-        const artifact = { title: value.title, type: file.type, filePath: artifactsPath };
         artifact.createdAt = new Date();
         artifact.updatedAt = new Date();
-
-        const filePath = utils.saveArtifact(file, artifactsPath);
+        
         const artifactResult = await Artifacts.insertOne(artifact);
 
-        return formatInsert(artifactResult);
+        result =  formatInsert(artifactResult);
+        result.name = file.name;
+
+        return result;
     }
 
     // ============================================================================
