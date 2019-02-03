@@ -1,16 +1,12 @@
 const ObjectId = require('mongodb').ObjectId;
-const utils = require('../helpers/utils');
 const { formatInsert, formatUpdate, formatRemove } = require('../helpers/utils');
-const { ArtifactType } = require('../helpers/enums');
 
 var TestCases = undefined;
-var Artifacts = undefined;
 
 class TestCaseService {
 
     constructor(db) {
         TestCases = db.collection('testcases');
-        Artifacts = db.collection('artifacts');
     }
 
     // ============================================================================

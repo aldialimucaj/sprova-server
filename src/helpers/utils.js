@@ -8,7 +8,6 @@ const ARTIFACTS_DIR = DATA_DIR + path.sep + 'artifacts'
 const PROJECTS = 'projects';
 const CYCLES = 'cycles';
 const TESTS = 'tests';
-const TEST_CASES = 'testcases';
 const EXECUTIONS = 'executions';
 const { DbType } = require('./enums');
 
@@ -200,6 +199,17 @@ function saveArtifact(file, dstPath) {
 }
 
 /**
+ * Delete artifact from hdd. This does not remove the database metadata.
+ * 
+ * @param {*} artifact 
+ * @returns {Promise}
+ */
+function removeArtifact(artifact) {
+    // TODO Sanitize
+    return fs.remove(artifact.filePath);
+}
+
+/**
  * Read artifact content form fs and return a stream
  * @param {*} artifact 
  */
@@ -290,6 +300,7 @@ exports.formatOptionsFromParams = formatOptionsFromParams;
 exports.sha512 = sha512;
 exports.saveArtifact = saveArtifact;
 exports.readArtifact = readArtifact;
+exports.removeArtifact = removeArtifact;
 exports.executionToPath = executionToPath;
 exports.testCaseToPath = testCaseToPath;
 exports.defineArtifactPath = defineArtifactPath;

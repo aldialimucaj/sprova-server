@@ -1,3 +1,4 @@
+const send = require('koa-send');
 const log = require('../helpers/log');
 const ArtifactService = require('../services/artifact.service');
 const { formatQueryFromParams, formatOptionsFromParams } = require('../helpers/utils');
@@ -50,7 +51,16 @@ class ArtifactRestApi {
     async getArtifact(ctx) {
         const id = ctx.params.id;
         const query = formatQueryFromParams(ctx.query);
-        ctx.body = await this.artifactService.getArtifact(id, query.download);
+        const artifact = await this.artifactService.getArtifact(id);
+        if (query.download) {
+            await send(ctx, artifact.filePath, {
+                setHeaders: function (res) {
+                    res.setHeader('Content-Disposition', `attachment; filename="${artifact.fileName}"`);
+                }
+            });
+        } else {
+            ctx.body = artifact;
+        }
     }
 
     // ============================================================================
@@ -68,13 +78,13 @@ class ArtifactRestApi {
      * @apiSuccess {String} _id ID of newly added element
      */
     async postArtifact(ctx) {
-        try{
+        try {
             const value = formatQueryFromParams(JSON.parse(ctx.request.body.value));
             value.user = ctx.state.user;
             const file = ctx.request.files.file;
             ctx.body = await this.artifactService.postArtifact(value, file);
             ctx.status = 201;
-        }catch(e) {
+        } catch (e) {
             throw new Error(e);
         }
     }

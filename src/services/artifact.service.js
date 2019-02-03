@@ -14,20 +14,19 @@ class ArtifactService {
         return await Artifacts.find(query, options).toArray();
     }
 
-    async getArtifact(id, download) {
+    async getArtifact(id) {
         const _id = ObjectId(id);
-        const artifact = await Artifacts.findOne({ _id });
-        if(download) {
-            return utils.readArtifact(artifact);
-        } else {
-            return artifact;
-        }
+        return await Artifacts.findOne({ _id });
     }
 
     // ============================================================================
 
     async delArtifact(id) {
         const _id = ObjectId(id);
+        const artifact = this.getArtifact(_id);
+        if (artifact.filePath) {
+            utils.removeArtifact(artifact);
+        }
         const response = await Artifacts.remove({ _id });
 
         return formatRemove(response, _id);
@@ -39,14 +38,14 @@ class ArtifactService {
         let result = {};
         const artifactsPath = utils.defineArtifactPath(value);
         const filePath = utils.saveArtifact(file, artifactsPath);
-        const artifact = { title: value.title, type: file.type, filePath };
+        const artifact = { title: value.title, type: file.type, filePath, fileName: file.name };
 
         artifact.createdAt = new Date();
         artifact.updatedAt = new Date();
-        
+
         const artifactResult = await Artifacts.insertOne(artifact);
 
-        result =  formatInsert(artifactResult);
+        result = formatInsert(artifactResult);
         result.name = file.name;
 
         return result;

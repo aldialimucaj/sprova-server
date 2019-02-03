@@ -125,7 +125,7 @@ const authRouter = new Router();
 // APP middlewares 
 // ============================================================================
 app
-  .use(cors())
+  .use(cors({ exposeHeaders: 'Content-Disposition' }))
   .use(koaBody({ multipart: true }))
   .use(koaLogger(log, { level: 'info' }))
   .use(authRouter.routes())
