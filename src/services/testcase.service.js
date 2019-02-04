@@ -19,9 +19,7 @@ class TestCaseService {
      * @param {boolean} withParentFlag if also parents should be returned
      */
     async getTestCases(query, options, withParentFlag) {
-        let result;
-
-        result = await TestCases.find(query, options).toArray();
+        const result = await TestCases.find(query, options).toArray();
         if (withParentFlag) {
             for (let t of result) {
                 t.isParent = await TestCases.countDocuments({ parentId: t._id }) > 0;
@@ -54,10 +52,9 @@ class TestCaseService {
      * @param {*} id test case id
      */
     async getTestCasewithParentFlag(id) {
-        var result;
         const _id = ObjectId(id);
 
-        result = await TestCases.findOne({ _id });
+        const result = await TestCases.findOne({ _id });
         if (result.parentId && result.parentId.toString) {
             let parent = await this.getTestCasewithParentFlag({ params: { id: result.parentId.toString() } });
             result.parent = parent;
