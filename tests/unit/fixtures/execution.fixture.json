@@ -51,6 +51,71 @@
             }
         }
     ],
+    "user1": {
+        "username" : "admin",
+        "firstname" : "Administrator",
+        "lastname" : "Administrator",
+        "status" : "active",
+        "email" : "admin",
+        "admin" : true
+    },
+    "testCase1": {
+        "_id": "5be308ce4c2ed900134a855a",
+        "testSteps": [
+            {
+                "action": "Navigate to <host>/riot",
+                "payload": "",
+                "expected": ""
+            },
+            {
+                "action": "Click help button",
+                "payload": "",
+                "expected": "Login help page is shown"
+            },
+            {
+                "action": "Enter correct username and password",
+                "payload": "",
+                "expected": ""
+            },
+            {
+                "action": "Change language (german↔english)",
+                "payload": "",
+                "expected": "Correct translation of available words/text"
+            },
+            {
+                "action": "Click sign in",
+                "payload": "",
+                "expected": "Successful login, correct user name showed in top right corner"
+            },
+            {
+                "action": "Sign out",
+                "payload": "",
+                "expected": "redirected to login page"
+            },
+            {
+                "action": "Enter wrong username/password",
+                "payload": "",
+                "expected": "Error message shown (Sign in - failed)"
+            },
+            {
+                "action": "Enter correct username and password",
+                "payload": "",
+                "expected": "Successful login"
+            }
+        ],
+        "title": "Login/Logout",
+        "description": "Tests login and logout functionality",
+        "createdAt": "2018-11-07T16:34:26.304Z",
+        "user": {
+            "_id": "5ae05f37dda5971dc20c9e21",
+            "username": "admin",
+            "admin": true,
+            "firstname": "Administrator",
+            "lastname": "Administrator",
+            "iat": 1541584990,
+            "exp": 1800784990
+        }
+    },
     "execution1": {
         "status": "PENDING",
         "testCaseId": "5be308ce4c2ed900134a855a",

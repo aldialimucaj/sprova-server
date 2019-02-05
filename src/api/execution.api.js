@@ -68,9 +68,10 @@ class ExecutionRestApi {
      * @apiSuccess {String} _id ID of newly added element
      */
     async postExecution(ctx) {
+        const query = formatQueryFromParams(ctx.query);
         const value = ctx.request.body;
-        value.user = ctx.state.user;
-        ctx.body = await this.executionService.postExecution(value);
+        const user = ctx.state.user;
+        ctx.body = await this.executionService.postExecution(value, user, query.returnDocument);
         ctx.status = 201;
     }
 

@@ -145,39 +145,48 @@ class ExecutionService {
      * Create new execution object.
      * 
      * @param {*} value 
+     * @param {*} user 
+     * @param {boolean} returnDocument should return created document in data property
      */
-    async postExecution(value) {
+    async postExecution(value, user, returnDocument) {
         // precondictions
         if (!value.cycleId) {
-            throw new Error("New execution should be likened to a specific cycle")
+            throw new Error("New execution should be likened to a specific cycle");
         }
         if (!value.testCaseId) {
-            throw new Error("New execution should be likened to a specific test case")
+            throw new Error("New execution should be likened to a specific test case");
         }
+
+
+        const cycleId = ObjectId(value.cycleId);
+        const testCaseId = ObjectId(value.testCaseId);
+        let executionSetId;
 
         // executions can be optionaly started from an execution set
         if (value.executionSetId) {
-            value.executionSetId = ObjectId(value.executionSetId);
+            executionSetId = ObjectId(value.executionSetId);
         }
 
-        // status should be delievered as it ca be working or pending
-        if (!value.status) {
-            value.status = ExecutionStatus.Pending;
+        const testCase = await TestCases.findOne({ _id: testCaseId });
+        if (!testCase) {
+            throw new Error(`TestCase with ID ${testCaseId} does not exist. Cannot create execution.`);
+        }
+        const execution = ExecutionService.createExecution(user, testCase, cycleId, executionSetId);
+        // status is optional as it ca be working or pending:default
+        if (value.status) {
+            execution.status = value.status;
         }
 
-        // TODO: make possible to define own _id as it allows us to fetch through the URL
-        delete value._id;
-        value.cycleId = ObjectId(value.cycleId);
-        value.testCaseId = ObjectId(value.testCaseId);
+        const response = await Executions.insertOne(execution);
 
-        // fingerprinting
-        value.createdAt = new Date();
-        value.updatedAt = new Date();
-        // value.user = ctx.state.user; TODO move to api handler
+        // we allso return the newly created execution
+        const result = formatInsert(response);
 
-        const response = await Executions.insertOne(value);
+        if (returnDocument) {
+            result.data = execution;
+        }
 
-        return formatInsert(response);
+        return result;
     }
 
     /**
@@ -240,7 +249,7 @@ class ExecutionService {
      * @param {*} cycleId 
      * @param {*} testSetId 
      */
-    static createExecution(user, testCase, cycleId, testSetId) {
+    static createExecution(user, testCase, cycleId, executionSetId) {
         const execution = {
             status: ExecutionStatus.Pending,
             executionType: ExecutionType.Manual,
@@ -248,13 +257,16 @@ class ExecutionService {
             testCaseId: testCase._id,
             title: testCase.title,
             description: testCase.description,
-            testSteps: testCase.testSteps.slice(0),
+            testSteps: testCase.testSteps.slice(0).map(t => {
+                delete t.artifacts;
+                return t;
+            }),
 
-            executionSetId: testSetId,
+            executionSetId,
+            cycleId,
 
             createdAt: new Date(),
             updatedAt: new Date(),
-            cycleId,
             user
         };
 

@@ -1,6 +1,8 @@
 /* eslint-disable */
 let config = { db: { host: '127.0.0.1' } };
 
+const ObjectId = require('mongodb').ObjectId;
+
 // mocks
 const { MongoMemoryServer } = require('mongodb-memory-server');
 const Router = require('../utils/router-mock');
@@ -77,14 +79,22 @@ describe('execution : service', () => {
 
   describe('postExecutions', () => {
     it('should save execution', async () => {
-      const result = await to.postExecution(fixtures.execution1);
+      fixtures.testCase1._id = ObjectId(fixtures.testCase1._id);
+      const testCase1Result = await TestCases.insertOne(fixtures.testCase1);
+
+      const result = await to.postExecution(fixtures.execution1, fixtures.user1, true);
+      
       expect(result).to.be.an('object');
       expect(result.ok).to.be.eql(1);
       expect(result._id).to.not.be.undefined;
       const newExecution = await Executions.findOne({ _id: result._id });
       expect(newExecution.title).to.equal(fixtures.execution1.title);
+      expect(newExecution.description).to.equal(fixtures.execution1.description);
+      expect(newExecution.testCaseId.toString()).to.equal(fixtures.testCase1._id.toString());
+      expect(newExecution.testSteps).to.eql(fixtures.testCase1.testSteps);
       expect(newExecution.createdAt).to.not.be.undefined;
       expect(newExecution.updatedAt).to.not.be.undefined;
+      expect(result.data).to.not.be.undefined;
     });
   });
 
