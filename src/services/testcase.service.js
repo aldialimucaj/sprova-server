@@ -56,7 +56,7 @@ class TestCaseService {
 
         const result = await TestCases.findOne({ _id });
         if (result.parentId && result.parentId.toString) {
-            let parent = await this.getTestCasewithParentFlag({ params: { id: result.parentId.toString() } });
+            let parent = await this.getTestCasewithParentFlag(result.parentId.toString());
             result.parent = parent;
         }
 
