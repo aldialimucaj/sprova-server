@@ -51,7 +51,7 @@ class ExecutionService {
             delete value._id;
             delete value.cycleId;
             delete value.testCaseId;
-            delete value.executionSetId;
+            delete value.testSetExecutionId;
             delete value.createdAt;
 
             value.updatedAt = new Date();
@@ -160,18 +160,18 @@ class ExecutionService {
 
         const cycleId = ObjectId(value.cycleId);
         const testCaseId = ObjectId(value.testCaseId);
-        let executionSetId;
+        let testSetExecutionId;
 
         // executions can be optionaly started from an execution set
-        if (value.executionSetId) {
-            executionSetId = ObjectId(value.executionSetId);
+        if (value.testSetExecutionId) {
+            testSetExecutionId = ObjectId(value.testSetExecutionId);
         }
 
         const testCase = await TestCases.findOne({ _id: testCaseId });
         if (!testCase) {
             throw new Error(`TestCase with ID ${testCaseId} does not exist. Cannot create execution.`);
         }
-        const execution = ExecutionService.createExecution(user, testCase, cycleId, executionSetId);
+        const execution = ExecutionService.createExecution(user, testCase, cycleId, testSetExecutionId);
         // status is optional as it ca be working or pending:default
         if (value.status) {
             execution.status = value.status;
@@ -209,8 +209,8 @@ class ExecutionService {
             if (filter.testCaseId) {
                 filter.testCaseId = ObjectId(filter.testCaseId);
             }
-            if (filter.executionSetId) {
-                filter.executionSetId = ObjectId(filter.executionSetId);
+            if (filter.testSetExecutionId) {
+                filter.testSetExecutionId = ObjectId(filter.testSetExecutionId);
             }
         }
 
@@ -249,7 +249,7 @@ class ExecutionService {
      * @param {*} cycleId 
      * @param {*} testSetId 
      */
-    static createExecution(user, testCase, cycleId, executionSetId) {
+    static createExecution(user, testCase, cycleId, testSetExecutionId) {
         const execution = {
             status: ExecutionStatus.Pending,
             executionType: ExecutionType.Manual,
@@ -262,7 +262,7 @@ class ExecutionService {
                 return t;
             }),
 
-            executionSetId,
+            testSetExecutionId,
             cycleId,
 
             createdAt: new Date(),

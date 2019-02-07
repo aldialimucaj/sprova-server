@@ -149,7 +149,7 @@ class TestSetExecutionService {
         var result;
         const _id = ObjectId(id);
 
-        result = await Executions.findOne({ executionSetId: _id, status: ExecutionStatus.Pending });
+        result = await Executions.findOne({ testSetExecutionId: _id, status: ExecutionStatus.Pending });
         if (result) {
             var update = await Executions.updateOne({ _id: result._id }, { $set: { status: ExecutionStatus.Working } });
             if (update.result.ok) {
@@ -171,7 +171,7 @@ class TestSetExecutionService {
         let result = {}
         const _id = ObjectId(id);
 
-        let nextTest = await Executions.findOne({ executionSetId: _id, status: ExecutionStatus.Pending });
+        let nextTest = await Executions.findOne({ testSetExecutionId: _id, status: ExecutionStatus.Pending });
         // no errors. query was successful
         result.ok = 1;
 
