@@ -31,12 +31,7 @@ class ProjectService {
      */
     async getCyclesByProjectId(id) {
         const _id = ObjectId(id);
-        const response = await Cycles.find({ projectId: _id }).toArray();
-        for (let t of response) {
-            t.isParent = await Cycles.countDocuments({ parentId: t._id }) > 0;
-        }
-
-        return response;
+        return await Cycles.find({ projectId: _id }).toArray();
     }
 
     /**
