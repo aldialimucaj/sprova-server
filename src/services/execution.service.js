@@ -257,10 +257,7 @@ class ExecutionService {
             testCaseId: testCase._id,
             title: testCase.title,
             description: testCase.description,
-            testSteps: testCase.testSteps.slice(0).map(t => {
-                delete t.artifacts;
-                return t;
-            }),
+            testSteps: testCase.testSteps.slice(0),
 
             testSetExecutionId,
             cycleId,
