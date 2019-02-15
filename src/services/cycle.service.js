@@ -1,6 +1,5 @@
 const ObjectId = require('mongodb').ObjectId;
 const { formatInsert, formatUpdate, formatRemove } = require('../helpers/utils');
-const log = require('../helpers/log');
 var Cycles = undefined;
 var TestSets = undefined;
 var TestCases = undefined;

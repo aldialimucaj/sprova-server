@@ -38,7 +38,7 @@ class ArtifactService {
         let result = {};
         const artifactsPath = utils.defineArtifactPath(value);
         const filePath = utils.saveArtifact(file, artifactsPath);
-        const artifact = { title: value.title, type: file.type, filePath, fileName: file.name };
+        const artifact = Object.assign({ type: file.type, filePath, fileName: file.name }, value)
 
         artifact.createdAt = new Date();
         artifact.updatedAt = new Date();
