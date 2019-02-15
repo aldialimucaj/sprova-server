@@ -80,7 +80,7 @@ class UserService {
 
     async delUser(id) {
         const _id = ObjectId(id);
-        const response = await Users.remove({ _id });
+        const response = await Users.deleteOne({ _id });
 
         return formatRemove(response, _id);
     }

@@ -20,28 +20,30 @@ let TestSetExecutions, TestSets, TestCases;
 
 const fixtures = require('./fixtures/testset-execution.fixture');
 
-before(async () => {
-  try {
-    mongod = new MongoMemoryServer();
-    const uriStr = await mongod.getConnectionString();
-    config.db.port = await mongod.getPort();
-    config.db.name = await mongod.getDbName()
-    const databaseManager = new DatabaseManager(config)
-
-    var db = await databaseManager.connect();
-    to = new TestSetExecutionService(db);
-
-    TestSetExecutions = db.collection('testset-executions');
-    TestSets = db.collection('testsets');
-    TestCases = db.collection('testcases');
-    await TestSetExecutions.deleteMany();
-  } catch (e) {
-    console.error(e)
-  }
-});
 
 
 describe('testSetExecution : service', () => {
+  before(async () => {
+    try {
+      mongod = new MongoMemoryServer();
+      const uriStr = await mongod.getConnectionString();
+      config.db.port = await mongod.getPort();
+      config.db.name = await mongod.getDbName()
+      const databaseManager = new DatabaseManager(config)
+
+      var db = await databaseManager.connect();
+      to = new TestSetExecutionService(db);
+
+      TestSetExecutions = db.collection('testset-executions');
+      TestSets = db.collection('testsets');
+      TestCases = db.collection('testcases');
+      await TestSetExecutions.deleteMany();
+    } catch (e) {
+      console.error(e)
+    }
+  });
+
+
   let fixture1testsetsResult;
   beforeEach(async () => {
     let fixture1testcasesResult = await TestCases.insertMany(fixtures.fixture1testcases.map(x => { delete x._id; return x; }));

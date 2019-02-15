@@ -156,7 +156,7 @@ class TestCaseService {
     async delTestCase(id) {
         const _id = ObjectId(id);
 
-        const response = await TestCases.remove({ _id });
+        const response = await TestCases.deleteOne({ _id });
 
         return formatRemove(response, _id);
     }

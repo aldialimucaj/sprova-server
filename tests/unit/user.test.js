@@ -21,26 +21,26 @@ const fixtures = require('./fixtures/user.fixture.json');
 const fixture1 = [{ "test": 1 }, { "test": 2 }];
 let fixture1Result;
 
-before(async () => {
-  try {
-    mongod = new MongoMemoryServer();
-    const uriStr = await mongod.getConnectionString();
-    config.db.port = await mongod.getPort();
-    config.db.name = await mongod.getDbName()
-    const databaseManager = new DatabaseManager(config)
-
-    var db = await databaseManager.connect();
-    to = new UserService(db);
-    Users = db.collection('users');
-    fixture1Result = await Users.insertMany(fixture1)
-  } catch (e) {
-    console.error(e)
-  }
-});
-
 // tests
 
 describe('user : service', () => {
+
+  before(async () => {
+    try {
+      mongod = new MongoMemoryServer();
+      const uriStr = await mongod.getConnectionString();
+      config.db.port = await mongod.getPort();
+      config.db.name = await mongod.getDbName()
+      const databaseManager = new DatabaseManager(config)
+
+      var db = await databaseManager.connect();
+      to = new UserService(db);
+      Users = db.collection('users');
+      fixture1Result = await Users.insertMany(fixture1)
+    } catch (e) {
+      console.error(e)
+    }
+  });
 
   describe('getUsers', () => {
     it('should return users', async () => {

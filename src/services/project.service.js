@@ -53,7 +53,7 @@ class ProjectService {
 
     async delProject(id) {
         const _id = ObjectId(id);
-        const result = await Projects.remove({ _id });
+        const result = await Projects.deleteOne({ _id });
 
         return formatRemove(result, _id);
     }

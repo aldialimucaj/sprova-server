@@ -49,7 +49,7 @@ class TestSetService {
 
     async delTestSet(id) {
         const _id = ObjectId(id);
-        const response = await TestSets.remove({ _id });
+        const response = await TestSets.deleteOne({ _id });
 
         return formatRemove(response, _id);
     }

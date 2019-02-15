@@ -27,7 +27,7 @@ class ArtifactService {
         if (artifact.filePath) {
             utils.removeArtifact(artifact);
         }
-        const response = await Artifacts.remove({ _id });
+        const response = await Artifacts.deleteOne({ _id });
 
         return formatRemove(response, _id);
     }

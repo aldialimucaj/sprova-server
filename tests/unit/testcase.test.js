@@ -20,27 +20,26 @@ let TestCases;
 
 const fixtures = require('./fixtures/testcase.fixture');
 
-before(async () => {
-  try {
-    mongod = new MongoMemoryServer();
-    const uriStr = await mongod.getConnectionString();
-    config.db.port = await mongod.getPort();
-    config.db.name = await mongod.getDbName()
-    const databaseManager = new DatabaseManager(config)
-
-    var db = await databaseManager.connect();
-    to = new TestCaseService(db);
-
-    TestCases = db.collection('testcases');
-    await TestCases.deleteMany();
-  } catch (e) {
-    console.error(e)
-  }
-});
-
-
 
 describe('testcase : service', () => {
+  before(async () => {
+    try {
+      mongod = new MongoMemoryServer();
+      const uriStr = await mongod.getConnectionString();
+      config.db.port = await mongod.getPort();
+      config.db.name = await mongod.getDbName()
+      const databaseManager = new DatabaseManager(config)
+  
+      var db = await databaseManager.connect();
+      to = new TestCaseService(db);
+  
+      TestCases = db.collection('testcases');
+      await TestCases.deleteMany();
+    } catch (e) {
+      console.error(e)
+    }
+  });
+  
   beforeEach(async () => {
     await TestCases.insertMany(fixtures.initialObjects.map(x => { delete x._id; return x; }));
   });

@@ -20,27 +20,26 @@ let Projects;
 
 const fixtures = require('./fixtures/project.fixture');
 
-before(async () => {
-  try {
-    mongod = new MongoMemoryServer();
-    const uriStr = await mongod.getConnectionString();
-    config.db.port = await mongod.getPort();
-    config.db.name = await mongod.getDbName()
-    const databaseManager = new DatabaseManager(config)
-
-    var db = await databaseManager.connect();
-    to = new ProjectService(db);
-
-    Projects = db.collection('projects');
-    await Projects.deleteMany();
-  } catch (e) {
-    console.error(e)
-  }
-});
-
-
 
 describe('project : service', () => {
+  before(async () => {
+    try {
+      mongod = new MongoMemoryServer();
+      const uriStr = await mongod.getConnectionString();
+      config.db.port = await mongod.getPort();
+      config.db.name = await mongod.getDbName()
+      const databaseManager = new DatabaseManager(config)
+
+      var db = await databaseManager.connect();
+      to = new ProjectService(db);
+
+      Projects = db.collection('projects');
+      await Projects.deleteMany();
+    } catch (e) {
+      console.error(e)
+    }
+  });
+
   beforeEach(async () => {
     await Projects.insertMany(fixtures.initialObjects.map(x => { delete x._id; return x; }));
   });

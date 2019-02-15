@@ -20,27 +20,29 @@ let Cycles;
 
 const fixtures = require('./fixtures/cycle.fixture');
 
-before(async () => {
-  try {
-    mongod = new MongoMemoryServer();
-    const uriStr = await mongod.getConnectionString();
-    config.db.port = await mongod.getPort();
-    config.db.name = await mongod.getDbName()
-    const databaseManager = new DatabaseManager(config)
-
-    var db = await databaseManager.connect();
-    to = new CycleService(db);
-
-    Cycles = db.collection('cycles');
-    await Cycles.deleteMany();
-  } catch (e) {
-    console.error(e)
-  }
-});
 
 
 
 describe('cycle : service', () => {
+  before(async () => {
+    try {
+      mongod = new MongoMemoryServer();
+      const uriStr = await mongod.getConnectionString();
+      config.db.port = await mongod.getPort();
+      config.db.name = await mongod.getDbName()
+      const databaseManager = new DatabaseManager(config)
+  
+      var db = await databaseManager.connect();
+      to = new CycleService(db);
+  
+      Cycles = db.collection('cycles');
+      await Cycles.deleteMany();
+    } catch (e) {
+      console.error(e)
+    }
+  });
+
+  
   beforeEach(async () => {
     await Cycles.insertMany(fixtures.initialObjects.map(x => { delete x._id; return x; }));
   });

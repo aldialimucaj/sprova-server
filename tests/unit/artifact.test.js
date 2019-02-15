@@ -20,27 +20,30 @@ let Artifacts;
 
 const fixtures = require('./fixtures/artifact.fixture');
 
-before(async () => {
-  try {
-    mongod = new MongoMemoryServer();
-    const uriStr = await mongod.getConnectionString();
-    config.db.port = await mongod.getPort();
-    config.db.name = await mongod.getDbName()
-    const databaseManager = new DatabaseManager(config)
-
-    var db = await databaseManager.connect();
-    to = new ArtifactService(db);
-
-    Artifacts = db.collection('artifacts');
-    await Artifacts.deleteMany();
-  } catch (e) {
-    console.error(e)
-  }
-});
-
-
 
 describe('artifact : service', () => {
+
+  before(async () => {
+    try {
+      mongod = new MongoMemoryServer();
+      const uriStr = await mongod.getConnectionString();
+      config.db.port = await mongod.getPort();
+      config.db.name = await mongod.getDbName()
+      const databaseManager = new DatabaseManager(config)
+  
+      var db = await databaseManager.connect();
+      to = new ArtifactService(db);
+  
+      Artifacts = db.collection('artifacts');
+      await Artifacts.deleteMany();
+    } catch (e) {
+      console.error(e)
+    }
+  });
+  
+  
+  
+
   beforeEach(async () => {
     await Artifacts.insertMany(fixtures.initialObjects.map(x => { delete x._id; return x; }));
   });

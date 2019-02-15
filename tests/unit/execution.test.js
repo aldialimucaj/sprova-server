@@ -24,29 +24,29 @@ let TestCases;
 
 const fixtures = require('./fixtures/execution.fixture');
 
-before(async () => {
-  try {
-    mongod = new MongoMemoryServer();
-    const uriStr = await mongod.getConnectionString();
-    config.db.port = await mongod.getPort();
-    config.db.name = await mongod.getDbName()
-    const databaseManager = new DatabaseManager(config)
-
-    var db = await databaseManager.connect();
-    to = new ExecutionService(db);
-
-    Executions = db.collection('executions');
-    TestCases = db.collection('testcases');
-    await Executions.deleteMany();
-  } catch (e) {
-    console.error(e)
-  }
-});
-
 
 // tests
 
 describe('execution : service', () => {
+  before(async () => {
+    try {
+      mongod = new MongoMemoryServer();
+      const uriStr = await mongod.getConnectionString();
+      config.db.port = await mongod.getPort();
+      config.db.name = await mongod.getDbName()
+      const databaseManager = new DatabaseManager(config)
+
+      var db = await databaseManager.connect();
+      to = new ExecutionService(db);
+
+      Executions = db.collection('executions');
+      TestCases = db.collection('testcases');
+      await Executions.deleteMany();
+    } catch (e) {
+      console.error(e)
+    }
+  });
+
   beforeEach(async () => {
     await Executions.insertMany(fixtures.initialObjects.map(x => { delete x._id; return x; }));
   });
@@ -83,7 +83,7 @@ describe('execution : service', () => {
       const testCase1Result = await TestCases.insertOne(fixtures.testCase1);
 
       const result = await to.postExecution(fixtures.execution1, fixtures.user1, true);
-      
+
       expect(result).to.be.an('object');
       expect(result.ok).to.be.eql(1);
       expect(result._id).to.not.be.undefined;
@@ -158,7 +158,7 @@ describe('execution : service', () => {
       };
 
       let newExecutionResult = await Executions.insertOne(oldExecution);
-      const result = await to.putExecution(newExecutionResult.insertedId.toString(), null, {username: "testuser"});
+      const result = await to.putExecution(newExecutionResult.insertedId.toString(), null, { username: "testuser" });
       let newExecution = await Executions.findOne({ _id: newExecutionResult.insertedId });
 
       expect(result).to.be.an('object');

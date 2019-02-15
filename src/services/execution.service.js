@@ -11,7 +11,7 @@ class ExecutionService {
     constructor(db) {
         Executions = db.collection('executions');
         TestCases = db.collection('testcases');
-        // this.artifactService = new ArtifactService(db);
+        this.artifactService = new ArtifactService(db);
     }
 
     // ============================================================================
@@ -222,7 +222,7 @@ class ExecutionService {
      */
     async delExecution(id) {
         const _id = ObjectId(id);
-        const response = await Executions.remove({ _id });
+        const response = await Executions.deleteOne({ _id });
 
         return formatRemove(response, _id);
     }

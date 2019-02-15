@@ -8,7 +8,6 @@ const ObjectId = require('mongodb').ObjectId;
 
 const to = require('../../src/helpers/utils');
 
-
 // tests
 
 describe('utils : helper', () => {

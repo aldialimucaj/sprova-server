@@ -233,7 +233,7 @@ class CycleService {
 
     async delCycle(id) {
         const _id = ObjectId(id);
-        const response = await Cycles.remove({ _id });
+        const response = await Cycles.deleteOne({ _id });
 
         return formatRemove(response, _id);
     }
