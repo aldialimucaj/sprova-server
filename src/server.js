@@ -37,6 +37,8 @@ const ExecutionGraphQL = require('./graphql/execution.gql');
 const APP_PORT = process.env.PORT || 8181;
 const PRODUCTION = process.env.NODE_ENV === 'production' ? true : false;
 
+const NON_STATIC_ROUTES = ['/api', '/authenticate', '/status'];
+
 const app = new Koa();
 
 // for REST api clients
@@ -128,19 +130,26 @@ app
   .use(cors({ exposeHeaders: 'Content-Disposition' }))
   .use(koaBody({ multipart: true }))
   .use(koaLogger(log, { level: 'info' }))
+  .use(async (ctx, next) => {
+    if (NON_STATIC_ROUTES.findIndex(route => ctx.path.startsWith(route)) < 0) {
+      await send(ctx, ctx.path, { root: '/web', index: 'index.html' });
+    } else {
+      await next();
+    }
+  })
   .use(authRouter.routes())
   .use(jwt({ secret: process.env.JWT_SECRET || 'you-hacker!', passthrough: !PRODUCTION }))
   .use(apiRouter.routes())
   .use(graphQLRouter.routes())
   .use(statusRouter.routes())
   .use(json())
+  .use(apiRouter.allowedMethods())
+  .use(statusRouter.allowedMethods())
   .use(async (ctx) => {
     if (ctx.path.startsWith('/data/artifacts')) {
       await send(ctx, ctx.path, { root: path.join(__dirname, '..') });
     }
-  })
-  .use(apiRouter.allowedMethods())
-  .use(statusRouter.allowedMethods());
+  });
 
 
 log.info(`starting server http://0.0.0.0:${APP_PORT}`);
