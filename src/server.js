@@ -37,7 +37,11 @@ const ExecutionGraphQL = require('./graphql/execution.gql');
 const APP_PORT = process.env.PORT || 8181;
 const PRODUCTION = process.env.NODE_ENV === 'production' ? true : false;
 
-const NON_STATIC_ROUTES = ['/api', '/authenticate', '/status'];
+const NON_STATIC_ROUTES = [
+  '/api',
+  '/authenticate',
+  '/status'
+];
 
 const app = new Koa();
 
@@ -132,9 +136,9 @@ app
   .use(koaLogger(log, { level: 'info' }))
   .use(async (ctx, next) => {
     if (NON_STATIC_ROUTES.findIndex(route => ctx.path.startsWith(route)) < 0) {
-      await send(ctx, ctx.path, { root: '/web', index: 'index.html' });
+      return await send(ctx, ctx.path, { root: '/web', index: 'index.html' });
     } else {
-      await next();
+      return await next();
     }
   })
   .use(authRouter.routes())
