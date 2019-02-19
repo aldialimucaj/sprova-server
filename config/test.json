@@ -5,7 +5,7 @@
         "port": 27027,
         "name": "sprova"
     },
-    "mongo": {
+    "mongoOptions": {
         "reconnectTries": 60,
         "reconnectInterval": 1000,
         "autoReconnect": true,
