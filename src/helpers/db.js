@@ -32,13 +32,16 @@ class DatabaseManager {
     }
 
     get mongoOptions() {
-        const options = Object.assign({ auth : {}}, this.config.mongoOptions);
+        const options = Object.assign({}, this.config.mongoOptions);
 
-        if(process.env.SPROVA_DB_USERNAME) {
+        if (process.env.SPROVA_DB_USERNAME) {
+            if (!options.auth) {
+                options.auth = {};
+            }
             options.auth.user = process.env.SPROVA_DB_USERNAME;
         }
 
-        if(process.env.SPROVA_DB_PASSWORD) {
+        if (process.env.SPROVA_DB_PASSWORD) {
             options.auth.password = process.env.SPROVA_DB_PASSWORD;
         }
 
