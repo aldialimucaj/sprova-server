@@ -1,7 +1,8 @@
 
 # Sprova Server 
 
-[![CircleCI](https://circleci.com/gh/aldialimucaj/sprova-server.svg?style=svg&circle-token=bba768315148188e2882ed002899427d8f7a04a3)](https://circleci.com/gh/aldialimucaj/sprova-server)
+[![Build Status](https://travis-ci.org/aldialimucaj/sprova-server.svg?branch=master)](https://travis-ci.org/aldialimucaj/sprova-server)
+
 
 ## API documentation
 You can find the full list of public REST API calls https://aldialimucaj.github.io/sprova-server/ 
