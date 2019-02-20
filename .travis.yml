@@ -1,0 +1,26 @@
+sudo: required
+
+services:
+  - docker
+
+addons:
+  chrome: stable
+
+language: node_js
+node_js:
+  - "11"
+
+branches:
+  only:
+    - master
+
+before_script:
+  - npm install
+
+script:
+  - npm run unit-tests
+  - npm run api-tests
+  - npm run lint
+
+after_success:
+  - bash sprova-server-build.sh
