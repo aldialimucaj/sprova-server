@@ -2,11 +2,10 @@ var jwt = require('jsonwebtoken');
 var utils = require('./utils');
 const log = require('./log');
 var Users = undefined;
-var JWT_SECRET = undefined;
+const JWT_SECRET = process.env.JWT_SECRET || 'you-hacker!';
 class Authenticator {
     constructor(db) {
         this.db = db;
-        JWT_SECRET = process.env.JWT_SECRET || 'you-hacker!';
     }
 
     async init() {
@@ -25,7 +24,7 @@ class Authenticator {
             let user = await Users.findOne({ username });
             if (!user) {
                 return { error: "user not found" };
-            } else if (user.password !== utils.sha512(password)) {
+            } else if (user.password !== utils.sha512(password, JWT_SECRET)) {
                 return { error: "wrong password" };
             } else {
                 return user;

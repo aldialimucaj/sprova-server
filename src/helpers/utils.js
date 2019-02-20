@@ -11,6 +11,7 @@ const TESTS = 'tests';
 const EXECUTIONS = 'executions';
 const { DbType } = require('./enums');
 
+const JWT_SECRET = process.env.JWT_SECRET || 'you-hacker!';
 
 /**
  * Formats output of mongodb insertOne document result
@@ -169,11 +170,10 @@ function formatOptionsFromParams(value) {
  * @param {*} key 
  * @returns {string}
  */
-function sha512(password, key = '') {
+function sha512(password, key = JWT_SECRET) {
     var hash = crypto.createHmac('sha512', key);
     hash.update(password);
-    var value = hash.digest('hex');
-    return value;
+    return hash.digest('hex');
 }
 
 /**
