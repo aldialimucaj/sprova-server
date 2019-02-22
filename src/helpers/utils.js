@@ -18,6 +18,21 @@ const JWT_SECRET = process.env.JWT_SECRET || 'you-hacker!';
  * 
  * @param {*} response Respone form mongodb 
  */
+function formatInsertMany(response) {
+    let result = { ok: 0 };
+    if (response && response.result) {
+        result.ok = response.result.ok;
+        result._ids = Object.values(response.insertedIds);
+    }
+
+    return result;
+}
+
+/**
+ * Formats output of mongodb insertOne document result
+ * 
+ * @param {*} response Respone form mongodb 
+ */
 function formatInsert(response) {
     let result = { ok: 0 };
     if (response && response.result) {
@@ -292,6 +307,7 @@ const timeout = ms => new Promise(res => setTimeout(res, ms))
 
 // ============================================================================
 exports.formatInsert = formatInsert;
+exports.formatInsertMany = formatInsertMany;
 exports.formatUpdate = formatUpdate;
 exports.formatRemove = formatRemove;
 exports.formatIDs = formatIDs;

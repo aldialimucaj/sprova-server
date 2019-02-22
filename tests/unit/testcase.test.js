@@ -85,6 +85,19 @@ describe('testcase : service', () => {
     });
   });
 
+  describe('postTestCases batch', () => {
+    it('should save testcase', async () => {
+      const result = await to.postTestCase([fixtures.testcase1, fixtures.testcase2]);
+      expect(result).to.be.an('object');
+      expect(result.ok).to.be.eql(1);
+      expect(result._ids).to.have.lengthOf(2);
+      const newTestCase = await TestCases.findOne({ _id: result._ids[0] });
+      expect(newTestCase.title).to.equal(fixtures.testcase1.title);
+      expect(newTestCase.createdAt).to.not.be.undefined;
+      expect(newTestCase.updatedAt).to.not.be.undefined;
+    });
+  });
+
   describe('putTestCase', () => {
     it('should change testcase', async () => {
       const changes = { title: "test-testcase" };

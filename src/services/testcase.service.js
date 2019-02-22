@@ -1,5 +1,5 @@
 const ObjectId = require('mongodb').ObjectId;
-const { formatInsert, formatUpdate, formatRemove } = require('../helpers/utils');
+const { formatInsert, formatInsertMany, formatUpdate, formatRemove } = require('../helpers/utils');
 
 var TestCases = undefined;
 
@@ -101,22 +101,17 @@ class TestCaseService {
      * @param {*} value
      */
     async postTestCase(value) {
-        // TODO: make possible to define own _id as it allows us to fetch through the URL
-        delete value._id;
-        // projectId comes in as string
-
-        value.createdAt = new Date();
-        value.updatedAt = new Date();
-
-        value.projectId = ObjectId(value.projectId)
-        if (value.parentId) {
-            value.parentId = ObjectId(value.parentId)
+        let response;
+        let result;
+        if (Array.isArray(value)) {
+            response = await TestCases.insertMany(value.map(t => this.prepareForInsert(t)));
+            result = formatInsertMany(response);
         } else {
-            delete value.parentId;
+            response = await TestCases.insertOne(this.prepareForInsert(value));
+            result = formatInsert(response);
         }
-        let response = await TestCases.insertOne(value);
 
-        return formatInsert(response);
+        return result;
     }
 
 
@@ -159,6 +154,24 @@ class TestCaseService {
         const response = await TestCases.deleteOne({ _id });
 
         return formatRemove(response, _id);
+    }
+
+    prepareForInsert(value) {
+        // TODO: make possible to define own _id as it allows us to fetch through the URL
+        delete value._id;
+        // projectId comes in as string
+
+        value.createdAt = new Date();
+        value.updatedAt = new Date();
+
+        value.projectId = ObjectId(value.projectId)
+        if (value.parentId) {
+            value.parentId = ObjectId(value.parentId)
+        } else {
+            delete value.parentId;
+        }
+
+        return value;
     }
 
 
