@@ -73,24 +73,24 @@ class TestCaseService {
      * @param {*} value 
      */
     async putTestCase(id, value) {
-        const _id = ObjectId(id);
-
-        // projectId comes in as string
-        value.projectId = ObjectId(value.projectId)
-        // parentId comes in as string
-        if (value.parentId) {
-            value.parentId = ObjectId(value.parentId)
+        let response;
+        let result;
+        if (Array.isArray(value)) {
+            result = [];
+            const ids = value.map(v => v._id);
+            const values = value.map(v => this.prepareForUpdate(v));
+            for (let v of values) {
+                response = await TestCases.updateMany({ _id: { $in: ids } }, { $set: v });
+                const updateResponse = formatUpdate(response, ids);
+                result.push(updateResponse);
+            }
+        } else {
+            const _id = ObjectId(id);
+            response = await TestCases.updateOne({ _id }, { $set: value });
+            result = formatUpdate(response, _id);
         }
-        // make sure not to change the id when editing
-        delete value._id;
-        // make sure createdAt was not changed
-        delete value.createdAt;
 
-        value.updatedAt = new Date();
-
-        const response = await TestCases.updateOne({ _id }, { $set: value });
-
-        return formatUpdate(response, _id);
+        return result;
     }
 
     // ============================================================================
@@ -164,12 +164,16 @@ class TestCaseService {
         value.createdAt = new Date();
         value.updatedAt = new Date();
 
-        value.projectId = ObjectId(value.projectId)
-        if (value.parentId) {
-            value.parentId = ObjectId(value.parentId)
-        } else {
-            delete value.parentId;
-        }
+        return value;
+    }
+
+    prepareForUpdate(value) {
+        // make sure not to change the id when editing
+        delete value._id;
+        // make sure createdAt was not changed
+        delete value.createdAt;
+
+        value.updatedAt = new Date();
 
         return value;
     }

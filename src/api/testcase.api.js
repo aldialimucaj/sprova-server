@@ -107,8 +107,16 @@ class TestCaseRestApi {
     async putTestCase(ctx) {
         const id = ctx.params.id;
         let value = ctx.request.body;
-        value.user = ctx.state.user;
-        value = formatIDs(value);
+        if (Array.isArray(value)) {
+            value = value.map(v => {
+                v.user = ctx.state.user;
+                return formatIDs(v);
+            })
+        } else {
+            value.user = ctx.state.user;
+            value = formatIDs(value);
+        }
+
         ctx.body = await this.testCaseService.putTestCase(id, value);
     }
 
