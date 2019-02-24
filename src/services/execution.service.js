@@ -1,6 +1,6 @@
 const ObjectId = require('mongodb').ObjectId;
 const { ExecutionStatus, ExecutionType, ArtifactType } = require('../helpers/enums');
-const { formatInsert, formatUpdate, formatRemove } = require('../helpers/utils');
+const { formatInsert, formatUpdate, formatDelete } = require('../helpers/utils');
 const ArtifactService = require('./artifact.service');
 
 var Executions = undefined;
@@ -224,7 +224,7 @@ class ExecutionService {
         const _id = ObjectId(id);
         const response = await Executions.deleteOne({ _id });
 
-        return formatRemove(response, _id);
+        return formatDelete(response, _id);
     }
 
     /* ************************************************************************* */

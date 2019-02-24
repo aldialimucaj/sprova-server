@@ -1,5 +1,5 @@
 const ObjectId = require('mongodb').ObjectId;
-const { formatInsert, formatInsertMany, formatUpdate, formatRemove } = require('../helpers/utils');
+const { formatInsert, formatInsertMany, formatUpdate, formatDelete, formatDeleteMany } = require('../helpers/utils');
 
 var TestCases = undefined;
 
@@ -148,12 +148,20 @@ class TestCaseService {
 
     // ============================================================================
 
-    async delTestCase(id) {
-        const _id = ObjectId(id);
+    async delTestCase(value) {
+        let response;
+        let result;
 
-        const response = await TestCases.deleteOne({ _id });
+        if (Array.isArray(value)) {
+            response = await TestCases.deleteMany({ _id: { $in: value.map(v => ObjectId(v)) } });
+            result = formatDeleteMany(response, value);
+        } else {
+            const _id = ObjectId(value);
+            const response = await TestCases.deleteOne({ _id });
+            result = formatDelete(response, _id);
+        }
 
-        return formatRemove(response, _id);
+        return result;
     }
 
     prepareForInsert(value) {

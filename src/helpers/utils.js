@@ -64,10 +64,26 @@ function formatUpdate(response, _id) {
  * @param {*} response Respone form mongodb 
  * @param {String|ObjectId} _id ID of document
  */
-function formatRemove(response, _id) {
+function formatDelete(response, _id) {
     let result = { _id, ok: 0 };
     if (response && response.result) {
         result.ok = response.result.ok;
+    }
+
+    return result;
+}
+
+/**
+ * Formats output of mongodb deleteMany document result
+ * 
+ * @param {*} response Respone form mongodb 
+ * @param {String|ObjectId} isd ID of document
+ */
+function formatDeleteMany(response, ids) {
+    let result = { ids, ok: 0 };
+    if (response && response.result) {
+        result.ok = response.result.ok;
+        result.n = response.deletedCount;
     }
 
     return result;
@@ -309,7 +325,8 @@ const timeout = ms => new Promise(res => setTimeout(res, ms))
 exports.formatInsert = formatInsert;
 exports.formatInsertMany = formatInsertMany;
 exports.formatUpdate = formatUpdate;
-exports.formatRemove = formatRemove;
+exports.formatDelete = formatDelete;
+exports.formatDeleteMany = formatDeleteMany;
 exports.formatIDs = formatIDs;
 exports.formatQueryFromParams = formatQueryFromParams;
 exports.formatOptionsFromParams = formatOptionsFromParams;

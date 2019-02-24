@@ -1,5 +1,5 @@
 const ObjectId = require('mongodb').ObjectId;
-const { formatInsert, formatUpdate, formatRemove } = require('../helpers/utils');
+const { formatInsert, formatUpdate, formatDelete } = require('../helpers/utils');
 var TestSets = undefined;
 var TestCases = undefined;
 var TestSetsExecution = undefined;
@@ -51,7 +51,7 @@ class TestSetService {
         const _id = ObjectId(id);
         const response = await TestSets.deleteOne({ _id });
 
-        return formatRemove(response, _id);
+        return formatDelete(response, _id);
     }
 
     // ============================================================================

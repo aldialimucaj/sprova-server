@@ -1,6 +1,7 @@
 const log = require('../helpers/log');
 const { formatQueryFromParams, formatOptionsFromParams, formatIDs } = require('../helpers/utils');
 const TestCaseService = require('../services/testcase.service');
+const ObjectId = require('mongodb').ObjectId
 
 class TestCaseRestApi {
 
@@ -137,7 +138,13 @@ class TestCaseRestApi {
      * @apiSuccess {Number} ok 1 if successful; 0 if  unsuccessful
      */
     async delTestCase(ctx) {
-        const id = ctx.params.id;
+        let id = ctx.params.id;
+        if (id.includes(',')) {
+            id = id.split(',').map(v => ObjectId(v));
+        } else {
+            id = ObjectId(id);
+        }
+
         ctx.body = await this.testCaseService.delTestCase(id);
     }
 

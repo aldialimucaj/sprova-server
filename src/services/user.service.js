@@ -2,7 +2,7 @@ const ObjectId = require('mongodb').ObjectId;
 const {
     formatInsert,
     formatUpdate,
-    formatRemove
+    formatDelete
 } = require('../helpers/utils');
 const log = require('../helpers/log');
 const utils = require('../helpers/utils');
@@ -82,7 +82,7 @@ class UserService {
         const _id = ObjectId(id);
         const response = await Users.deleteOne({ _id });
 
-        return formatRemove(response, _id);
+        return formatDelete(response, _id);
     }
 
     /* ************************************************************************* */

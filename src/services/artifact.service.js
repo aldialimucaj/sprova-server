@@ -1,6 +1,6 @@
 const ObjectId = require('mongodb').ObjectId;
 const utils = require('../helpers/utils');
-const { formatInsert, formatUpdate, formatRemove } = require('../helpers/utils');
+const { formatInsert, formatUpdate, formatDelete } = require('../helpers/utils');
 var Artifacts = undefined;
 
 class ArtifactService {
@@ -29,7 +29,7 @@ class ArtifactService {
         }
         const response = await Artifacts.deleteOne({ _id });
 
-        return formatRemove(response, _id);
+        return formatDelete(response, _id);
     }
 
     // ============================================================================

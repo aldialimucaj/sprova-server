@@ -1,5 +1,5 @@
 const { ExecutionStatus, TestSetExecutionStatus } = require('../helpers/enums');
-const { formatInsert, formatUpdate, formatRemove } = require('../helpers/utils');
+const { formatInsert, formatUpdate, formatDelete } = require('../helpers/utils');
 const ExecutionService = require('./execution.service');
 const ObjectId = require('mongodb').ObjectId;
 const _ = require('lodash');
@@ -34,7 +34,7 @@ class TestSetExecutionService {
         const _id = ObjectId(id);
         const response = await TestSetsExecution.deleteOne({ _id });
 
-        return formatRemove(response, _id);
+        return formatDelete(response, _id);
     }
 
     // ============================================================================
