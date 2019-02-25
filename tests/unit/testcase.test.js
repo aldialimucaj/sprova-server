@@ -83,6 +83,36 @@ describe('testcase : service', () => {
       expect(newTestCase.createdAt).to.not.be.undefined;
       expect(newTestCase.updatedAt).to.not.be.undefined;
     });
+
+    it('should copy testcase with cloneFromId', async () => {
+      let newTestCaseResult1 = await TestCases.insertOne(fixtures.testcase1);
+      fixtures.testcase2.parentId = newTestCaseResult1.insertedId;
+      let newTestCaseResult2 = await TestCases.insertOne(fixtures.testcase2);
+      fixtures.testcase3.parentId = newTestCaseResult1.insertedId;
+      let newTestCaseResult3 = await TestCases.insertOne(fixtures.testcase3);
+      fixtures.testcase4.parentId = newTestCaseResult2.insertedId;
+      let newTestCaseResult4 = await TestCases.insertOne(fixtures.testcase4);
+      fixtures.testcase5.parentId = newTestCaseResult2.insertedId;
+      let newTestCaseResult5 = await TestCases.insertOne(fixtures.testcase5);
+
+      let originalTestCase = await TestCases.findOne({ _id: newTestCaseResult2.insertedId })
+      originalTestCase.cloneFromId = newTestCaseResult2.insertedId;
+      originalTestCase.parentId = newTestCaseResult1.insertedId;
+
+      const initTestCaseCount = await TestCases.count();
+
+      const result = await to.postTestCase(originalTestCase);
+      const endTestCaseCount = await TestCases.count();
+      expect(endTestCaseCount).to.eq(initTestCaseCount + 3);
+      expect(result).to.be.an('object');
+      expect(result.ok).to.be.eql(1);
+      expect(result._id).to.not.be.undefined;
+      const newTestCase = await TestCases.findOne({ _id: result._id });
+      expect(newTestCase).to.not.be.null;
+      const newTestChildrenCount = await TestCases.count({ parentId: result._id });
+      expect(newTestChildrenCount).to.be.eql(2);
+
+    });
   });
 
   describe('postTestCases batch', () => {
@@ -121,7 +151,7 @@ describe('testcase : service', () => {
       expect(newTestCase).to.be.null;
       expect(result.ok).to.be.eql(1);
       expect(result._id).to.be.eql(newTestCaseResult.insertedId);
-      
+
       const endTestCaseCount = await TestCases.count();
       expect(endTestCaseCount).to.eq(initTestCaseCount);
     });

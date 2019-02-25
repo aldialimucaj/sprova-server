@@ -109,17 +109,12 @@ class TestCaseService {
             response = await TestCases.insertMany(testCases);
             result = formatInsertMany(response);
             for (let testCase of testCases) {
-                if (testCase.cloneFromId) {
-                    const children = await TestCases.find({ parentId: testCase.cloneFromId }).toArray();
-                    for (let child of children) {
-                        child.parentId = testCase._id;
-                        this.postTestCase(child, { cloneFromId: child._id });
-                    }
-                }
+                await this.copyChildren(testCase);
             }
         } else {
             response = await TestCases.insertOne(this.prepareForInsert(value));
             result = formatInsert(response);
+            await this.copyChildren(value);
         }
 
         return result;
@@ -184,6 +179,10 @@ class TestCaseService {
         return result;
     }
 
+    /* ************************************************************************* */
+    /*                                 HELPERS                                    */
+    /* ************************************************************************* */
+
     prepareForInsert(value) {
         // TODO: make possible to define own _id as it allows us to fetch through the URL
         delete value._id;
@@ -206,6 +205,15 @@ class TestCaseService {
         return value;
     }
 
+    async copyChildren(testCase) {
+        if (testCase.cloneFromId) {
+            const children = await TestCases.find({ parentId: testCase.cloneFromId }).toArray();
+            for (let child of children) {
+                child.parentId = testCase._id;
+                this.postTestCase(child, { cloneFromId: child._id });
+            }
+        }
+    }
 
 }
 
