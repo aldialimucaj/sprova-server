@@ -113,13 +113,109 @@ describe('testcase : service', () => {
   });
 
   describe('delTestCase', () => {
-    it('should change testcase', async () => {
+    it('should delete testcase', async () => {
+      const initTestCaseCount = await TestCases.count();
       let newTestCaseResult = await TestCases.insertOne(fixtures.testcase3);
       const result = await to.delTestCase(newTestCaseResult.insertedId.toString());
       let newTestCase = await TestCases.findOne({ _id: newTestCaseResult.insertedId });
       expect(newTestCase).to.be.null;
       expect(result.ok).to.be.eql(1);
       expect(result._id).to.be.eql(newTestCaseResult.insertedId);
+      
+      const endTestCaseCount = await TestCases.count();
+      expect(endTestCaseCount).to.eq(initTestCaseCount);
+    });
+  });
+
+  describe('delTestCase with child', () => {
+
+    it('should delete testcases with 3 generations', async () => {
+      const initTestCaseCount = await TestCases.count();
+
+      let newTestCaseResult1 = await TestCases.insertOne(fixtures.testcase1);
+      fixtures.testcase2.parentId = newTestCaseResult1.insertedId;
+      let newTestCaseResult2 = await TestCases.insertOne(fixtures.testcase2);
+      fixtures.testcase3.parentId = newTestCaseResult2.insertedId;
+      let newTestCaseResult3 = await TestCases.insertOne(fixtures.testcase3);
+
+      const result = await to.delTestCase(newTestCaseResult1.insertedId.toString());
+      expect(result.ok).to.be.eql(1);
+      expect(result._id).to.be.eql(newTestCaseResult1.insertedId);
+
+      let newTestCase1 = await TestCases.findOne({ _id: newTestCaseResult1.insertedId });
+      expect(newTestCase1).to.be.null;
+      let newTestCase2 = await TestCases.findOne({ _id: newTestCaseResult2.insertedId });
+      expect(newTestCase2).to.be.null;
+      let newTestCase3 = await TestCases.findOne({ _id: newTestCaseResult3.insertedId });
+      expect(newTestCase3).to.be.null;
+
+      const endTestCaseCount = await TestCases.count();
+      expect(endTestCaseCount).to.eq(initTestCaseCount);
+    });
+
+    it('should delete testcases with 5 generations', async () => {
+      const initTestCaseCount = await TestCases.count();
+      let newTestCaseResult1 = await TestCases.insertOne(fixtures.testcase1);
+      fixtures.testcase2.parentId = newTestCaseResult1.insertedId;
+      let newTestCaseResult2 = await TestCases.insertOne(fixtures.testcase2);
+      fixtures.testcase3.parentId = newTestCaseResult2.insertedId;
+      let newTestCaseResult3 = await TestCases.insertOne(fixtures.testcase3);
+      fixtures.testcase4.parentId = newTestCaseResult3.insertedId;
+      let newTestCaseResult4 = await TestCases.insertOne(fixtures.testcase4);
+      fixtures.testcase5.parentId = newTestCaseResult4.insertedId;
+      let newTestCaseResult5 = await TestCases.insertOne(fixtures.testcase5);
+
+
+      const result = await to.delTestCase(newTestCaseResult1.insertedId.toString());
+      expect(result.ok).to.be.eql(1);
+      expect(result._id).to.be.eql(newTestCaseResult1.insertedId);
+
+      let newTestCase1 = await TestCases.findOne({ _id: newTestCaseResult1.insertedId });
+      expect(newTestCase1).to.be.null;
+      let newTestCase2 = await TestCases.findOne({ _id: newTestCaseResult2.insertedId });
+      expect(newTestCase2).to.be.null;
+      let newTestCase3 = await TestCases.findOne({ _id: newTestCaseResult3.insertedId });
+      expect(newTestCase3).to.be.null;
+      let newTestCase4 = await TestCases.findOne({ _id: newTestCaseResult4.insertedId });
+      expect(newTestCase4).to.be.null;
+      let newTestCase5 = await TestCases.findOne({ _id: newTestCaseResult5.insertedId });
+      expect(newTestCase5).to.be.null;
+
+      const endTestCaseCount = await TestCases.count();
+      expect(endTestCaseCount).to.eq(initTestCaseCount);
+    });
+
+    it('should delete testcases with a tree shape', async () => {
+      const initTestCaseCount = await TestCases.count();
+      let newTestCaseResult1 = await TestCases.insertOne(fixtures.testcase1);
+      fixtures.testcase2.parentId = newTestCaseResult1.insertedId;
+      let newTestCaseResult2 = await TestCases.insertOne(fixtures.testcase2);
+      fixtures.testcase3.parentId = newTestCaseResult1.insertedId;
+      let newTestCaseResult3 = await TestCases.insertOne(fixtures.testcase3);
+      fixtures.testcase4.parentId = newTestCaseResult2.insertedId;
+      let newTestCaseResult4 = await TestCases.insertOne(fixtures.testcase4);
+      fixtures.testcase5.parentId = newTestCaseResult2.insertedId;
+      let newTestCaseResult5 = await TestCases.insertOne(fixtures.testcase5);
+
+      const midTestCaseCount = await TestCases.count();
+      expect(midTestCaseCount).to.eq(initTestCaseCount + 5);
+
+      const result = await to.delTestCase(newTestCaseResult1.insertedId.toString());
+      expect(result.ok).to.be.eql(1);
+      expect(result._id).to.be.eql(newTestCaseResult1.insertedId);
+      const endTestCaseCount = await TestCases.count();
+      expect(endTestCaseCount).to.eq(initTestCaseCount);
+
+      let newTestCase1 = await TestCases.findOne({ _id: newTestCaseResult1.insertedId });
+      expect(newTestCase1).to.be.null;
+      let newTestCase2 = await TestCases.findOne({ _id: newTestCaseResult2.insertedId });
+      expect(newTestCase2).to.be.null;
+      let newTestCase3 = await TestCases.findOne({ _id: newTestCaseResult3.insertedId });
+      expect(newTestCase3).to.be.null;
+      let newTestCase4 = await TestCases.findOne({ _id: newTestCaseResult4.insertedId });
+      expect(newTestCase4).to.be.null;
+      let newTestCase5 = await TestCases.findOne({ _id: newTestCaseResult5.insertedId });
+      expect(newTestCase5).to.be.null;
     });
   });
 

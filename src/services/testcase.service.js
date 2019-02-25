@@ -160,26 +160,26 @@ class TestCaseService {
     // ============================================================================
 
     async delTestCase(value) {
-        let response;
         let result = { ok: 0 };
-
+        let children;
         // Test cases can reference each other, thus when deleting a parent
         // we should also take care of deleting its children as well.
 
         if (Array.isArray(value) && value.length > 0) {
             const deleteIds = value.map(v => ObjectId(v));
-            response = await TestCases.deleteMany({ _id: { $in: deleteIds } });
+            const response = await TestCases.deleteMany({ _id: { $in: deleteIds } });
             result = formatDeleteMany(response, value);
-            const children = await TestCases.find({ parentId: { $in: deleteIds } }).toArray();
-            this.delTestCase(children);
+            children = await TestCases.find({ parentId: { $in: deleteIds } }).toArray();
         } else if (ObjectId.isValid(value)) {
             const _id = ObjectId(value);
             const response = await TestCases.deleteOne({ _id });
             result = formatDelete(response, _id);
-            const children = await TestCases.find({ parentId: _id }).toArray();
-            this.delTestCase(children);
+            children = await TestCases.find({ parentId: _id }).toArray();
         }
 
+        if (children && children.length) {
+            await this.delTestCase(children.map(c => c._id));
+        }
 
         return result;
     }
