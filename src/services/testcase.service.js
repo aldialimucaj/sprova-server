@@ -103,9 +103,20 @@ class TestCaseService {
     async postTestCase(value) {
         let response;
         let result;
+
         if (Array.isArray(value)) {
-            response = await TestCases.insertMany(value.map(t => this.prepareForInsert(t)));
+            const testCases = value.map(t => this.prepareForInsert(t));
+            response = await TestCases.insertMany(testCases);
             result = formatInsertMany(response);
+            for (let testCase of testCases) {
+                if (testCase.cloneFromId) {
+                    const children = await TestCases.find({ parentId: testCase.cloneFromId }).toArray();
+                    for (let child of children) {
+                        child.parentId = testCase._id;
+                        this.postTestCase(child, { cloneFromId: child._id });
+                    }
+                }
+            }
         } else {
             response = await TestCases.insertOne(this.prepareForInsert(value));
             result = formatInsert(response);
@@ -150,16 +161,25 @@ class TestCaseService {
 
     async delTestCase(value) {
         let response;
-        let result;
+        let result = { ok: 0 };
 
-        if (Array.isArray(value)) {
-            response = await TestCases.deleteMany({ _id: { $in: value.map(v => ObjectId(v)) } });
+        // Test cases can reference each other, thus when deleting a parent
+        // we should also take care of deleting its children as well.
+
+        if (Array.isArray(value) && value.length > 0) {
+            const deleteIds = value.map(v => ObjectId(v));
+            response = await TestCases.deleteMany({ _id: { $in: deleteIds } });
             result = formatDeleteMany(response, value);
-        } else {
+            const children = await TestCases.find({ parentId: { $in: deleteIds } }).toArray();
+            this.delTestCase(children);
+        } else if (ObjectId.isValid(value)) {
             const _id = ObjectId(value);
             const response = await TestCases.deleteOne({ _id });
             result = formatDelete(response, _id);
+            const children = await TestCases.find({ parentId: _id }).toArray();
+            this.delTestCase(children);
         }
+
 
         return result;
     }

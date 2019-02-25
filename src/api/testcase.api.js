@@ -73,6 +73,8 @@ class TestCaseRestApi {
      */
     async postTestCase(ctx) {
         let value = ctx.request.body;
+        const query = formatQueryFromParams(ctx.query);
+
         if (Array.isArray(value)) {
             value = value.map(v => {
                 v.user = ctx.state.user;
@@ -83,7 +85,7 @@ class TestCaseRestApi {
             value = formatIDs(value);
         }
 
-        ctx.body = await this.testCaseService.postTestCase(value);
+        ctx.body = await this.testCaseService.postTestCase(value, query);
         ctx.status = 201;
     }
 
