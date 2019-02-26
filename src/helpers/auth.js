@@ -27,6 +27,7 @@ class Authenticator {
             } else if (user.password !== utils.sha512(password, JWT_SECRET)) {
                 return { error: "wrong password" };
             } else {
+                delete user.password;
                 return user;
             }
         } catch (e) {

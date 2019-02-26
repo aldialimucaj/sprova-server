@@ -28,6 +28,7 @@ const ExecutionRestApi = require('./api/execution.api');
 const TestSetExecutionRestApi = require('./api/testset-execution.api');
 const ArtifactRestApi = require('./api/artifact.api');
 const ReportRestApi = require('./api/report.api');
+const SearchRestApi = require('./api/search.api');
 
 // GraphQL API
 const Schema = require('./graphql/schema');
@@ -98,6 +99,7 @@ const authRouter = new Router();
     const testCaseAPI = new TestCaseRestApi(apiRouter, db);
     const testSetExecutionAPI = new TestSetExecutionRestApi(apiRouter, db);
     const userAPI = new UserRestApi(apiRouter, db);
+    const searchRestApi = new SearchRestApi(apiRouter, db);
 
     // register REST API routes
     artifactAPI.register();
@@ -109,6 +111,7 @@ const authRouter = new Router();
     testCaseAPI.register();
     testSetExecutionAPI.register();
     userAPI.register();
+    searchRestApi.register();
 
     // register GraphQL routes
     // ============================================================================
