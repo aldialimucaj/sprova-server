@@ -35,5 +35,43 @@ describe('utils : helper', () => {
       const result1 = to.formatIDs(fix1);
       expect(result1).to.eql(fix1expected);
     });
+
+    it('should not format ids in array', async () => {
+      const fix1 = { fel: [{ mosId: "123456789012" }] }
+      const fix1expected = { fel: [{ mosId: "123456789012" }] }
+      const result1 = to.formatIDs(fix1);
+      expect(result1).to.eql(fix1expected);
+    });
+  });
+
+  describe('isValidObjectId', () => {
+    it('should recognize correct id', async () => {
+      const id1 = "8af582d1dccd6600137338cc";
+      const result = to.isValidObjectId(id1);
+      expect(result).to.be.true;
+    })
+    it('should recognize incorrect id', async () => {
+      const id1 = "8af582d1dccd6600137338c";
+      let result = to.isValidObjectId(id1);
+      expect(result).to.be.false;
+
+      const id2 = "123456789012";
+      result = to.isValidObjectId(id2);
+      expect(result).to.be.false;
+
+      const id3 = "8af582d1dccd6600137338cC";
+      result = to.isValidObjectId(id3);
+      expect(result).to.be.false;
+
+      const id4 = "8af582d1dccd6600137338cg";
+      result = to.isValidObjectId(id4);
+      expect(result).to.be.false;
+
+      result = to.isValidObjectId(null);
+      expect(result).to.be.false;
+
+      result = to.isValidObjectId();
+      expect(result).to.be.false;
+    })
   });
 });

@@ -107,7 +107,7 @@ function formatIDs(value) {
     const result = Object.assign({}, value);
     const keys = Object.keys(value);
     for (const key of keys) {
-        if ((key.endsWith('Id') || key === '_id') && ObjectId.isValid(result[key])) {
+        if ((key.endsWith('Id') || key === '_id') && isValidObjectId(result[key])) {
             result[key] = ObjectId(result[key]);
         } else if (key.endsWith('Id') && result[key] === 'null') {
             result[key] = null;
@@ -117,6 +117,22 @@ function formatIDs(value) {
             result[key] = result[key].map(e => formatIDs(e));
         }
     }
+
+    return result;
+}
+
+/**
+ * Test if string is valid Object Id in 24 byte format.
+ * 
+ * @param {string} value ObjectId string representation
+ */
+function isValidObjectId(value) {
+    let result = true;
+    result = result && (value !== undefined);
+    result = result && (value !== null);
+    result = result && (value.length == 24);
+    result = result && (value === value.toLowerCase());
+    result = result && ObjectId.isValid(value);
 
     return result;
 }
@@ -328,6 +344,7 @@ exports.formatUpdate = formatUpdate;
 exports.formatDelete = formatDelete;
 exports.formatDeleteMany = formatDeleteMany;
 exports.formatIDs = formatIDs;
+exports.isValidObjectId = isValidObjectId;
 exports.formatQueryFromParams = formatQueryFromParams;
 exports.formatOptionsFromParams = formatOptionsFromParams;
 exports.sha512 = sha512;
