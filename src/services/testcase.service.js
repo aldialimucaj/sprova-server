@@ -210,7 +210,7 @@ class TestCaseService {
             const children = await TestCases.find({ parentId: testCase.cloneFromId }).toArray();
             for (let child of children) {
                 child.parentId = testCase._id;
-                this.postTestCase(child, { cloneFromId: child._id });
+                await this.postTestCase(child, { cloneFromId: child._id });
             }
         }
     }
