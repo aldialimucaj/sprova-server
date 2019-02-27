@@ -5,6 +5,7 @@ const ProjectService = require('../services/project.service');
 const TestCaseService = require('../services/testcase.service');
 const TestSetExecutionService = require('../services/testset-execution.service');
 const TestSetService = require('../services/testset.service');
+const { formatIDs } = require('../helpers/utils');
 
 
 class SearchRestApi {
@@ -21,6 +22,21 @@ class SearchRestApi {
     }
 
     // ============================================================================
+
+
+    /**
+     * @api {post} /search/projects Search for projects
+     * 
+     * @apiName findProjects
+     * @apiGroup Search
+     * 
+     * @apiSuccess {Array} - list of projects
+     */
+    async findProjects(ctx) {
+        const value = ctx.request.body;
+        const query = formatIDs(value.filter);
+        ctx.body = await this.projectService.getProjects(query);
+    }
 
     /**
      * @api {post} /search/cycles Search for cycles
@@ -185,7 +201,7 @@ class SearchRestApi {
     /* ************************************************************************* */
 
     register() {
-
+        this.router.post('/search/projects', this.findProjects.bind(this));
         this.router.post('/search/cycles', this.findCycles.bind(this));
         this.router.post('/search/cycles/:id/testcases/find', this.findCycleTestCases.bind(this));
         this.router.post('/search/cycles/:id/testcases/findOne', this.findOneCycleTestCase.bind(this));

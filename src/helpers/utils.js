@@ -36,6 +36,7 @@ function formatInsertMany(response) {
 function formatInsert(response) {
     let result = { ok: 0 };
     if (response && response.result) {
+        result.n = response.result.n;
         result.ok = response.result.ok;
         result._id = response.insertedId;
     }
