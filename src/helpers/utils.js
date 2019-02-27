@@ -128,10 +128,10 @@ function formatIDs(value) {
  */
 function isValidObjectId(value) {
     let result = true;
-    result = result && (value !== undefined);
-    result = result && (value !== null);
-    result = result && (value.length == 24);
-    result = result && (value === value.toLowerCase());
+    result = result && value !== undefined;
+    result = result && value !== null;
+    result = result && value.length === 24;
+    result = result && value === value.toLowerCase();
     result = result && ObjectId.isValid(value);
 
     return result;
