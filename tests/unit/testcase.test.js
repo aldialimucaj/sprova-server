@@ -86,8 +86,10 @@ describe('testcase : service', () => {
 
     it('should copy testcase with cloneFromId', async () => {
       let newTestCaseResult1 = await TestCases.insertOne(fixtures.testcase1);
+      
       fixtures.testcase2.parentId = newTestCaseResult1.insertedId;
       let newTestCaseResult2 = await TestCases.insertOne(fixtures.testcase2);
+      
       fixtures.testcase3.parentId = newTestCaseResult1.insertedId;
       let newTestCaseResult3 = await TestCases.insertOne(fixtures.testcase3);
       fixtures.testcase4.parentId = newTestCaseResult2.insertedId;
@@ -102,8 +104,7 @@ describe('testcase : service', () => {
       const initTestCaseCount = await TestCases.count();
 
       const result = await to.postTestCase(originalTestCase);
-      const endTestCaseCount = await TestCases.count();
-      expect(endTestCaseCount).to.eq(initTestCaseCount + 3);
+      
       expect(result).to.be.an('object');
       expect(result.ok).to.be.eql(1);
       expect(result._id).to.not.be.undefined;
@@ -111,7 +112,8 @@ describe('testcase : service', () => {
       expect(newTestCase).to.not.be.null;
       const newTestChildrenCount = await TestCases.count({ parentId: result._id });
       expect(newTestChildrenCount).to.be.eql(2);
-
+      const endTestCaseCount = await TestCases.count();
+      expect(endTestCaseCount).to.eq(initTestCaseCount + 3);
     });
   });
 
