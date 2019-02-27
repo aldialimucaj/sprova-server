@@ -160,6 +160,8 @@ class TestCaseService {
         // Test cases can reference each other, thus when deleting a parent
         // we should also take care of deleting its children as well.
 
+        // TODO: make sure after deleting a test case to delete its references
+        // in cycles and test sets
         if (Array.isArray(value) && value.length > 0) {
             const deleteIds = value.map(v => ObjectId(v));
             const response = await TestCases.deleteMany({ _id: { $in: deleteIds } });

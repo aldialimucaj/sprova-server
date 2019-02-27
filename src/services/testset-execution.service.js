@@ -192,7 +192,10 @@ class TestSetExecutionService {
     reinfoceOrder(testCases, testCaseIds) {
         let result = [];
         for (let _id of testCaseIds) {
-            result.push(_.find(testCases, { _id }));
+            const testCaseId = _.find(testCases, { _id });
+            if(testCaseId) {
+                result.push(testCaseId);
+            }
         }
         return result;
     }

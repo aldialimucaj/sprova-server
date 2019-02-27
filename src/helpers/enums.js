@@ -30,6 +30,7 @@ const ExecutionStatus = Object.freeze({
     Failed: "FAILED",
     Successful: "SUCCESSFUL",
     Pending: "PENDING",
+    Warning: "WARNING",
     Working: "WORKING"
 });
 
