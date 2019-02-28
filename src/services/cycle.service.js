@@ -117,27 +117,21 @@ class CycleService {
     }
 
     /**
-     * Search for cycles by defining filter values that are passed to cycles.find()
+     * Search for cycles by defining query values that are passed to cycles.find()
      * 
-     * @param {*} value filter values
+     * @param {*} query query values
      */
-    async findCycles(value) {
-        var filter = {}
-        if (value && value.filter) {
-            filter = value.filter;
-            if (filter.projectId) {
-                filter.projectId = ObjectId(filter.projectId);
-            }
-        }
+    async findCycles(query) {
 
-        return await Cycles.find(filter).toArray();
+
+        return await Cycles.find(query).toArray();
     }
 
     /**
-     * Find cycle test cases by applying filter values to testcases.find();
+     * Find cycle test cases by applying query values to testcases.find();
      * 
      * @param {*} id cycle ID
-     * @param {*} value filter object must set like { filter: { title:"test" }, options : { limit: 10 } }
+     * @param {*} value query object must set like { query: { title:"test" }, options : { limit: 10 } }
      * @param {*} options query options
      */
     async findOneCycleTestCases(id, query, options) {
@@ -153,7 +147,7 @@ class CycleService {
      * Find single cycle with its according test cases
      * 
      * @param {*} id cycle ID
-     * @param {*} value filter object must set like { filter: { title:"test" }}
+     * @param {*} value query object must set like { query: { title:"test" }}
      */
     async findOneCycleTestCase(id, query) {
         const _id = ObjectId(id);
@@ -163,44 +157,23 @@ class CycleService {
     }
 
     /**
-     * Find test sets belonging to cycle.
-     * 
-     * @param {*} id cycle ID
-     * @param {*} value test set filter
-     */
-    async findCycleTestSets(id, value) {
-        const _id = ObjectId(id);
-        var filter = {}
-        if (value && value.filter) {
-            filter = value.filter;
-            if (filter.projectId) {
-                filter.projectId = ObjectId(filter.projectId);
-            }
-        }
-
-        filter.cycleId = _id;
-
-        return await TestSets.find(filter).toArray();
-    }
-
-    /**
      * Find single test set belonging to cycle
      * 
      * @param {*} id cycle ID
-     * @param {*} value test set filter
+     * @param {*} value test set query
      */
     async findOneCycleTestSet(id, value) {
         const _id = ObjectId(id);
-        var filter = {}
-        if (value && value.filter) {
-            filter = Object.assign({}, value.filter);
-            if (filter.projectId) {
-                filter.projectId = ObjectId(filter.projectId);
+        var query = {}
+        if (value && value.query) {
+            query = Object.assign({}, value.query);
+            if (query.projectId) {
+                query.projectId = ObjectId(query.projectId);
             }
         }
 
-        filter.cycleId = _id;
-        return await TestSets.findOne(filter);
+        query.cycleId = _id;
+        return await TestSets.findOne(query);
     }
 
 

@@ -92,7 +92,7 @@ function formatDeleteMany(response, ids) {
 
 /**
  * Changes property values of the format valueId to mongo ObjectId value. 
- * This is useful for search and filter functions. Functions returns a
+ * This is useful for search and query functions. Functions returns a
  * copy of the original value. 
  * 
  * Example

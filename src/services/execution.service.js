@@ -181,36 +181,13 @@ class ExecutionService {
     }
 
     /**
-     * Find executions by applying filter values to executions.find();
+     * Find executions by applying query values to executions.find();
      * 
-     * @param {*} value filter object must set like { filter: { title:"test" }, options : { limit: 10 } }
+     * @param {*} query query object must set like { query: { title:"test" }, options : { limit: 10 } }
+     * @param {*} options query options like limit and skip
      */
-    async findExecutions(value) {
-        let filter = {};
-        let options = {};
-
-        if (value && value.filter) {
-            filter = value.filter;
-            if (filter.projectId) {
-                filter.projectId = ObjectId(filter.projectId);
-            }
-            if (filter.cycleId) {
-                filter.cycleId = ObjectId(filter.cycleId);
-            }
-            if (filter.testCaseId) {
-                filter.testCaseId = ObjectId(filter.testCaseId);
-            }
-            if (filter.testSetExecutionId) {
-                filter.testSetExecutionId = ObjectId(filter.testSetExecutionId);
-            }
-        }
-
-        if (value && value.options) {
-            //TODO sanitize options
-            options = value.options;
-        }
-
-        return await Executions.find(filter, options).toArray();
+    async findExecutions(query, options) {
+        return await Executions.find(query, options).toArray();
     }
 
     // ============================================================================

@@ -117,9 +117,9 @@ class TestSetService {
     async findTestSets(value) {
         let query = {};
         let options = {};
-        if (value && value.filter) {
+        if (value && value.query) {
 
-            query = value.filter;
+            query = value.query;
             if (query.projectId) {
                 query.projectId = ObjectId(query.projectId);
             }

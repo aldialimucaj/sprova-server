@@ -48,7 +48,8 @@ class SearchRestApi {
      */
     async findCycles(ctx) {
         const value = ctx.request.body;
-        ctx.body = await this.cycleService.findCycles(value);
+        const query = formatIDs(value.query)
+        ctx.body = await this.cycleService.findCycles(query);
     }
 
     /**
@@ -86,42 +87,7 @@ class SearchRestApi {
         ctx.body = await this.cycleService.findOneCycleTestCase(id, query);
     }
 
-    /**
-     * @api {post} /search/cycles/:id/testsets Search for test sets in cycle
-     * 
-     * @apiExample {curl} Example usage:
-     *     curl -X POST -d '{"key1":"value1", "key2":"value2"}' -H "Content-Type: application/json" http://localhost/api/search/cycles/:id/testsets 
-     *
-     * @apiName findCycleTestSets
-     * @apiGroup Search
-     * 
-     * @apiSuccess {Array} - list of test sets
-     */
-    async findCycleTestSets(ctx) {
-        const id = ctx.params.id;
-        const value = ctx.request.body;
-        ctx.body = await this.cycleService.findCycleTestSets(id, value);
-    }
-
-    /**
-     * @api {post} /search/cycles/:id/testsets/findOne Search for test set in cycle
-     * 
-     * @apiExample {curl} Example usage:
-     *     curl -X POST -d '{"key1":"value1", "key2":"value2"}' -H "Content-Type: application/json" http://localhost/api/search/cycles/:id/testsets/findOne 
-     * 
-     * @apiName findOneCycleTestSet
-     * @apiGroup Search
-     * 
-     * @apiSuccess {TestSet} - testset
-     */
-    async findOneCycleTestSet(ctx) {
-        const id = ctx.params.id;
-        const value = ctx.request.body;
-        ctx.body = await this.cycleService.findOneCycleTestSet(id, value);
-    }
-
     // ============================================================================
-
 
     /**
      * @api {post} /search/executions Search for executions
@@ -206,8 +172,6 @@ class SearchRestApi {
         this.router.post('/search/cycles', this.findCycles.bind(this));
         this.router.post('/search/cycles/:id/testcases/find', this.findCycleTestCases.bind(this));
         this.router.post('/search/cycles/:id/testcases/findOne', this.findOneCycleTestCase.bind(this));
-        this.router.post('/search/cycles/:id/testsets/find', this.findCycleTestSets.bind(this));
-        this.router.post('/search/cycles/:id/testsets/findOne', this.findOneCycleTestSet.bind(this));
 
         this.router.post('/search/executions', this.findExecutions.bind(this));
 
