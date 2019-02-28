@@ -138,30 +138,15 @@ class CycleService {
      * 
      * @param {*} id cycle ID
      * @param {*} value filter object must set like { filter: { title:"test" }, options : { limit: 10 } }
+     * @param {*} options query options
      */
-    async findCycleTestCases(id, value) {
+    async findOneCycleTestCases(id, query, options) {
         const _id = ObjectId(id);
-
-        let filter = {};
-        let options = {};
-
-        if (value && value.filter) {
-            filter = value.filter;
-            if (filter.projectId) {
-                filter.projectId = ObjectId(filter.projectId);
-            }
-        }
-
-        if (value && value.options) {
-            //TODO sanitize options
-            options = value.options;
-        }
-
-        let cycle = await Cycles.findOne({ _id });
-        filter._id = { $in: cycle.testCases }
-
-        return await TestCases.find(filter, options).toArray();
+        const cycle = await Cycles.findOne({ _id });
+        const result = await TestCases.find({ _id: { $in: cycle.testCases }, ...query }, options).toArray();
+        return result;
     }
+
 
 
     /**
@@ -170,21 +155,11 @@ class CycleService {
      * @param {*} id cycle ID
      * @param {*} value filter object must set like { filter: { title:"test" }}
      */
-    async findOneCycleTestCase(id, value) {
+    async findOneCycleTestCase(id, query) {
         const _id = ObjectId(id);
-
-        var filter = {}
-        if (value && value.filter) {
-            filter = Object.assign({}, value.filter);
-            if (filter.projectId) {
-                filter.projectId = ObjectId(filter.projectId);
-            }
-        }
-
-        let cycle = await Cycles.findOne({ _id });
-        filter._id = { $in: cycle.testCases }
-
-        return await TestCases.findOne(filter);
+        const cycle = await Cycles.findOne({ _id });
+        const result = await TestCases.findOne({ _id: { $in: cycle.testCases }, ...query })
+        return result;
     }
 
     /**

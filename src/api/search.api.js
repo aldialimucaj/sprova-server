@@ -34,7 +34,7 @@ class SearchRestApi {
      */
     async findProjects(ctx) {
         const value = ctx.request.body;
-        const query = formatIDs(value.filter);
+        const query = formatIDs(value.query);
         ctx.body = await this.projectService.getProjects(query);
     }
 
@@ -82,7 +82,8 @@ class SearchRestApi {
     async findOneCycleTestCase(ctx) {
         const id = ctx.params.id;
         const value = ctx.request.body;
-        ctx.body = await this.cycleService.findOneCycleTestCase(id, value);
+        const query = formatIDs(value.query);
+        ctx.body = await this.cycleService.findOneCycleTestCase(id, query);
     }
 
     /**
