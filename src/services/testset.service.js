@@ -1,36 +1,31 @@
 const ObjectId = require('mongodb').ObjectId;
+const dbm = require('../helpers/db');
 const { formatInsert, formatUpdate, formatDelete } = require('../helpers/utils');
-var TestSets = undefined;
-var TestCases = undefined;
-var TestSetsExecution = undefined;
 
 class TestSetService {
 
-    constructor(db) {
-        TestSets = db.collection('testsets');
-        TestCases = db.collection('testcases');
-        TestSetsExecution = db.collection('testset-executions');
+    constructor() {
+        this.TestSets = dbm.getCollection('testsets');
+        this.TestCases = dbm.getCollection('testcases');
+        this.TestSetsExecution = dbm.getCollection('testset-executions');
     }
 
-    // ============================================================================
-
     async getTestSets(query, options) {
-        return await TestSets.find(query, options).toArray();
+        return await this.TestSets.find(query, options).toArray();
     }
 
     async getTestSet(id) {
         const _id = ObjectId(id);
-        return await TestSets.findOne({ _id });
+        return await this.TestSets.findOne({ _id });
     }
-
 
     async getTestSetTestCases(id) {
         let result;
         const _id = ObjectId(id);
 
-        let testSet = await TestSets.findOne({ _id });
+        let testSet = await this.TestSets.findOne({ _id });
         if (testSet.testCases) {
-            result = await TestCases.find({ _id: { $in: testSet.testCases } }).toArray();
+            result = await this.TestCases.find({ _id: { $in: testSet.testCases } }).toArray();
         } else {
             result = [];
         }
@@ -41,20 +36,15 @@ class TestSetService {
     async getTestSetTestSetExecutions(id) {
         const _id = ObjectId(id);
 
-        return await TestSetsExecution.find({ testSetId: _id }).toArray();
+        return await this.TestSetsExecution.find({ testSetId: _id }).toArray();
     }
-
-
-    // ============================================================================
 
     async delTestSet(id) {
         const _id = ObjectId(id);
-        const response = await TestSets.deleteOne({ _id });
+        const response = await this.TestSets.deleteOne({ _id });
 
         return formatDelete(response, _id);
     }
-
-    // ============================================================================
 
     /**
      * Update model
@@ -83,12 +73,10 @@ class TestSetService {
 
         value.updatedAt = new Date();
 
-        let response = await TestSets.updateOne({ _id }, { $set: value });
+        let response = await this.TestSets.updateOne({ _id }, { $set: value });
 
         return formatUpdate(response, _id);
     }
-
-    // ============================================================================
 
     /**
      * Create model
@@ -109,7 +97,7 @@ class TestSetService {
             value.testCases = value.testCases.map(t => ObjectId(t));
         }
 
-        let response = await TestSets.insertOne(value);
+        let response = await this.TestSets.insertOne(value);
 
         return formatInsert(response);
     }
@@ -132,8 +120,8 @@ class TestSetService {
             options = value.options;
         }
 
-        return await TestSets.find(query, options).toArray();
+        return await this.TestSets.find(query, options).toArray();
     }
 }
 
-module.exports = TestSetService;
+module.exports = new TestSetService();

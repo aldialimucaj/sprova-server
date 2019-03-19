@@ -1,43 +1,34 @@
 const { ExecutionStatus, TestSetExecutionStatus } = require('../helpers/enums');
+const dbm = require('../helpers/db');
 const { formatInsert, formatUpdate, formatDelete } = require('../helpers/utils');
-const ExecutionService = require('./execution.service');
+const executionService = require('./execution.service');
 const ObjectId = require('mongodb').ObjectId;
 const _ = require('lodash');
-var TestSetsExecution = undefined;
-var TestSets = undefined;
-var TestCases = undefined;
-var Executions = undefined;
 
 class TestSetExecutionService {
 
-    constructor(db) {
-        TestSetsExecution = db.collection('testset-executions');
-        TestSets = db.collection('testsets');
-        TestCases = db.collection('testcases');
-        Executions = db.collection('executions');
+    constructor() {
+        this.TestSetsExecution = dbm.getCollection('testset-executions');
+        this.TestSets = dbm.getCollection('testsets');
+        this.TestCases = dbm.getCollection('testcases');
+        this.Executions = dbm.getCollection('executions');
     }
 
-    // ============================================================================
-
     async getTestSetExecutions(query, options) {
-        return await TestSetsExecution.find(query, options).toArray();
+        return await this.TestSetsExecution.find(query, options).toArray();
     }
 
     async getTestSetExecution(id) {
         const _id = ObjectId(id);
-        return await TestSetsExecution.findOne({ _id });
+        return await this.TestSetsExecution.findOne({ _id });
     }
-
-    // ============================================================================
 
     async delTestSetExecution(id) {
         const _id = ObjectId(id);
-        const response = await TestSetsExecution.deleteOne({ _id });
+        const response = await this.TestSetsExecution.deleteOne({ _id });
 
         return formatDelete(response, _id);
     }
-
-    // ============================================================================
 
     /**
      * Update model
@@ -64,12 +55,10 @@ class TestSetExecutionService {
         // updatedAt timestamp
         value.updatedAt = new Date();
 
-        let response = await TestSetsExecution.updateOne({ _id }, { $set: value });
+        let response = await this.TestSetsExecution.updateOne({ _id }, { $set: value });
 
         return formatUpdate(response, _id);
     }
-
-    // ============================================================================
 
     /**
      * Create model from an existing test set.
@@ -94,21 +83,21 @@ class TestSetExecutionService {
         // updated on every POST request
         // endedAt -> last test updated
 
-        let response = await TestSetsExecution.insertOne(value);
+        let response = await this.TestSetsExecution.insertOne(value);
 
         // create execution pool for this test set
         // new instances will be created forr all test belonging 
         // to this set will be marked as planned
         // and linked through the execution 
-        let testSet = await TestSets.findOne({ _id: value.testSetId });
+        let testSet = await this.TestSets.findOne({ _id: value.testSetId });
         if (!testSet) {
             throw new Error('Test Set ID is invalid');
         }
 
-        let testCases = await TestCases.find({ _id: { $in: testSet.testCases } }).toArray();
+        let testCases = await this.TestCases.find({ _id: { $in: testSet.testCases } }).toArray();
         let orderedTestCases = this.reinfoceOrder(testCases, testSet.testCases);
-        let executions = orderedTestCases.map(testCase => ExecutionService.createExecution(value.user, testCase, value.cycleId, response.insertedId));
-        await Executions.insertMany(executions);
+        let executions = orderedTestCases.map(testCase => executionService.createExecution(value.user, testCase, value.cycleId, response.insertedId));
+        await this.Executions.insertMany(executions);
 
         return formatInsert(response);
     }
@@ -133,7 +122,7 @@ class TestSetExecutionService {
             }
         }
 
-        return await TestSetsExecution.find(query, options).toArray();
+        return await this.TestSetsExecution.find(query, options).toArray();
     }
 
     /* ************************************************************************* */
@@ -149,14 +138,14 @@ class TestSetExecutionService {
         var result;
         const _id = ObjectId(id);
 
-        result = await Executions.findOne({ testSetExecutionId: _id, status: ExecutionStatus.Pending });
+        result = await this.Executions.findOne({ testSetExecutionId: _id, status: ExecutionStatus.Pending });
         if (result) {
-            var update = await Executions.updateOne({ _id: result._id }, { $set: { status: ExecutionStatus.Working } });
+            var update = await this.Executions.updateOne({ _id: result._id }, { $set: { status: ExecutionStatus.Working } });
             if (update.result.ok) {
                 result.status = ExecutionStatus.Working;
             }
         } else {
-            await TestSetsExecution.updateOne({ _id }, { $set: { status: TestSetExecutionStatus.Finished } });
+            await this.TestSetsExecution.updateOne({ _id }, { $set: { status: TestSetExecutionStatus.Finished } });
         }
 
         return result;
@@ -171,7 +160,7 @@ class TestSetExecutionService {
         let result = {}
         const _id = ObjectId(id);
 
-        let nextTest = await Executions.findOne({ testSetExecutionId: _id, status: ExecutionStatus.Pending });
+        let nextTest = await this.Executions.findOne({ testSetExecutionId: _id, status: ExecutionStatus.Pending });
         // no errors. query was successful
         result.ok = 1;
 
@@ -201,4 +190,4 @@ class TestSetExecutionService {
     }
 }
 
-module.exports = TestSetExecutionService;
+module.exports = new TestSetExecutionService();

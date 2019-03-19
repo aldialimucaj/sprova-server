@@ -1,4 +1,5 @@
 const ObjectId = require('mongodb').ObjectId;
+const dbm = require('../helpers/db');
 const {
     formatInsert,
     formatUpdate,
@@ -6,28 +7,25 @@ const {
 } = require('../helpers/utils');
 const log = require('../helpers/log');
 const utils = require('../helpers/utils');
-var Users = undefined;
 
 class UserService {
-    constructor(db) {
-        Users = db.collection('users');
+
+    constructor() {
+        this.Users = dbm.getCollection('users');
         log.info("successfully loaded UserService");
     }
 
-    // ============================================================================
-
     async getUsers(query, options) {
-        return await Users.find(query, options).toArray();
+        return await this.Users.find(query, options).toArray();
     }
 
     async getUser(id) {
         const _id = ObjectId(id);
-        let result = await Users.findOne({ _id });
+        let result = await this.Users.findOne({ _id });
 
         return this.formatUser(result);
     }
 
-    // ============================================================================
     /**
      * Create model
      * 
@@ -42,9 +40,9 @@ class UserService {
         value.createdAt = new Date();
 
         try {
-            let existingUser = await Users.findOne({ username });
+            let existingUser = await this.Users.findOne({ username });
             if (!existingUser) {
-                let response = await Users.insertOne(value);
+                let response = await this.Users.insertOne(value);
                 result = formatInsert(response);
             } else {
                 result = {
@@ -59,8 +57,6 @@ class UserService {
         return result;
     }
 
-    // ============================================================================
-
     async putUser(id, value) {
         const _id = ObjectId(id);
 
@@ -71,16 +67,14 @@ class UserService {
 
         value.updatedAt = new Date();
 
-        const response = await Users.updateOne({ _id }, { $set: value });
+        const response = await this.Users.updateOne({ _id }, { $set: value });
 
         return formatUpdate(response, _id);
     }
 
-    // ============================================================================
-
     async delUser(id) {
         const _id = ObjectId(id);
-        const response = await Users.deleteOne({ _id });
+        const response = await this.Users.deleteOne({ _id });
 
         return formatDelete(response, _id);
     }
@@ -103,4 +97,4 @@ class UserService {
     }
 }
 
-module.exports = UserService;
+module.exports = new UserService();

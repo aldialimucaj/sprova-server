@@ -1,27 +1,22 @@
 const ObjectId = require('mongodb').ObjectId;
+const dbm = require('../helpers/db');
 const { formatInsert, formatUpdate, formatDelete } = require('../helpers/utils');
-
-var Projects = undefined;
-var TestCases = undefined;
-var Cycles = undefined;
 
 class ProjectService {
 
-    constructor(db) {
-        Projects = db.collection('projects');
-        TestCases = db.collection('testcases');
-        Cycles = db.collection('cycles');
+    constructor() {
+        this.Projects = dbm.getCollection('projects');
+        this.TestCases = dbm.getCollection('testcases');
+        this.Cycles = dbm.getCollection('cycles');
     }
 
-    // ============================================================================
-
     async getProjects(query, options) {
-        return await Projects.find(query, options).toArray();
+        return await this.Projects.find(query, options).toArray();
     }
 
     async getProject(id) {
         const _id = ObjectId(id);
-        return await Projects.findOne({ _id });
+        return await this.Projects.findOne({ _id });
     }
 
      /**
@@ -31,7 +26,7 @@ class ProjectService {
      */
     async getCyclesByProjectId(id) {
         const _id = ObjectId(id);
-        return await Cycles.find({ projectId: _id }).toArray();
+        return await this.Cycles.find({ projectId: _id }).toArray();
     }
 
     /**
@@ -41,24 +36,20 @@ class ProjectService {
      */
     async getTestCasesByProjectId(id) {
         const _id = ObjectId(id);
-        const response = await TestCases.find({ projectId: _id }).toArray();
+        const response = await this.TestCases.find({ projectId: _id }).toArray();
         for (let t of response) {
-            t.isParent = await TestCases.countDocuments({ parentId: t._id }) > 0;
+            t.isParent = await this.TestCases.countDocuments({ parentId: t._id }) > 0;
         }
 
         return response;
     }
 
-    // ============================================================================
-
     async delProject(id) {
         const _id = ObjectId(id);
-        const result = await Projects.deleteOne({ _id });
+        const result = await this.Projects.deleteOne({ _id });
 
         return formatDelete(result, _id);
     }
-
-    // ============================================================================
 
     /**
      * Update model
@@ -76,12 +67,10 @@ class ProjectService {
 
         value.updatedAt = new Date();
 
-        const response = await Projects.updateOne({ _id }, { $set: value });
+        const response = await this.Projects.updateOne({ _id }, { $set: value });
 
         return formatUpdate(response, _id);
     }
-
-    // ============================================================================
 
     /**
      * Create model
@@ -95,10 +84,10 @@ class ProjectService {
         value.createdAt = new Date();
         value.updatedAt = new Date();
 
-        const response = await Projects.insertOne(value);
+        const response = await this.Projects.insertOne(value);
 
         return formatInsert(response);
     }
 }
 
-module.exports = ProjectService;
+module.exports = new ProjectService();
