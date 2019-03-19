@@ -23,7 +23,7 @@ const artifactsRouter = new Router();
  * 
  * @apiSuccess {Array} - list of artifacts
  */
-artifactsRouter.get('/artifacts', async (ctx) => {
+artifactsRouter.get('/', async (ctx) => {
     const query = formatQueryFromParams(ctx.query);
     const options = formatOptionsFromParams(ctx.query);
 
@@ -44,7 +44,7 @@ artifactsRouter.get('/artifacts', async (ctx) => {
  * @apiSuccess {String} title
  * @apiSuccess {String} description
  */
-artifactsRouter.get('/artifacts/:id', async (ctx) => {
+artifactsRouter.get('/:id', async (ctx) => {
     const id = ctx.params.id;
     const query = formatQueryFromParams(ctx.query);
     const artifact = await artifactService.getArtifact(id);
@@ -71,7 +71,7 @@ artifactsRouter.get('/artifacts/:id', async (ctx) => {
  * @apiSuccess {Number} ok 1 if successful; 0 if unsuccessful
  * @apiSuccess {String} _id ID of newly added element
  */
-artifactsRouter.post('/artifacts', async (ctx) => {
+artifactsRouter.post('/', async (ctx) => {
     try {
         const value = formatQueryFromParams(JSON.parse(ctx.request.body.value));
         value.user = ctx.state.user;
@@ -97,7 +97,7 @@ artifactsRouter.post('/artifacts', async (ctx) => {
  * @apiSuccess {Number} ok 1 if successful; 0 if  unsuccessful
  * @apiSuccess {String} _id ID of edited element
  */
-artifactsRouter.put('/artifacts', async (ctx) => {
+artifactsRouter.put('/', async (ctx) => {
     const id = ctx.params.id;
     const value = ctx.request.body;
     value.user = ctx.state.user;
@@ -117,7 +117,7 @@ artifactsRouter.put('/artifacts', async (ctx) => {
  * 
  * @apiSuccess {Number} ok 1 if successful; 0 if  unsuccessful
  */
-artifactsRouter.del('/artifacts', async (ctx) => {
+artifactsRouter.del('/', async (ctx) => {
     const id = ctx.params.id;
     ctx.body = await artifactService.delArtifact(id);
 });

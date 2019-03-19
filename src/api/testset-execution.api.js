@@ -19,7 +19,7 @@ const testsetExecutionRouter = new Router();
  * 
  * @apiSuccess {Array} - list of testSetExecutions
  */
-testsetExecutionRouter.get('/testset-executions', async (ctx) => {
+testsetExecutionRouter.get('/', async (ctx) => {
     const query = formatQueryFromParams(ctx.query);
     const options = formatOptionsFromParams(ctx.query);
 
@@ -40,7 +40,7 @@ testsetExecutionRouter.get('/testset-executions', async (ctx) => {
  * @apiSuccess {String} title
  * @apiSuccess {String} description
  */
-testsetExecutionRouter.get('/testset-executions/:id', async (ctx) => {
+testsetExecutionRouter.get('/:id', async (ctx) => {
     const id = ctx.params.id;
     ctx.body = await testSetExecutionService.getTestSetExecution(id);
 });
@@ -59,7 +59,7 @@ testsetExecutionRouter.get('/testset-executions/:id', async (ctx) => {
  * @apiSuccess {String} title
  * @apiSuccess {String} description
  */
-testsetExecutionRouter.get('/testset-executions/:id/next-pending', async (ctx) => {
+testsetExecutionRouter.get('/:id/next-pending', async (ctx) => {
     const id = ctx.params.id;
     ctx.body = await testSetExecutionService.getNextPendingTest(id);
 });
@@ -78,7 +78,7 @@ testsetExecutionRouter.get('/testset-executions/:id/next-pending', async (ctx) =
  * @apiSuccess {String} title
  * @apiSuccess {String} description
  */
-testsetExecutionRouter.get('/testset-executions/:id/has-pending', async (ctx) => {
+testsetExecutionRouter.get('/:id/has-pending', async (ctx) => {
     const id = ctx.params.id;
     ctx.body = await testSetExecutionService.hasPendingTest(id);
 });
@@ -97,7 +97,7 @@ testsetExecutionRouter.get('/testset-executions/:id/has-pending', async (ctx) =>
  * @apiSuccess {Number} ok 1 if successful; 0 if  unsuccessful
  * @apiSuccess {String} _id ID of edited element
  */
-testsetExecutionRouter.put('/testset-executions/:id', async (ctx) => {
+testsetExecutionRouter.put('/:id', async (ctx) => {
     const id = ctx.params.id;
     const value = ctx.request.body;
     value.user = ctx.state.user;
@@ -116,7 +116,7 @@ testsetExecutionRouter.put('/testset-executions/:id', async (ctx) => {
  * @apiSuccess {Number} ok 1 if successful; 0 if unsuccessful
  * @apiSuccess {String} _id ID of newly added element
  */
-testsetExecutionRouter.post('/testset-executions', async (ctx) => {
+testsetExecutionRouter.post('/', async (ctx) => {
     const value = ctx.request.body;
     value.user = ctx.state.user;
     ctx.body = await testSetExecutionService.postTestSetExecution(value);
@@ -136,7 +136,7 @@ testsetExecutionRouter.post('/testset-executions', async (ctx) => {
  * 
  * @apiSuccess {Number} ok 1 if successful; 0 if  unsuccessful
  */
-testsetExecutionRouter.del('/testset-executions/:id', async (ctx) => {
+testsetExecutionRouter.del('/:id', async (ctx) => {
     const id = ctx.params.id;
     ctx.body = await testSetExecutionService.delTestSetExecution(id);
 });

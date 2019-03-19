@@ -1,4 +1,5 @@
 const Router = require('koa-router');
+const log = require('../helpers/log');
 const projectService = require('../services/project.service');
 const { formatQueryFromParams, formatOptionsFromParams } = require('../helpers/utils');
 
@@ -19,7 +20,7 @@ const projectRouter = new Router();
  * 
  * @apiSuccess {Array} - list of projects
  */
-projectRouter.get('/projects', async (ctx) => {
+projectRouter.get('/', async (ctx) => {
     const query = formatQueryFromParams(ctx.query);
     const options = formatOptionsFromParams(ctx.query);
 
@@ -40,7 +41,7 @@ projectRouter.get('/projects', async (ctx) => {
  * @apiSuccess {String} title
  * @apiSuccess {String} description
  */
-projectRouter.get('/projects/:id', async (ctx) => {
+projectRouter.get('/:id', async (ctx) => {
     const id = ctx.params.id;
     ctx.body = await projectService.getProject(id);
 });
@@ -59,7 +60,7 @@ projectRouter.get('/projects/:id', async (ctx) => {
  * @apiSuccess {String} title
  * @apiSuccess {String} description
  */
-projectRouter.get('/projects/:id/cycles', async (ctx) => {
+projectRouter.get('/:id/cycles', async (ctx) => {
     const id = ctx.params.id;
     ctx.body = await projectService.getCyclesByProjectId(id);
 });
@@ -78,7 +79,7 @@ projectRouter.get('/projects/:id/cycles', async (ctx) => {
  * @apiSuccess {String} title
  * @apiSuccess {String} description
  */
-projectRouter.get('/projects/:id/testcases', async (ctx) => {
+projectRouter.get('/:id/testcases', async (ctx) => {
     const id = ctx.params.id;
     ctx.body = await projectService.getTestCasesByProjectId(id);
 });
@@ -97,7 +98,7 @@ projectRouter.get('/projects/:id/testcases', async (ctx) => {
  * @apiSuccess {Number} ok 1 if successful; 0 if  unsuccessful
  * @apiSuccess {String} _id ID of edited element
  */
-projectRouter.put('/projects/:id', async (ctx) => {
+projectRouter.put('/:id', async (ctx) => {
     const id = ctx.params.id;
     const value = ctx.request.body;
     value.user = ctx.state.user;
@@ -116,7 +117,7 @@ projectRouter.put('/projects/:id', async (ctx) => {
  * @apiSuccess {Number} ok 1 if successful; 0 if unsuccessful
  * @apiSuccess {String} _id ID of newly added element
  */
-projectRouter.post('/projects', async (ctx) => {
+projectRouter.post('/', async (ctx) => {
     const value = ctx.request.body;
     value.user = ctx.state.user;
     ctx.body = await projectService.postProject(value);
@@ -136,9 +137,9 @@ projectRouter.post('/projects', async (ctx) => {
  * 
  * @apiSuccess {Number} ok 1 if successful; 0 if  unsuccessful
  */
-projectRouter.del('/projects/:id', async (ctx) => {
+projectRouter.del('/:id', async (ctx) => {
     const id = ctx.params.id;
     ctx.body = await projectService.delProject(id);
 });
 
-module.exports = projectRouter.routes();
+module.exports = projectRouter;

@@ -19,7 +19,7 @@ const testsetRouter = new Router();
  * 
  * @apiSuccess {Array} - list of testSets
  */
-testsetRouter.get('/testsets', async (ctx) => {
+testsetRouter.get('/', async (ctx) => {
     const query = formatQueryFromParams(ctx.query);
     const options = formatOptionsFromParams(ctx.query);
 
@@ -40,7 +40,7 @@ testsetRouter.get('/testsets', async (ctx) => {
  * @apiSuccess {String} title
  * @apiSuccess {String} description
  */
-testsetRouter.get('/testsets/:id', async (ctx) => {
+testsetRouter.get('/:id', async (ctx) => {
     const id = ctx.params.id;
     ctx.body = await testSetService.getTestSet(id);
 });
@@ -58,7 +58,7 @@ testsetRouter.get('/testsets/:id', async (ctx) => {
  * 
  * @apiSuccess {Array} array
  */
-testsetRouter.get('/testsets/:id/testcases', async (ctx) => {
+testsetRouter.get('/:id/testcases', async (ctx) => {
     const id = ctx.params.id;
     ctx.body = await testSetService.getTestSetTestCases(id);
 });
@@ -76,7 +76,7 @@ testsetRouter.get('/testsets/:id/testcases', async (ctx) => {
  * 
  * @apiSuccess {Array} array
  */
-testsetRouter.get('/testsets/:id/testset-executions', async (ctx) => {
+testsetRouter.get('/:id/testset-executions', async (ctx) => {
     const id = ctx.params.id;
     ctx.body = await testSetService.getTestSetTestSetExecutions(id);
 });
@@ -95,7 +95,7 @@ testsetRouter.get('/testsets/:id/testset-executions', async (ctx) => {
  * @apiSuccess {Number} ok 1 if successful; 0 if  unsuccessful
  * @apiSuccess {String} _id ID of edited element
  */
-testsetRouter.put('/testsets/:id', async (ctx) => {
+testsetRouter.put('/:id', async (ctx) => {
     const id = ctx.params.id;
     const value = ctx.request.body;
     value.user = ctx.state.user;
@@ -114,7 +114,7 @@ testsetRouter.put('/testsets/:id', async (ctx) => {
  * @apiSuccess {Number} ok 1 if successful; 0 if unsuccessful
  * @apiSuccess {String} _id ID of newly added element
  */
-testsetRouter.post('/testsets', async (ctx) => {
+testsetRouter.post('/', async (ctx) => {
     const value = ctx.request.body;
     value.user = ctx.state.user;
     ctx.body = await testSetService.postTestSet(value);
@@ -134,7 +134,7 @@ testsetRouter.post('/testsets', async (ctx) => {
  * 
  * @apiSuccess {Number} ok 1 if successful; 0 if  unsuccessful
  */
-testsetRouter.del('/testsets/:id', async (ctx) => {
+testsetRouter.del('/:id', async (ctx) => {
     const id = ctx.params.id;
     ctx.body = await testSetService.delTestSet(id);
 });

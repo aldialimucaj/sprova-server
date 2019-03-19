@@ -15,7 +15,7 @@ const reportRouter = new Router();
  * 
  * @apiSuccess {Object} - report data
  */
-reportRouter.get('/reports/projects/:id', async (ctx) => {
+reportRouter.get('/projects/:id', async (ctx) => {
     const id = ctx.params.id;
     ctx.body = await reportService.getProjectReport(id);
 });
@@ -32,7 +32,7 @@ reportRouter.get('/reports/projects/:id', async (ctx) => {
  * 
  * @apiSuccess {Object} - report data
  */
-reportRouter.get('/reports/cycles/:id', async (ctx) => {
+reportRouter.get('/cycles/:id', async (ctx) => {
     const id = ctx.params.id;
     ctx.body = await reportService.getCycleReport(id);
 });
@@ -49,7 +49,7 @@ reportRouter.get('/reports/cycles/:id', async (ctx) => {
  * 
  * @apiSuccess {Object} - report data
  */
-reportRouter.get('/reports/testsets/:id', async (ctx) => {
+reportRouter.get('/testsets/:id', async (ctx) => {
     const id = ctx.params.id;
     ctx.body = await reportService.getTestSetReport(id);
 });

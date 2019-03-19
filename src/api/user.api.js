@@ -4,29 +4,29 @@ const { formatQueryFromParams, formatOptionsFromParams } = require('../helpers/u
 
 const userRouter = new Router();
 
-userRouter.get('/users', async (ctx) => {
+userRouter.get('/', async (ctx) => {
     const query = formatQueryFromParams(ctx.query);
     const options = formatOptionsFromParams(ctx.query);
 
     ctx.body = await userService.getUsers(query, options);
 });
 
-userRouter.get('/users/:id', async (ctx) => {
+userRouter.get('/:id', async (ctx) => {
     ctx.body = await userService.getUser(ctx.params.id);
 });
 
-userRouter.del('/users/:id', async (ctx) => {
+userRouter.del('/:id', async (ctx) => {
     const id = ctx.params.id;
     ctx.body = await userService.delUser(id);
 });
 
-userRouter.put('/users/:id', async (ctx) => {
+userRouter.put('/:id', async (ctx) => {
     const id = ctx.params.id;
     const value = ctx.request.body;
     ctx.body = await userService.putUser(id, value);
 });
 
-userRouter.post('/users', async (ctx) => {
+userRouter.post('/', async (ctx) => {
     const value = ctx.request.body;
     ctx.body = await userService.postUser(value);
 });

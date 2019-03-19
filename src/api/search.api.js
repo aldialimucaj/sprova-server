@@ -17,7 +17,7 @@ const searchRouter = new Router();
  * 
  * @apiSuccess {Array} - list of projects
  */
-searchRouter.post('/search/projects', async (ctx) => {
+searchRouter.post('/projects', async (ctx) => {
     const value = ctx.request.body;
     const query = formatIDs(value.query);
     ctx.body = await projectService.getProjects(query);
@@ -31,7 +31,7 @@ searchRouter.post('/search/projects', async (ctx) => {
  * 
  * @apiSuccess {Array} - list of cycles
  */
-searchRouter.post('/search/cycles', async (ctx) => {
+searchRouter.post('/cycles', async (ctx) => {
     const value = ctx.request.body;
     const query = formatIDs(value.query)
     ctx.body = await cycleService.findCycles(query);
@@ -48,7 +48,7 @@ searchRouter.post('/search/cycles', async (ctx) => {
  * 
  * @apiSuccess {Array} - list of test cases
  */
-searchRouter.post('/search/cycles/:id/testcases/find', async (ctx) => {
+searchRouter.post('/cycles/:id/testcases/find', async (ctx) => {
     const id = ctx.params.id;
     const value = ctx.request.body;
     ctx.body = await cycleService.findCycleTestCases(id, value);
@@ -65,7 +65,7 @@ searchRouter.post('/search/cycles/:id/testcases/find', async (ctx) => {
  * 
  * @apiSuccess {TestCase} - test case
  */
-searchRouter.post('/search/cycles/:id/testcases/findOne', async (ctx) => {
+searchRouter.post('/cycles/:id/testcases/findOne', async (ctx) => {
     const id = ctx.params.id;
     const value = ctx.request.body;
     const query = formatIDs(value.query);
@@ -83,7 +83,7 @@ searchRouter.post('/search/cycles/:id/testcases/findOne', async (ctx) => {
  * 
  * @apiSuccess {Array} - list of executions
  */
-searchRouter.post('/search/executions', async (ctx) => {
+searchRouter.post('/executions', async (ctx) => {
     const value = ctx.request.body;
     ctx.body = await executionService.findExecutions(value);
 });
@@ -99,7 +99,7 @@ searchRouter.post('/search/executions', async (ctx) => {
  * 
  * @apiSuccess {Array} - list of testcases
  */
-searchRouter.post('/search/testcases', async (ctx) => {
+searchRouter.post('/testcases', async (ctx) => {
     const value = ctx.request.body;
     ctx.body = await testCaseService.findTestCases(value);
 });
@@ -115,7 +115,7 @@ searchRouter.post('/search/testcases', async (ctx) => {
  * 
  * @apiSuccess {Array} - list of test set executions
  */
-searchRouter.post('/search/testset-executions', async (ctx) => {
+searchRouter.post('/testset-executions', async (ctx) => {
     const value = ctx.request.body;
     ctx.body = await testSetExecutionService.findTestSetExecutions(value);
 });
@@ -131,7 +131,7 @@ searchRouter.post('/search/testset-executions', async (ctx) => {
  * 
  * @apiSuccess {Array} - list of test sets
  */
-searchRouter.post('/search/testsets', async (ctx) => {
+searchRouter.post('/testsets', async (ctx) => {
     const value = ctx.request.body;
     value.user = ctx.state.user;
     ctx.body = await testSetService.findTestSets(value);

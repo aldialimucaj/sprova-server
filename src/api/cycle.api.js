@@ -19,7 +19,7 @@ const cycleRouter = new Router();
  * 
  * @apiSuccess {Array} - list of cycles
  */
-cycleRouter.get('/cycles', async (ctx) => {
+cycleRouter.get('/', async (ctx) => {
     const query = formatQueryFromParams(ctx.query);
     const options = formatOptionsFromParams(ctx.query);
     ctx.body = await cycleService.getCycles(query, options);
@@ -39,7 +39,7 @@ cycleRouter.get('/cycles', async (ctx) => {
  * @apiSuccess {String} title
  * @apiSuccess {String} description
  */
-cycleRouter.get('/cycles/:id', async (ctx) => {
+cycleRouter.get('/:id', async (ctx) => {
     const id = ctx.params.id;
     ctx.body = await cycleService.getCycle(id);
 });
@@ -52,7 +52,7 @@ cycleRouter.get('/cycles/:id', async (ctx) => {
  * 
  * @apiSuccess {Array} - list of test cases
  */
-cycleRouter.get('/cycles/:id/testcases', async (ctx) => {
+cycleRouter.get('/:id/testcases', async (ctx) => {
     const id = ctx.params.id;
     const query = formatQueryFromParams(ctx.query);
     const options = formatOptionsFromParams(ctx.query);
@@ -68,7 +68,7 @@ cycleRouter.get('/cycles/:id/testcases', async (ctx) => {
  * 
  * @apiSuccess {Array} - list of test cases
  */
-cycleRouter.get('/cycles/:id/testcasesstats', async (ctx) => {
+cycleRouter.get('/:id/testcasesstats', async (ctx) => {
     const id = ctx.params.id;
     const query = formatQueryFromParams(ctx.query);
     const options = formatOptionsFromParams(ctx.query);
@@ -88,7 +88,7 @@ cycleRouter.get('/cycles/:id/testcasesstats', async (ctx) => {
  * @apiSuccess {Number} ok 1 if successful; 0 if unsuccessful
  * @apiSuccess {String} _id ID of newly added element
  */
-cycleRouter.post('/cycles', async (ctx) => {
+cycleRouter.post('/', async (ctx) => {
     const value = ctx.request.body;
     value.user = ctx.state.user;
     ctx.body = await cycleService.postCycle(value);
@@ -108,7 +108,7 @@ cycleRouter.post('/cycles', async (ctx) => {
  * @apiSuccess {Number} ok 1 if successful; 0 if  unsuccessful
  * @apiSuccess {String} _id ID of edited element
  */
-cycleRouter.put('/cycles/:id', async (ctx) => {
+cycleRouter.put('/:id', async (ctx) => {
     const id = ctx.params.id;
     const value = ctx.request.body;
     value.user = ctx.state.user;
@@ -128,7 +128,7 @@ cycleRouter.put('/cycles/:id', async (ctx) => {
  * 
  * @apiSuccess {Number} ok 1 if successful; 0 if  unsuccessful
  */
-cycleRouter.del('/cycles/:id', async (ctx) => {
+cycleRouter.del('/:id', async (ctx) => {
     const id = ctx.params.id;
     if (!id) {
         throw new Error("You cannot delete what you don't know to exist. Invalid ID.");

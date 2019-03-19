@@ -54,40 +54,24 @@ const NON_STATIC_ROUTES = [
 // Koa application
 const app = new Koa();
 
-app
-  .use(cors({ exposeHeaders: 'Content-Disposition' }))
-  .use(koaBody({ multipart: true }))
-  .use(koaLogger(log, { level: 'info' }))
-  .use(async (ctx, next) => {
-    if (NON_STATIC_ROUTES.findIndex(route => ctx.path.startsWith(route)) < 0) {
-      return await send(ctx, ctx.path, { root: '/web', index: 'index.html' });
-    } else {
-      return await next();
-    }
-  })
-  .use(json())
-  .use(jwt({ secret: process.env.JWT_SECRET || 'you-hacker!', passthrough: !PRODUCTION }))
-  .use(async (ctx) => {
-    if (ctx.path.startsWith('/data/artifacts')) {
-      await send(ctx, ctx.path, { root: path.join(__dirname, '..') });
-    }
-  });
-
 // for REST api clients
 const apiRouter = new Router({
   prefix: '/api'
 });
 
-apiRouter.use(artifactApi);
-apiRouter.use(cycleApi);
-apiRouter.use(executionApi);
-apiRouter.use(projectApi);
-apiRouter.use(reportApi);
-apiRouter.use(searchApi);
-apiRouter.use(testCaseApi);
-apiRouter.use(testSetApi);
-apiRouter.use(testSetExecutionApi);
-apiRouter.use(userApi);
+apiRouter.use('/artifacts', artifactApi);
+apiRouter.use('/cycles', cycleApi);
+apiRouter.use('/executions', executionApi);
+apiRouter.use('/projects', projectApi.routes(), projectApi.allowedMethods());
+apiRouter.use('/reports', reportApi);
+apiRouter.use('/search', searchApi);
+apiRouter.use('/testcases', testCaseApi);
+apiRouter.use('/testset-executions', testSetApi);
+apiRouter.use('/testsets', testSetExecutionApi);
+apiRouter.use('/users', userApi);
+
+log.info(apiRouter.routes());
+log.info(artifactApi);
 
 // for frontend clients
 const graphQLRouter = new Router({
@@ -121,12 +105,29 @@ authRouter.post('/authenticate', async (ctx) => {
 });
 
 app
+  .use(cors({ exposeHeaders: 'Content-Disposition' }))
+  .use(koaBody({ multipart: true }))
+  .use(koaLogger(log, { level: 'info' }))
+  .use(async (ctx, next) => {
+    if (NON_STATIC_ROUTES.findIndex(route => ctx.path.startsWith(route)) < 0) {
+      return await send(ctx, ctx.path, { root: '/web', index: 'index.html' });
+    } else {
+      return await next();
+    }
+  })
   .use(authRouter.routes())
+  .use(jwt({ secret: process.env.JWT_SECRET || 'you-hacker!', passthrough: !PRODUCTION }))
   .use(apiRouter.routes())
   .use(graphQLRouter.routes())
   .use(statusRouter.routes())
+  .use(json())
   .use(apiRouter.allowedMethods())
-  .use(statusRouter.allowedMethods());
+  .use(statusRouter.allowedMethods())
+  .use(async (ctx) => {
+    if (ctx.path.startsWith('/data/artifacts')) {
+      await send(ctx, ctx.path, { root: path.join(__dirname, '..') });
+    }
+  });
 
 // Asynchronously connect to database
 (async function start() {

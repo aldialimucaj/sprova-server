@@ -20,7 +20,7 @@ const testcaseRouter = new Router();
  * 
  * @apiSuccess {Array} - list of testcases
  */
-testcaseRouter.get('/testcases', async (ctx) => {
+testcaseRouter.get('/', async (ctx) => {
     const options = formatOptionsFromParams(ctx.query);
     const query = formatQueryFromParams(ctx.query);
     const withParentFlag = !!ctx.query.withParentFlag;
@@ -43,7 +43,7 @@ testcaseRouter.get('/testcases', async (ctx) => {
  * @apiSuccess {String} title
  * @apiSuccess {String} description
  */
-testcaseRouter.get('/testcases/:id', async (ctx) => {
+testcaseRouter.get('/:id', async (ctx) => {
     const id = ctx.params.id;
     const withParentFlag = ctx.query.withParentFlag && ctx.query.withParentFlag.toLowerCase() === 'true';
     ctx.body = await testCaseService.getTestCase(id, withParentFlag);
@@ -63,7 +63,7 @@ testcaseRouter.get('/testcases/:id', async (ctx) => {
  * @apiSuccess {Number} ok 1 if successful; 0 if  unsuccessful
  * @apiSuccess {String} _id ID of edited element
  */
-testcaseRouter.put('/testcases/:id', async (ctx) => {
+testcaseRouter.put('/:id', async (ctx) => {
     const id = ctx.params.id;
     let value = ctx.request.body;
     if (Array.isArray(value)) {
@@ -91,7 +91,7 @@ testcaseRouter.put('/testcases/:id', async (ctx) => {
  * @apiSuccess {Number} ok 1 if successful; 0 if unsuccessful
  * @apiSuccess {String} _id ID of newly added element
  */
-testcaseRouter.post('/testcases', async (ctx) => {
+testcaseRouter.post('/', async (ctx) => {
     let value = ctx.request.body;
     const query = formatQueryFromParams(ctx.query);
 
@@ -122,7 +122,7 @@ testcaseRouter.post('/testcases', async (ctx) => {
  * 
  * @apiSuccess {Number} ok 1 if successful; 0 if  unsuccessful
  */
-testcaseRouter.del('/testcases/:id', async (ctx) => {
+testcaseRouter.del('/:id', async (ctx) => {
     let id = ctx.params.id;
     if (id.includes(',')) {
         id = id.split(',').map(v => ObjectId(v));
