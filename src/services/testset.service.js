@@ -1,13 +1,15 @@
 const ObjectId = require('mongodb').ObjectId;
 const dbm = require('../helpers/db');
+const log = require('../helpers/log');
 const { formatInsert, formatUpdate, formatDelete } = require('../helpers/utils');
 
 class TestSetService {
 
-    constructor() {
-        this.TestSets = dbm.getCollection('testsets');
-        this.TestCases = dbm.getCollection('testcases');
-        this.TestSetsExecution = dbm.getCollection('testset-executions');
+    async load() {
+        this.TestSets = await dbm.getCollection('testsets');
+        this.TestCases = await dbm.getCollection('testcases');
+        this.TestSetsExecution = await dbm.getCollection('testset-executions');
+        log.info("Successfully loaded TestSetService");
     }
 
     async getTestSets(query, options) {

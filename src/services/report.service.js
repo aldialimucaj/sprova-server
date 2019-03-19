@@ -1,14 +1,16 @@
 const ObjectId = require('mongodb').ObjectId;
 const dbm = require('../helpers/db');
+const log = require('../helpers/log');
 
 class ReportService {
-    
-    constructor() {
-        this.Projects = dbm.getCollection('projects');
-        this.Cycles = dbm.getCollection('cycles');
-        this.TestSets = dbm.getCollection('testsets');
-        this.TestCases = dbm.getCollection('testcases');
-        this.Executions = dbm.getCollection('executions');
+
+    async load() {
+        this.Projects = await dbm.getCollection('projects');
+        this.Cycles = await dbm.getCollection('cycles');
+        this.TestSets = await dbm.getCollection('testsets');
+        this.TestCases = await dbm.getCollection('testcases');
+        this.Executions = await dbm.getCollection('executions');
+        log.info("Successfully loaded ReportService");
     }
 
     /**

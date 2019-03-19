@@ -1,14 +1,16 @@
 const ObjectId = require('mongodb').ObjectId;
 const dbm = require('../helpers/db');
+const log = require('../helpers/log');
 const { ExecutionStatus, ExecutionType, ArtifactType } = require('../helpers/enums');
 const { formatInsert, formatUpdate, formatDelete } = require('../helpers/utils');
 const artifactService = require('./artifact.service');
 
 class ExecutionService {
 
-    constructor() {
-        this.Executions = dbm.getCollection('executions');
-        this.TestCases = dbm.getCollection('testcases');
+    async load() {
+        this.Executions = await dbm.getCollection('executions');
+        this.TestCases = await dbm.getCollection('testcases');
+        log.info("Successfully loaded ExecutionService");
     }
 
     async getExecutions(query, options) {

@@ -7,13 +7,12 @@ class DatabaseManager {
     constructor(config) {
         log.info('Initializing DB')
         this.config = config;
-        this.client = new MongoClient();
     }
 
     //TODO: handle replicaSets and shards
     get connectUrl() {
         const { host, port, name } = this.config.db;
-        return this.connectUrl = `mongodb://${host}:${port}/${name}`;
+        return `mongodb://${host}:${port}/${name}`;
     }
 
     get mongoOptions() {
@@ -35,7 +34,7 @@ class DatabaseManager {
         log.info('Connecting to database %s', this.connectUrl);
         const { name } = this.config.db;
         try {
-            await this.client.connect(this.connectUrl, this.mongoOptions);
+            this.client = await MongoClient.connect(this.connectUrl, this.mongoOptions);
             this.db = this.client.db(name);
             log.info('Successfully connected to database %s', this.connectUrl);
         } catch (error) {

@@ -1,11 +1,13 @@
 const ObjectId = require('mongodb').ObjectId;
 const dbm = require('../helpers/db');
+const log = require('../helpers/log');
 const { formatInsert, formatInsertMany, formatUpdate, formatDelete, formatDeleteMany } = require('../helpers/utils');
 
 class TestCaseService {
 
-    constructor() {
-        this.TestCases = dbm.getCollection('testcases');
+    async load() {
+        this.TestCases = await dbm.getCollection('testcases');
+        log.info("Successfully loaded TestCaseService");
     }
 
     /**

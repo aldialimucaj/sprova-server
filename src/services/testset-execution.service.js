@@ -1,5 +1,6 @@
 const { ExecutionStatus, TestSetExecutionStatus } = require('../helpers/enums');
 const dbm = require('../helpers/db');
+const log = require('../helpers/log');
 const { formatInsert, formatUpdate, formatDelete } = require('../helpers/utils');
 const executionService = require('./execution.service');
 const ObjectId = require('mongodb').ObjectId;
@@ -7,11 +8,12 @@ const _ = require('lodash');
 
 class TestSetExecutionService {
 
-    constructor() {
-        this.TestSetsExecution = dbm.getCollection('testset-executions');
-        this.TestSets = dbm.getCollection('testsets');
-        this.TestCases = dbm.getCollection('testcases');
-        this.Executions = dbm.getCollection('executions');
+    async load() {
+        this.TestSetsExecution = await dbm.getCollection('testset-executions');
+        this.TestSets = await dbm.getCollection('testsets');
+        this.TestCases = await dbm.getCollection('testcases');
+        this.Executions = await dbm.getCollection('executions');
+        log.info("Successfully loaded TestSetExecutionService");
     }
 
     async getTestSetExecutions(query, options) {

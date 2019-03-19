@@ -1,11 +1,14 @@
 const ObjectId = require('mongodb').ObjectId;
 const dbm = require('../helpers/db');
+const log = require('../helpers/log');
 const utils = require('../helpers/utils');
 const { formatInsert, formatUpdate, formatDelete } = require('../helpers/utils');
 
 class ArtifactService {
-    constructor() {
-        this.Artifacts = dbm.getCollection('artifacts');
+
+    async load() {
+        this.Artifacts = await dbm.getCollection('artifacts');
+        log.info("Successfully loaded ArtifactsService");
     }
 
     async getArtifacts(query, options) {

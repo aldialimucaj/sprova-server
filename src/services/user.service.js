@@ -10,9 +10,12 @@ const utils = require('../helpers/utils');
 
 class UserService {
 
-    constructor() {
-        this.Users = dbm.getCollection('users');
-        log.info("successfully loaded UserService");
+    async load() {
+        this.Users = await dbm.getCollection('users');
+        this.TestSets = await dbm.getCollection('testsets');
+        this.TestCases = await dbm.getCollection('testcases');
+        this.TestSetsExecution = await dbm.getCollection('testset-executions');
+        log.info("Successfully loaded UserService");
     }
 
     async getUsers(query, options) {

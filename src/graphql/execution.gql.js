@@ -1,13 +1,14 @@
 const log = require('../helpers/log');
+const dbm = require('../helpers/db');
 const graphql = require('graphql');
 const ObjectId = require('mongodb').ObjectId
 const GraphQLDateTime = require('graphql-iso-date').GraphQLDateTime;
 var Executions = undefined;
 
 class ExecutionGraphQL {
-    constructor(router, db) {
+    constructor(router) {
         this.router = router;
-        Executions = db.collection('executions');
+        Executions = dbm.getCollection('executions');
 
         log.info("successfully loaded ExecutionGraphQL")
     }

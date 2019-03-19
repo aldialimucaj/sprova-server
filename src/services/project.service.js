@@ -1,13 +1,15 @@
 const ObjectId = require('mongodb').ObjectId;
 const dbm = require('../helpers/db');
+const log = require('../helpers/log');
 const { formatInsert, formatUpdate, formatDelete } = require('../helpers/utils');
 
 class ProjectService {
 
-    constructor() {
-        this.Projects = dbm.getCollection('projects');
-        this.TestCases = dbm.getCollection('testcases');
-        this.Cycles = dbm.getCollection('cycles');
+    async load() {
+        this.Projects = await dbm.getCollection('projects');
+        this.TestCases = await dbm.getCollection('testcases');
+        this.Cycles = await dbm.getCollection('cycles');
+        log.info("Successfully loaded ProjectService");
     }
 
     async getProjects(query, options) {

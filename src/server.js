@@ -27,6 +27,16 @@ const testSetApi = require('./api/testset.api');
 const testSetExecutionApi = require('./api/testset-execution.api');
 const userApi = require('./api/user.api');
 
+const artifactService = require('./services/artifact.service');
+const cycleService = require('./services/cycle.service');
+const executionService = require('./services/execution.service');
+const projectService = require('./services/project.service');
+const reportService = require('./services/report.service');
+const testcaseService = require('./services/testcase.service');
+const testsetExecutionService = require('./services/testsetExecution.service');
+const testsetService = require('./services/testset.service');
+const userService = require('./services/user.service');
+
 // GraphQL API
 const Schema = require('./graphql/schema');
 const TestCaseGraphQL = require('./graphql/testcase.gql');
@@ -79,14 +89,6 @@ apiRouter.use(testSetApi);
 apiRouter.use(testSetExecutionApi);
 apiRouter.use(userApi);
 
-app
-  .use(authRouter.routes())
-  .use(apiRouter.routes())
-  .use(graphQLRouter.routes())
-  .use(statusRouter.routes())
-  .use(apiRouter.allowedMethods())
-  .use(statusRouter.allowedMethods())
-
 // for frontend clients
 const graphQLRouter = new Router({
   prefix: '/graphql'
@@ -114,6 +116,14 @@ statusRouter.all('/', (ctx) => ctx.body = { success: true, name, version, server
 // Authentication router
 const authRouter = new Router();
 
+app
+  .use(authRouter.routes())
+  .use(apiRouter.routes())
+  .use(graphQLRouter.routes())
+  .use(statusRouter.routes())
+  .use(apiRouter.allowedMethods())
+  .use(statusRouter.allowedMethods());
+
 // Asynchronously connect to database
 (async function start() {
   log.info('Server connecting to database');
@@ -122,6 +132,21 @@ const authRouter = new Router();
     log.info('Successfully established database connection');
   } catch (e) {
     log.error(e);
+  }
+
+  log.info('Load database services');
+  try {
+    await artifactService.load();
+    await cycleService.load();
+    await executionService.load();
+    await projectService.load();
+    await reportService.load();
+    await testcaseService.load();
+    await testsetExecutionService.load();
+    await testsetService.load();
+    await userService.load();
+  } catch (e) {
+    log.error(e)
   }
 
   const auth = new Authenticator();
