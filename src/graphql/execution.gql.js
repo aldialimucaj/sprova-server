@@ -8,9 +8,11 @@ var Executions = undefined;
 class ExecutionGraphQL {
     constructor(router) {
         this.router = router;
-        Executions = dbm.getCollection('executions');
+    }
 
-        log.info("successfully loaded ExecutionGraphQL")
+    async load() {
+        Executions = dbm.getCollection('executions');
+        log.info("Successfully loaded ExecutionGraphQL");
     }
 
     /**

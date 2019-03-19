@@ -13,7 +13,7 @@ const koaBody = require('koa-body');
 const log = require('./helpers/log');
 const dbm = require('./helpers/db');
 
-const Authenticator = require('./helpers/auth');
+const authService = require('./helpers/auth');
 
 // REST API
 const artifactApi = require('./api/artifact.api');
@@ -33,7 +33,7 @@ const executionService = require('./services/execution.service');
 const projectService = require('./services/project.service');
 const reportService = require('./services/report.service');
 const testcaseService = require('./services/testcase.service');
-const testsetExecutionService = require('./services/testsetExecution.service');
+const testsetExecutionService = require('./services/testset-execution.service');
 const testsetService = require('./services/testset.service');
 const userService = require('./services/user.service');
 
@@ -116,6 +116,10 @@ statusRouter.all('/', (ctx) => ctx.body = { success: true, name, version, server
 // Authentication router
 const authRouter = new Router();
 
+authRouter.post('/authenticate', async (ctx) => {
+  await authService.authenticate(ctx);
+});
+
 app
   .use(authRouter.routes())
   .use(apiRouter.routes())
@@ -136,6 +140,7 @@ app
 
   log.info('Load database services');
   try {
+    await authService.load();
     await artifactService.load();
     await cycleService.load();
     await executionService.load();
@@ -149,11 +154,14 @@ app
     log.error(e)
   }
 
-  const auth = new Authenticator();
-  auth.init();
-  authRouter.post('/authenticate', async (ctx) => {
-    await auth.authenticate(ctx);
-  });
+  log.info('Load GraphQL services');
+  try {
+    await testCaseGraphQL.load();
+    await executionGraphQL.load();
+  } catch (e) {
+    log.error(e)
+  }
+  
 })();
 
 log.info(`starting server http://0.0.0.0:${APP_PORT}`);

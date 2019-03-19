@@ -1,5 +1,6 @@
 const graphql = require('graphql');
 const dbm = require('../helpers/db');
+const log = require('../helpers/log');
 const ObjectId = require('mongodb').ObjectId
 var TestCases = undefined;
 
@@ -7,7 +8,11 @@ class TestCaseGraphQL {
     constructor(router) {
         this.name = 'TestCaseGraphQL';
         this.router = router;
+    }
+
+    async load() {
         TestCases = dbm.getCollection('testcases');
+        log.info("Successfully loaded TestCaseGraphQL");
     }
 
     /**
