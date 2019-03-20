@@ -1,37 +1,34 @@
 const ObjectId = require('mongodb').ObjectId;
+const dbm = require('../helpers/db');
+const log = require('../helpers/log');
 const { formatInsert, formatUpdate, formatDelete } = require('../helpers/utils');
-var Cycles = undefined;
-var TestSets = undefined;
-var TestCases = undefined;
-var Executions = undefined;
 
 class CycleService {
 
-    constructor(db) {
-        Cycles = db.collection('cycles');
-        TestSets = db.collection('testsets');
-        TestCases = db.collection('testcases');
-        Executions = db.collection('executions');
+    async load() {
+        this.Cycles = await dbm.getCollection('cycles');
+        this.TestSets = await dbm.getCollection('testsets');
+        this.TestCases = await dbm.getCollection('testcases');
+        this.Executions = await dbm.getCollection('executions');
+        log.info("Successfully loaded CycleService");
     }
 
-    // ============================================================================
-
     async getCycles(query, options) {
-        return await Cycles.find(query, options).toArray();
+        return await this.Cycles.find(query, options).toArray();
     }
 
     async getCycle(id) {
         const _id = ObjectId(id);
 
-        return await Cycles.findOne({ _id });
+        return await this.Cycles.findOne({ _id });
     }
 
     async getCycleTestCases(cycleId, query, options) {
         const _id = ObjectId(cycleId);
-        let cycle = await Cycles.findOne({ _id });
+        let cycle = await this.Cycles.findOne({ _id });
         const extraQuery = Object.assign(query, { _id: { $in: cycle.testCases } });
 
-        return await TestCases.find(extraQuery, options).toArray();
+        return await this.TestCases.find(extraQuery, options).toArray();
     }
 
     /**
@@ -44,12 +41,12 @@ class CycleService {
         const _id = ObjectId(cycleId);
 
         try {
-            var cycle = await Cycles.findOne({ _id });
+            var cycle = await this.Cycles.findOne({ _id });
             const testCasesIds = cycle.testCases.map(tc => ObjectId(tc));
             const extraQuery = Object.assign(query, { _id: { $in: testCasesIds } });
-            var testCases = await TestCases.find(extraQuery, options).toArray();
+            var testCases = await this.TestCases.find(extraQuery, options).toArray();
             await Promise.all(testCases.map(async tc => {
-                tc.executionsStats = await Executions.aggregate([
+                tc.executionsStats = await this.Executions.aggregate([
                     {
                         $match: { testCaseId: tc._id, cycleId: _id }
                     },
@@ -65,7 +62,6 @@ class CycleService {
         return result;
     }
 
-    // ============================================================================
     /**
      * Update model
      * 
@@ -87,12 +83,10 @@ class CycleService {
         // make sure createdAt was not changed
         delete value.createdAt;
 
-        const result = await Cycles.updateOne({ _id }, { $set: value });
+        const result = await this.Cycles.updateOne({ _id }, { $set: value });
 
         return formatUpdate(result, _id);
     }
-
-    // ============================================================================
 
     /**
      * Create model
@@ -111,7 +105,7 @@ class CycleService {
         value.createdAt = new Date();
         value.updatedAt = new Date();
 
-        const result = await Cycles.insertOne(value);
+        const result = await this.Cycles.insertOne(value);
 
         return formatInsert(result);
     }
@@ -124,7 +118,7 @@ class CycleService {
     async findCycles(query) {
 
 
-        return await Cycles.find(query).toArray();
+        return await this.Cycles.find(query).toArray();
     }
 
     /**
@@ -136,12 +130,10 @@ class CycleService {
      */
     async findOneCycleTestCases(id, query, options) {
         const _id = ObjectId(id);
-        const cycle = await Cycles.findOne({ _id });
-        const result = await TestCases.find({ _id: { $in: cycle.testCases }, ...query }, options).toArray();
+        const cycle = await this.Cycles.findOne({ _id });
+        const result = await this.TestCases.find({ _id: { $in: cycle.testCases }, ...query }, options).toArray();
         return result;
     }
-
-
 
     /**
      * Find single cycle with its according test cases
@@ -151,8 +143,8 @@ class CycleService {
      */
     async findOneCycleTestCase(id, query) {
         const _id = ObjectId(id);
-        const cycle = await Cycles.findOne({ _id });
-        const result = await TestCases.findOne({ _id: { $in: cycle.testCases }, ...query })
+        const cycle = await this.Cycles.findOne({ _id });
+        const result = await this.TestCases.findOne({ _id: { $in: cycle.testCases }, ...query })
         return result;
     }
 
@@ -173,19 +165,16 @@ class CycleService {
         }
 
         query.cycleId = _id;
-        return await TestSets.findOne(query);
+        return await this.TestSets.findOne(query);
     }
-
-
-    // ============================================================================
 
     async delCycle(id) {
         const _id = ObjectId(id);
-        const response = await Cycles.deleteOne({ _id });
+        const response = await this.Cycles.deleteOne({ _id });
 
         return formatDelete(response, _id);
     }
 
 }
 
-module.exports = CycleService;
+module.exports = new CycleService();

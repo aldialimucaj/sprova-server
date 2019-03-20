@@ -9,10 +9,10 @@ const chai = require('chai');
 const expect = chai.expect;
 
 // setup
-const DatabaseManager = require('../../src/helpers/db');
+const dbm = require('../../src/helpers/db');
 
 // test object
-const TestSetService = require('../../src/services/testset.service');
+const testSetService = require('../../src/services/testset.service');
 
 let to;
 let mongod;
@@ -24,15 +24,14 @@ describe('testSet : service', () => {
   before(async () => {
     try {
       mongod = new MongoMemoryServer();
-      const uriStr = await mongod.getConnectionString();
       config.db.port = await mongod.getPort();
       config.db.name = await mongod.getDbName()
-      const databaseManager = new DatabaseManager(config)
 
-      var db = await databaseManager.connect();
-      to = new TestSetService(db);
-
-      TestSets = db.collection('testsets');
+      await dbm.connect(config);
+      await testSetService.load();
+      to = testSetService;
+  
+      TestSets = await dbm.getCollection('testsets');
       await TestSets.deleteMany();
     } catch (e) {
       console.error(e)

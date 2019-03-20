@@ -1,9 +1,5 @@
-const { name, version } = require('../package.json');
-const config = require('./config/index');
-
 const path = require('path');
 const Koa = require('koa');
-const Router = require('koa-router');
 const json = require('koa-json')
 const jwt = require('koa-jwt');
 const koaLogger = require('koa-bunyan');
@@ -12,31 +8,29 @@ const cors = require('@koa/cors');
 const koaBody = require('koa-body');
 
 const log = require('./helpers/log');
-const utils = require('./helpers/utils');
-const DatabaseManager = require('./helpers/db');
-const databaseManager = new DatabaseManager(config)
+const dbm = require('./helpers/db');
 
-const Authenticator = require('./helpers/auth');
+const apiRouter = require('./routers/api.router');
+const authRouter = require('./routers/auth.router');
+const graphQLRouter = require('./routers/graphql.router');
+const statusRouter = require('./routers/status.router');
 
-// REST API
-const UserRestApi = require('./api/user.api');
-const ProjectRestApi = require('./api/project.api');
-const CycleRestApi = require('./api/cycle.api');
-const TestSetRestApi = require('./api/testset.api');
-const TestCaseRestApi = require('./api/testcase.api');
-const ExecutionRestApi = require('./api/execution.api');
-const TestSetExecutionRestApi = require('./api/testset-execution.api');
-const ArtifactRestApi = require('./api/artifact.api');
-const ReportRestApi = require('./api/report.api');
-const SearchRestApi = require('./api/search.api');
+const artifactService = require('./services/artifact.service');
+const authService = require('./helpers/auth');
+const cycleService = require('./services/cycle.service');
+const executionService = require('./services/execution.service');
+const projectService = require('./services/project.service');
+const reportService = require('./services/report.service');
+const testcaseService = require('./services/testcase.service');
+const testsetExecutionService = require('./services/testset-execution.service');
+const testsetService = require('./services/testset.service');
+const userService = require('./services/user.service');
 
-// GraphQL API
-const Schema = require('./graphql/schema');
-const TestCaseGraphQL = require('./graphql/testcase.gql');
-const ExecutionGraphQL = require('./graphql/execution.gql');
+// const testCaseGraphQL = require('./graphql/testcase.gql');
+// const executionGraphQL = require('./graphql/execution.gql');
 
 const APP_PORT = process.env.PORT || 8181;
-const PRODUCTION = process.env.NODE_ENV === 'production' ? true : false;
+const PRODUCTION = process.env.NODE_ENV === 'production';
 
 const NON_STATIC_ROUTES = [
   '/api',
@@ -44,95 +38,9 @@ const NON_STATIC_ROUTES = [
   '/status'
 ];
 
+// Koa application
 const app = new Koa();
 
-// for REST api clients
-const apiRouter = new Router({
-  prefix: '/api'
-});
-
-// for frontend clients
-const graphQLRouter = new Router({
-  prefix: '/graphql'
-});
-
-
-// status page
-const statusRouter = new Router({
-  prefix: '/status'
-});
-
-statusRouter.all('/', (ctx) => ctx.body = { success: true, name, version, serverTime: new Date() });
-
-const authRouter = new Router();
-
-(async function start() {
-  try {
-    var db = null;
-    while (!db) {
-      log.info("server connecting to database");
-      db = await databaseManager.connect();
-      if (db) {
-        log.info("successfully established database connection");
-      } else {
-        await utils.timeout(1000);
-      }
-    }
-
-    // Authenticator 
-    // ============================================================================
-
-    const auth = new Authenticator(db);
-    auth.init();
-    authRouter.post('/authenticate', async (ctx) => {
-      await auth.authenticate(ctx);
-    });
-
-    // Initialize API routes
-    // ============================================================================
-    const artifactAPI = new ArtifactRestApi(apiRouter, db);
-    const cycleAPI = new CycleRestApi(apiRouter, db);
-    const executionAPI = new ExecutionRestApi(apiRouter, db);
-    const projectAPI = new ProjectRestApi(apiRouter, db);
-    const reportAPI = new ReportRestApi(apiRouter, db);
-    const testSetAPI = new TestSetRestApi(apiRouter, db);
-    const testCaseAPI = new TestCaseRestApi(apiRouter, db);
-    const testSetExecutionAPI = new TestSetExecutionRestApi(apiRouter, db);
-    const userAPI = new UserRestApi(apiRouter, db);
-    const searchRestApi = new SearchRestApi(apiRouter, db);
-
-    // register REST API routes
-    artifactAPI.register();
-    cycleAPI.register();
-    executionAPI.register();
-    projectAPI.register();
-    reportAPI.register();
-    testSetAPI.register();
-    testCaseAPI.register();
-    testSetExecutionAPI.register();
-    userAPI.register();
-    searchRestApi.register();
-
-    // register GraphQL routes
-    // ============================================================================
-    const schema = new Schema(graphQLRouter);
-
-    const testCaseGraphQL = new TestCaseGraphQL(graphQLRouter, db);
-    const executionGraphQL = new ExecutionGraphQL(graphQLRouter, db);
-    schema.addAPIschema(testCaseGraphQL);
-    schema.addAPIschema(executionGraphQL);
-
-    // finalize and register schema
-    schema.register();
-
-  } catch (e) {
-    log.error(e);
-  }
-})();
-
-
-// APP middlewares 
-// ============================================================================
 app
   .use(cors({ exposeHeaders: 'Content-Disposition' }))
   .use(koaBody({ multipart: true }))
@@ -158,14 +66,49 @@ app
     }
   });
 
+// Boot server
+(async function start() {
+  log.info('Server connecting to database');
+  try {
+    await dbm.connect();
+    log.info('Successfully established database connection');
+  } catch (e) {
+    log.error(e);
+  }
 
-log.info(`starting server http://0.0.0.0:${APP_PORT}`);
+  log.info('Load database services');
+  try {
+    await authService.load();
+    await artifactService.load();
+    await cycleService.load();
+    await executionService.load();
+    await projectService.load();
+    await reportService.load();
+    await testcaseService.load();
+    await testsetExecutionService.load();
+    await testsetService.load();
+    await userService.load();
+    log.info('Successfully loaded database services');
+  } catch (e) {
+    log.error(e)
+  }
 
-const server = app.listen(APP_PORT);
+  // log.info('Load GraphQL services');
+  // try {
+  //   await testCaseGraphQL.load();
+  //   await executionGraphQL.load();
+  // } catch (e) {
+  //   log.error(e)
+  // }
+  
+})();
 
-function stop() {
-  server.close();
-}
+log.info(`Starting server http://0.0.0.0:${APP_PORT}`);
+  const server = app.listen(APP_PORT);
 
-module.exports = server;
-module.exports.stop = stop;
+  function stop() {
+    server.close();
+  }
+
+  module.exports = server;
+  module.exports.stop = stop;

@@ -10,8 +10,8 @@ const chai = require('chai');
 const expect = chai.expect;
 
 // setup
-const DatabaseManager = require('../../src/helpers/db');
-const ReportService = require('../../src/services/report.service');
+const dbm = require('../../src/helpers/db');
+const reportService = require('../../src/services/report.service');
 
 let to;
 let mongod;
@@ -33,18 +33,19 @@ describe('report : service', () => {
   before(async () => {
     try {
       mongod = new MongoMemoryServer();
-      const uriStr = await mongod.getConnectionString();
       config.db.port = await mongod.getPort();
       config.db.name = await mongod.getDbName();
-      const databaseManager = new DatabaseManager(config);
 
-      var db = await databaseManager.connect();
-      to = new ReportService(db);
-      Reports = db.collection('reports');
-      Projects = db.collection('projects');
-      Cycles = db.collection('cycles');
-      TestCases = db.collection('testcases');
-      Executions = db.collection('executions');
+      await dbm.connect(config);
+      await reportService.load();
+      to = reportService;
+  
+      Reports = await dbm.getCollection('projects');
+      Projects = await dbm.getCollection('projects');
+      Cycles = await dbm.getCollection('cycles');
+      TestCases = await dbm.getCollection('testcases');
+      Executions = await dbm.getCollection('executions');
+
       fixture1projectsResult = await Projects.insertMany(fixture1projects);
 
       fixture1testcases[0].projectId = fixture1projectsResult.insertedIds[0];
@@ -52,12 +53,10 @@ describe('report : service', () => {
       fixture1testcases[2].projectId = fixture1projectsResult.insertedIds[1];
       fixture1testcasesResult = await TestCases.insertMany(fixture1testcases);
 
-
       fixture1cycles[0].projectId = fixture1projectsResult.insertedIds[0];
       fixture1cycles[1].projectId = fixture1projectsResult.insertedIds[1];
       fixture1cycles[0].testCases = Object.values(fixture1testcasesResult.insertedIds);
       fixture1cyclesResult = await Cycles.insertMany(fixture1cycles);
-
 
       fixture1executions[0].testCaseId = fixture1testcasesResult.insertedIds[0];
       fixture1executions[0].cycleId = fixture1cyclesResult.insertedIds[0];

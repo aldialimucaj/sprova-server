@@ -9,10 +9,10 @@ const chai = require('chai');
 const expect = chai.expect;
 
 // setup
-const DatabaseManager = require('../../src/helpers/db');
+const dbm = require('../../src/helpers/db');
 
 // test object
-const CycleService = require('../../src/services/cycle.service');
+const cycleService = require('../../src/services/cycle.service');
 
 let to;
 let mongod;
@@ -27,15 +27,14 @@ describe('cycle : service', () => {
   before(async () => {
     try {
       mongod = new MongoMemoryServer();
-      const uriStr = await mongod.getConnectionString();
       config.db.port = await mongod.getPort();
       config.db.name = await mongod.getDbName()
-      const databaseManager = new DatabaseManager(config)
+
+      await dbm.connect(config);
+      await cycleService.load();
+      to = cycleService;
   
-      var db = await databaseManager.connect();
-      to = new CycleService(db);
-  
-      Cycles = db.collection('cycles');
+      Cycles = await dbm.getCollection('cycles');
       await Cycles.deleteMany();
     } catch (e) {
       console.error(e)

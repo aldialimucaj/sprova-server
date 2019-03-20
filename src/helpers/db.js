@@ -1,62 +1,79 @@
 const log = require('./log');
 const MongoClient = require('mongodb').MongoClient
+const config = require('../config');
 
 class DatabaseManager {
 
     constructor(config) {
-        log.info('initializing DB')
+        log.info('Initializing DB')
         this.config = config;
     }
 
-    async connect() {
-        try {
-            log.info('connecting to db %s', this.connectUrl);
-            const client = await MongoClient.connect(this.connectUrl, this.mongoOptions);
-            this.db = client.db(this.config.db.name);
-            log.info('successfully connected to db %s', this.connectUrl);
-            return this.db;
-        } catch (e) {
-            log.error('%s at %s', e.message, this.connectUrl);
-            return null;
-        }
-    }
-
-    getDB() {
-        return this.db;
-    }
-
+    //TODO: handle replicaSets and shards
     get connectUrl() {
-        let db = this.config.db;
-        //TODO: handle replicaSets and shards
-        return `mongodb://${db.host}:${db.port}/${db.name}`
+        const { host, port, name } = this.config.db;
+        return `mongodb://${host}:${port}/${name}`;
     }
 
     get mongoOptions() {
-        const options = Object.assign({}, this.config.mongoOptions);
+        const { mongoOptions } = this.config;
+        const { SPROVA_DB_USERNAME, SPROVA_DB_PASSWORD } = process.env;
 
-        if (process.env.SPROVA_DB_USERNAME) {
-            if (!options.auth) {
-                options.auth = {};
-            }
-            options.auth.user = process.env.SPROVA_DB_USERNAME;
+        const overrides = {
+            ...SPROVA_DB_USERNAME && { user: SPROVA_DB_USERNAME },
+            ...SPROVA_DB_PASSWORD && { password: SPROVA_DB_PASSWORD }
         }
 
-        if (process.env.SPROVA_DB_PASSWORD) {
-            options.auth.password = process.env.SPROVA_DB_PASSWORD;
-        }
-
-        return options;
+        return {...mongoOptions, ...overrides};
     }
 
+    /**
+     * Asynchronously connect to database.
+     * 
+     * @param {*} config Optional config override that can by used for testing. 
+     */
+    async connect(config) {
+        if (config) {
+            this.config = config;
+        }
+        log.info('Connecting to database %s', this.connectUrl);
+        const { name } = this.config.db;
+        try {
+            this.client = await MongoClient.connect(this.connectUrl, this.mongoOptions);
+            this.db = this.client.db(name);
+            log.info('Successfully connected to database %s', this.connectUrl);
+        } catch (error) {
+            log.error('%s at %s', error.message, this.connectUrl);
+            throw error;
+        }
+    }
+
+    /**
+     * Disconnect client from database.
+     */
+    async disconnect() {
+        await this.client.close();
+    }
+
+    /**
+     * Load collection by name.
+     * 
+     * @param {string} name of the collection to load.
+     */
     async getCollection(name) {
-        var collection = undefined;
-        if (this.db) {
-            collection = await this.db.collection(name);
-        } else {
-            log.error('trying to open collection without db connection');
+        if (!this.db) {
+            throw new Error('Trying to open collection without database connection!');
         }
-        return collection;
+        return await this.db.collection(name);
     }
+
+    /**
+     * Get current database object.
+     */
+    getDB() {
+        return this.db;
+    }
+    
 }
 
-module.exports = DatabaseManager;
+module.exports = new DatabaseManager(config);

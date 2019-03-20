@@ -1,32 +1,27 @@
 const ObjectId = require('mongodb').ObjectId;
+const dbm = require('../helpers/db');
+const log = require('../helpers/log');
 const { ExecutionStatus, ExecutionType, ArtifactType } = require('../helpers/enums');
 const { formatInsert, formatUpdate, formatDelete } = require('../helpers/utils');
-const ArtifactService = require('./artifact.service');
-
-var Executions = undefined;
-var TestCases = undefined;
+const artifactService = require('./artifact.service');
 
 class ExecutionService {
 
-    constructor(db) {
-        Executions = db.collection('executions');
-        TestCases = db.collection('testcases');
-        this.artifactService = new ArtifactService(db);
+    async load() {
+        this.Executions = await dbm.getCollection('executions');
+        this.TestCases = await dbm.getCollection('testcases');
+        log.info("Successfully loaded ExecutionService");
     }
 
-    // ============================================================================
-
     async getExecutions(query, options) {
-        return await Executions.find(query, options).toArray();
+        return await this.Executions.find(query, options).toArray();
     }
 
     async getExecution(id) {
         const _id = ObjectId(id);
 
-        return await Executions.findOne({ _id });
+        return await this.Executions.findOne({ _id });
     }
-
-    // ============================================================================
 
     /**
      * Update model
@@ -52,7 +47,7 @@ class ExecutionService {
 
             value.updatedAt = new Date();
 
-            response = await Executions.updateOne({ _id }, { $set: value });
+            response = await this.Executions.updateOne({ _id }, { $set: value });
         }
 
         return formatUpdate(response, _id);
@@ -63,7 +58,7 @@ class ExecutionService {
         const status = value.status;
         const user = value.user;
 
-        const response = await Executions.updateOne({ _id }, { $set: { status, user } });
+        const response = await this.Executions.updateOne({ _id }, { $set: { status, user } });
 
         return formatUpdate(response, _id);
     }
@@ -80,7 +75,7 @@ class ExecutionService {
         const _id = ObjectId(id);
         const testStep = `testSteps.${stepIdx}`;
 
-        const response = await Executions.updateOne({ _id }, { $set: { [testStep]: value, updatedAt: new Date() } });
+        const response = await this.Executions.updateOne({ _id }, { $set: { [testStep]: value, updatedAt: new Date() } });
 
         return formatUpdate(response, _id);
     }
@@ -97,11 +92,10 @@ class ExecutionService {
         const testStepsStatus = `testSteps.${stepIdx}.status`;
         const status = value.status;
 
-        const response = await Executions.updateOne({ _id }, { $set: { [testStepsStatus]: status, updatedAt: new Date() } });
+        const response = await this.Executions.updateOne({ _id }, { $set: { [testStepsStatus]: status, updatedAt: new Date() } });
 
         return formatUpdate(response, _id);
     }
-
 
     /**
      * Update execution with artifacts generated from it
@@ -113,12 +107,12 @@ class ExecutionService {
         var result = { files: [] };
         const _id = ObjectId(id);
         try {
-            const execution = await Executions.findOne({ _id });
+            const execution = await this.Executions.findOne({ _id });
 
             const files = value.files || [];
             for (let file of Object.values(files)) {
                 const artifactValue = { artifactType: ArtifactType.Execution, stepIdx, executionId: execution._id, cycleId: execution.cycleId }
-                const artifactResult = await this.artifactService.postArtifact(artifactValue, file);
+                const artifactResult = await artifactService.postArtifact(artifactValue, file);
 
                 result.ok = 1;
                 result.files.push({ _id: artifactResult._id, filename: file.name, success: true });
@@ -131,7 +125,6 @@ class ExecutionService {
         return result;
     }
 
-    // ============================================================================
     /**
      * Create new execution object.
      * 
@@ -158,17 +151,17 @@ class ExecutionService {
             testSetExecutionId = ObjectId(value.testSetExecutionId);
         }
 
-        const testCase = await TestCases.findOne({ _id: testCaseId });
+        const testCase = await this.TestCases.findOne({ _id: testCaseId });
         if (!testCase) {
             throw new Error(`TestCase with ID ${testCaseId} does not exist. Cannot create execution.`);
         }
-        const execution = ExecutionService.createExecution(user, testCase, cycleId, testSetExecutionId);
+        const execution = this.createExecution(user, testCase, cycleId, testSetExecutionId);
         // status is optional as it ca be working or pending:default
         if (value.status) {
             execution.status = value.status;
         }
 
-        const response = await Executions.insertOne(execution);
+        const response = await this.Executions.insertOne(execution);
 
         // we allso return the newly created execution
         const result = formatInsert(response);
@@ -187,10 +180,8 @@ class ExecutionService {
      * @param {*} options query options like limit and skip
      */
     async findExecutions(query, options) {
-        return await Executions.find(query, options).toArray();
+        return await this.Executions.find(query, options).toArray();
     }
-
-    // ============================================================================
 
     /**
      * Remove execution
@@ -199,7 +190,7 @@ class ExecutionService {
      */
     async delExecution(id) {
         const _id = ObjectId(id);
-        const response = await Executions.deleteOne({ _id });
+        const response = await this.Executions.deleteOne({ _id });
 
         return formatDelete(response, _id);
     }
@@ -207,7 +198,6 @@ class ExecutionService {
     /* ************************************************************************* */
     /*                                 NON PUBLIC                                */
     /* ************************************************************************* */
-
 
     /**
      * Create execution object
@@ -217,7 +207,7 @@ class ExecutionService {
      * @param {*} cycleId 
      * @param {*} testSetId 
      */
-    static createExecution(user, testCase, cycleId, testSetExecutionId) {
+    createExecution(user, testCase, cycleId, testSetExecutionId) {
         const execution = {
             status: ExecutionStatus.Pending,
             executionType: ExecutionType.Manual,
@@ -248,8 +238,8 @@ class ExecutionService {
      */
     async resetExecution(id, user) {
         const _id = ObjectId(id);
-        let execution = await Executions.findOne({ _id });
-        let testCase = await TestCases.findOne({ _id: execution.testCaseId });
+        let execution = await this.Executions.findOne({ _id });
+        let testCase = await this.TestCases.findOne({ _id: execution.testCaseId });
 
         if (!testCase) {
             throw new Error(`No test case with ObjectId('${execution.testCaseId}') for executionId = ObjectId('${_id}')`);
@@ -270,8 +260,8 @@ class ExecutionService {
         execution.finishedAt = null;
         execution.user = user;
 
-        return await Executions.updateOne({ _id }, { $set: execution });
+        return await this.Executions.updateOne({ _id }, { $set: execution });
     }
 }
 
-module.exports = ExecutionService;
+module.exports = new ExecutionService();

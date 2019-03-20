@@ -1,27 +1,18 @@
 var jwt = require('jsonwebtoken');
 var utils = require('./utils');
+const dbm = require('../helpers/db');
 const log = require('./log');
-var Users = undefined;
 const JWT_SECRET = process.env.JWT_SECRET || 'you-hacker!';
 class Authenticator {
-    constructor(db) {
-        this.db = db;
-    }
 
-    async init() {
-        try {
-            Users = await this.db.collection('users');
-            log.info('successfully initialized Authenticator');
-            return true;
-        } catch (error) {
-            log.error(error);
-            return false;
-        }
+    async load() {
+        this.Users = await dbm.getCollection('users');
+        log.info("Successfully loaded Authenticator");
     }
 
     async validate(username, password) {
         try {
-            let user = await Users.findOne({ username });
+            let user = await this.Users.findOne({ username });
             if (!user) {
                 return { error: "user not found" };
             } else if (user.password !== utils.sha512(password, JWT_SECRET)) {
@@ -63,4 +54,4 @@ class Authenticator {
     }
 }
 
-module.exports = Authenticator;
+module.exports = new Authenticator();

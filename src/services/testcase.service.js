@@ -1,15 +1,14 @@
 const ObjectId = require('mongodb').ObjectId;
+const dbm = require('../helpers/db');
+const log = require('../helpers/log');
 const { formatInsert, formatInsertMany, formatUpdate, formatDelete, formatDeleteMany } = require('../helpers/utils');
-
-var TestCases = undefined;
 
 class TestCaseService {
 
-    constructor(db) {
-        TestCases = db.collection('testcases');
+    async load() {
+        this.TestCases = await dbm.getCollection('testcases');
+        log.info("Successfully loaded TestCaseService");
     }
-
-    // ============================================================================
 
     /**
      * Fetch test cases belonging to project
@@ -19,10 +18,10 @@ class TestCaseService {
      * @param {boolean} withParentFlag if also parents should be returned
      */
     async getTestCases(query, options, withParentFlag) {
-        const result = await TestCases.find(query, options).toArray();
+        const result = await this.TestCases.find(query, options).toArray();
         if (withParentFlag) {
             for (let t of result) {
-                t.isParent = await TestCases.countDocuments({ parentId: t._id }) > 0;
+                t.isParent = await this.TestCases.countDocuments({ parentId: t._id }) > 0;
             }
         }
 
@@ -40,7 +39,7 @@ class TestCaseService {
         if (withParentFlag) {
             result = this.getTestCasewithParentFlag(id);
         } else {
-            result = await TestCases.findOne({ _id })
+            result = await this.TestCases.findOne({ _id })
         }
 
         return result;
@@ -54,7 +53,7 @@ class TestCaseService {
     async getTestCasewithParentFlag(id) {
         const _id = ObjectId(id);
 
-        const result = await TestCases.findOne({ _id });
+        const result = await this.TestCases.findOne({ _id });
         if (result.parentId && result.parentId.toString) {
             let parent = await this.getTestCasewithParentFlag(result.parentId.toString());
             result.parent = parent;
@@ -80,20 +79,18 @@ class TestCaseService {
             const ids = value.map(v => v._id);
             const values = value.map(v => this.prepareForUpdate(v));
             for (let v of values) {
-                response = await TestCases.updateMany({ _id: { $in: ids } }, { $set: v });
+                response = await this.TestCases.updateMany({ _id: { $in: ids } }, { $set: v });
                 const updateResponse = formatUpdate(response, ids);
                 result.push(updateResponse);
             }
         } else {
             const _id = ObjectId(id);
-            response = await TestCases.updateOne({ _id }, { $set: value });
+            response = await this.TestCases.updateOne({ _id }, { $set: value });
             result = formatUpdate(response, _id);
         }
 
         return result;
     }
-
-    // ============================================================================
 
     /**
      * Create new model
@@ -106,20 +103,19 @@ class TestCaseService {
 
         if (Array.isArray(value)) {
             const testCases = value.map(t => this.prepareForInsert(t));
-            response = await TestCases.insertMany(testCases);
+            response = await this.TestCases.insertMany(testCases);
             result = formatInsertMany(response);
             for (let testCase of testCases) {
                 await this.copyChildren(testCase);
             }
         } else {
-            response = await TestCases.insertOne(this.prepareForInsert(value));
+            response = await this.TestCases.insertOne(this.prepareForInsert(value));
             result = formatInsert(response);
             await this.copyChildren(value);
         }
 
         return result;
     }
-
 
     /**
      * Search in test cases
@@ -140,10 +136,10 @@ class TestCaseService {
 
         // TODO sanitize options
 
-        const response = await TestCases.find(query, options).toArray();
+        const response = await this.TestCases.find(query, options).toArray();
         for (let t of response) {
             if (t.executable) {
-                t.isParent = await TestCases.countDocuments({ parentId: t._id }) > 0;
+                t.isParent = await this.TestCases.countDocuments({ parentId: t._id }) > 0;
             } else {
                 t.isParent = true;
             }
@@ -151,8 +147,6 @@ class TestCaseService {
 
         return response;
     }
-
-    // ============================================================================
 
     async delTestCase(value) {
         let result = { ok: 0 };
@@ -164,14 +158,14 @@ class TestCaseService {
         // in cycles and test sets
         if (Array.isArray(value) && value.length > 0) {
             const deleteIds = value.map(v => ObjectId(v));
-            const response = await TestCases.deleteMany({ _id: { $in: deleteIds } });
+            const response = await this.TestCases.deleteMany({ _id: { $in: deleteIds } });
             result = formatDeleteMany(response, value);
-            children = await TestCases.find({ parentId: { $in: deleteIds } }).toArray();
+            children = await this.TestCases.find({ parentId: { $in: deleteIds } }).toArray();
         } else if (ObjectId.isValid(value)) {
             const _id = ObjectId(value);
-            const response = await TestCases.deleteOne({ _id });
+            const response = await this.TestCases.deleteOne({ _id });
             result = formatDelete(response, _id);
-            children = await TestCases.find({ parentId: _id }).toArray();
+            children = await this.TestCases.find({ parentId: _id }).toArray();
         }
 
         if (children && children.length) {
@@ -209,14 +203,13 @@ class TestCaseService {
 
     async copyChildren(testCase) {
         if (testCase.cloneFromId) {
-            const children = await TestCases.find({ parentId: testCase.cloneFromId }).toArray();
+            const children = await this.TestCases.find({ parentId: testCase.cloneFromId }).toArray();
             for (let child of children) {
                 child.parentId = testCase._id;
                 await this.postTestCase(child, { cloneFromId: child._id });
             }
         }
     }
-
 }
 
-module.exports = TestCaseService;
+module.exports = new TestCaseService();

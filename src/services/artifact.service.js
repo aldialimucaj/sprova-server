@@ -1,25 +1,24 @@
 const ObjectId = require('mongodb').ObjectId;
+const dbm = require('../helpers/db');
+const log = require('../helpers/log');
 const utils = require('../helpers/utils');
 const { formatInsert, formatUpdate, formatDelete } = require('../helpers/utils');
-var Artifacts = undefined;
 
 class ArtifactService {
-    constructor(db) {
-        Artifacts = db.collection('artifacts');
+
+    async load() {
+        this.Artifacts = await dbm.getCollection('artifacts');
+        log.info("Successfully loaded ArtifactsService");
     }
 
-    // ============================================================================
-
     async getArtifacts(query, options) {
-        return await Artifacts.find(query, options).toArray();
+        return await this.Artifacts.find(query, options).toArray();
     }
 
     async getArtifact(id) {
         const _id = ObjectId(id);
-        return await Artifacts.findOne({ _id });
+        return await this.Artifacts.findOne({ _id });
     }
-
-    // ============================================================================
 
     async delArtifact(id) {
         const _id = ObjectId(id);
@@ -27,12 +26,10 @@ class ArtifactService {
         if (artifact.filePath) {
             utils.removeArtifact(artifact);
         }
-        const response = await Artifacts.deleteOne({ _id });
+        const response = await this.Artifacts.deleteOne({ _id });
 
         return formatDelete(response, _id);
     }
-
-    // ============================================================================
 
     async postArtifact(value, file) {
         let result = {};
@@ -43,15 +40,13 @@ class ArtifactService {
         artifact.createdAt = new Date();
         artifact.updatedAt = new Date();
 
-        const artifactResult = await Artifacts.insertOne(artifact);
+        const artifactResult = await this.Artifacts.insertOne(artifact);
 
         result = formatInsert(artifactResult);
         result.name = file.name;
 
         return result;
     }
-
-    // ============================================================================
 
     async putArtifact(id, value) {
         const _id = ObjectId(id);
@@ -65,10 +60,10 @@ class ArtifactService {
 
         value.updatedAt = new Date();
 
-        let response = await Artifacts.updateOne({ _id }, { $set: value });
+        let response = await this.Artifacts.updateOne({ _id }, { $set: value });
 
         return formatUpdate(response, _id);
     }
 }
 
-module.exports = ArtifactService;
+module.exports = new ArtifactService();

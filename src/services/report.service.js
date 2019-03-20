@@ -1,21 +1,17 @@
 const ObjectId = require('mongodb').ObjectId;
-var Projects = undefined;
-var Cycles = undefined;
-var TestSets = undefined;
-var TestCases = undefined;
-var Executions = undefined;
+const dbm = require('../helpers/db');
+const log = require('../helpers/log');
 
 class ReportService {
-    constructor(db) {
 
-        Projects = db.collection('projects');
-        Cycles = db.collection('cycles');
-        TestSets = db.collection('testsets');
-        TestCases = db.collection('testcases');
-        Executions = db.collection('executions');
+    async load() {
+        this.Projects = await dbm.getCollection('projects');
+        this.Cycles = await dbm.getCollection('cycles');
+        this.TestSets = await dbm.getCollection('testsets');
+        this.TestCases = await dbm.getCollection('testcases');
+        this.Executions = await dbm.getCollection('executions');
+        log.info("Successfully loaded ReportService");
     }
-
-    // ============================================================================
 
     /**
      * Return project's relevant data for building a project report
@@ -26,13 +22,13 @@ class ReportService {
         let result = {};
         const _id = ObjectId(id);
 
-        let project = await Projects.findOne({ _id });
+        let project = await this.Projects.findOne({ _id });
         result.project = project;
 
-        let cycles = await Cycles.find({ projectId: _id }).toArray();
+        let cycles = await this.Cycles.find({ projectId: _id }).toArray();
         result.cycles = cycles;
 
-        let testCases = await TestCases.find({ projectId: _id }).toArray();
+        let testCases = await this.TestCases.find({ projectId: _id }).toArray();
         result.testCases = testCases;
 
         return result;
@@ -47,17 +43,17 @@ class ReportService {
         let result = {};
 
         const _id = ObjectId(id);
-        let cycle = await Cycles.findOne({ _id });
+        let cycle = await this.Cycles.findOne({ _id });
         result.cycle = cycle;
 
-        let testsets = await TestSets.find({ cycleId: _id }).toArray();
+        let testsets = await this.TestSets.find({ cycleId: _id }).toArray();
         result.testsets = testsets;
 
 
-        let testCases = await TestCases.find({ _id: { $in: cycle.testCases } }).toArray();
+        let testCases = await this.TestCases.find({ _id: { $in: cycle.testCases } }).toArray();
         result.testCases = testCases;
 
-        var executionIds = await Executions.aggregate(
+        var executionIds = await this.Executions.aggregate(
             {
                 $match: { cycleId: _id }
             },
@@ -85,7 +81,7 @@ class ReportService {
             }
         ).toArray();
         let idsArray = executionIds.map(e => e._id);
-        let executions = await Executions.find({ _id: { $in: idsArray } }).toArray();
+        let executions = await this.Executions.find({ _id: { $in: idsArray } }).toArray();
         result.executions = executions;
 
         return result;
@@ -97,4 +93,4 @@ class ReportService {
     }
 }
 
-module.exports = ReportService;
+module.exports = new ReportService();
