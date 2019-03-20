@@ -9,8 +9,8 @@ const chai = require('chai');
 const expect = chai.expect;
 
 // setup
-const DatabaseManager = require('../../src/helpers/db');
-const UserService = require('../../src/services/user.service');
+const dbm = require('../../src/helpers/db');
+const userService = require('../../src/services/user.service');
 
 let to;
 let mongod;
@@ -28,14 +28,14 @@ describe('user : service', () => {
   before(async () => {
     try {
       mongod = new MongoMemoryServer();
-      const uriStr = await mongod.getConnectionString();
       config.db.port = await mongod.getPort();
       config.db.name = await mongod.getDbName()
-      const databaseManager = new DatabaseManager(config)
 
-      var db = await databaseManager.connect();
-      to = new UserService(db);
-      Users = db.collection('users');
+      await dbm.connect(config);
+      await userService.load();
+      to = userService;
+  
+      Users = await dbm.getCollection('users');
       fixture1Result = await Users.insertMany(fixture1)
     } catch (e) {
       console.error(e)

@@ -20,7 +20,6 @@ let Artifacts;
 
 const fixtures = require('./fixtures/artifact.fixture');
 
-
 describe('artifact : service', () => {
 
   before(async () => {
@@ -30,10 +29,10 @@ describe('artifact : service', () => {
       config.db.name = await mongod.getDbName()
   
       await dbm.connect(config);
-      artifactService.load();
+      await artifactService.load();
       to = artifactService;
   
-      Artifacts = db.collection('artifacts');
+      Artifacts = await dbm.getCollection('artifacts');
       await Artifacts.deleteMany();
     } catch (e) {
       console.error(e)

@@ -9,10 +9,10 @@ const chai = require('chai');
 const expect = chai.expect;
 
 // setup
-const DatabaseManager = require('../../src/helpers/db');
+const dbm = require('../../src/helpers/db');
 
 // test object
-const TestSetExecutionService = require('../../src/services/testset-execution.service');
+const testSetExecutionService = require('../../src/services/testset-execution.service');
 
 let to;
 let mongod;
@@ -26,17 +26,16 @@ describe('testSetExecution : service', () => {
   before(async () => {
     try {
       mongod = new MongoMemoryServer();
-      const uriStr = await mongod.getConnectionString();
       config.db.port = await mongod.getPort();
       config.db.name = await mongod.getDbName()
-      const databaseManager = new DatabaseManager(config)
 
-      var db = await databaseManager.connect();
-      to = new TestSetExecutionService(db);
-
-      TestSetExecutions = db.collection('testset-executions');
-      TestSets = db.collection('testsets');
-      TestCases = db.collection('testcases');
+      await dbm.connect(config);
+      await testSetExecutionService.load();
+      to = testSetExecutionService;
+  
+      TestSetExecutions = await dbm.getCollection('testset-executions');
+      TestSets = await dbm.getCollection('testsets');
+      TestCases = await dbm.getCollection('testcases');
       await TestSetExecutions.deleteMany();
     } catch (e) {
       console.error(e)
@@ -82,11 +81,13 @@ describe('testSetExecution : service', () => {
 
   describe('postTestSetExecutions', () => {
     it('should save testSetExecution', async () => {
+      console.log('start');
       fixtures.testSetExecution1.testSetId = fixture1testsetsResult.insertedIds[0]
       const result = await to.postTestSetExecution(fixtures.testSetExecution1);
       expect(result).to.be.an('object');
       expect(result.ok).to.be.eql(1);
       expect(result._id).to.not.be.undefined;
+      console.log('ok');
       const newTestSetExecution = await TestSetExecutions.findOne({ _id: result._id });
       expect(newTestSetExecution.title).to.equal(fixtures.testSetExecution1.title);
       expect(newTestSetExecution.createdAt).to.not.be.undefined;

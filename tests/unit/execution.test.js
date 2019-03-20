@@ -13,10 +13,9 @@ const chai = require('chai');
 const expect = chai.expect;
 
 // setup
-const DatabaseManager = require('../../src/helpers/db');
+const dbm = require('../../src/helpers/db');
 
-
-const ExecutionService = require('../../src/services/execution.service.js');
+const executionService = require('../../src/services/execution.service.js');
 let to;
 let mongod;
 let Executions;
@@ -31,16 +30,15 @@ describe('execution : service', () => {
   before(async () => {
     try {
       mongod = new MongoMemoryServer();
-      const uriStr = await mongod.getConnectionString();
       config.db.port = await mongod.getPort();
       config.db.name = await mongod.getDbName()
-      const databaseManager = new DatabaseManager(config)
-
-      var db = await databaseManager.connect();
-      to = new ExecutionService(db);
-
-      Executions = db.collection('executions');
-      TestCases = db.collection('testcases');
+      
+      await dbm.connect(config);
+      await executionService.load();
+      to = executionService;
+  
+      Executions = await dbm.getCollection('executions');
+      TestCases = await dbm.getCollection('testcases');
       await Executions.deleteMany();
     } catch (e) {
       console.error(e)

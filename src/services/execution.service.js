@@ -155,7 +155,7 @@ class ExecutionService {
         if (!testCase) {
             throw new Error(`TestCase with ID ${testCaseId} does not exist. Cannot create execution.`);
         }
-        const execution = ExecutionService.createExecution(user, testCase, cycleId, testSetExecutionId);
+        const execution = this.createExecution(user, testCase, cycleId, testSetExecutionId);
         // status is optional as it ca be working or pending:default
         if (value.status) {
             execution.status = value.status;
@@ -207,7 +207,7 @@ class ExecutionService {
      * @param {*} cycleId 
      * @param {*} testSetId 
      */
-    static createExecution(user, testCase, cycleId, testSetExecutionId) {
+    createExecution(user, testCase, cycleId, testSetExecutionId) {
         const execution = {
             status: ExecutionStatus.Pending,
             executionType: ExecutionType.Manual,
