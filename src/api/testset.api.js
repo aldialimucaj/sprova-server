@@ -139,4 +139,4 @@ testsetRouter.del('/:id', async (ctx) => {
     ctx.body = await testSetService.delTestSet(id);
 });
 
-module.exports = testsetRouter.routes();
+module.exports = testsetRouter;

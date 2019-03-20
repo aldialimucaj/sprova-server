@@ -137,4 +137,4 @@ searchRouter.post('/testsets', async (ctx) => {
     ctx.body = await testSetService.findTestSets(value);
 });
 
-module.exports = searchRouter.routes();
+module.exports = searchRouter;

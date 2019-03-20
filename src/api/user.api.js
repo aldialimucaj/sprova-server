@@ -31,4 +31,4 @@ userRouter.post('/', async (ctx) => {
     ctx.body = await userService.postUser(value);
 });
 
-module.exports = userRouter.routes();
+module.exports = userRouter;

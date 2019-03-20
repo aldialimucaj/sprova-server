@@ -1,5 +1,4 @@
 const Router = require('koa-router');
-const log = require('../helpers/log');
 const projectService = require('../services/project.service');
 const { formatQueryFromParams, formatOptionsFromParams } = require('../helpers/utils');
 

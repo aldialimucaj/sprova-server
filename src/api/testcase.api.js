@@ -133,4 +133,4 @@ testcaseRouter.del('/:id', async (ctx) => {
     ctx.body = await testCaseService.delTestCase(id);
 });
 
-module.exports = testcaseRouter.routes();
+module.exports = testcaseRouter;

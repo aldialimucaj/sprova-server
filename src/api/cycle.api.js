@@ -136,4 +136,4 @@ cycleRouter.del('/:id', async (ctx) => {
     ctx.body = await cycleService.delCycle(id);
 });
 
-module.exports = cycleRouter.routes();
+module.exports = cycleRouter;

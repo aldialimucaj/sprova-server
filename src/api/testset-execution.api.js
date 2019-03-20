@@ -141,4 +141,4 @@ testsetExecutionRouter.del('/:id', async (ctx) => {
     ctx.body = await testSetExecutionService.delTestSetExecution(id);
 });
 
-module.exports = testsetExecutionRouter.routes();
+module.exports = testsetExecutionRouter;

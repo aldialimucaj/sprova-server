@@ -194,4 +194,4 @@ executionRouter.del('/:id', async (ctx) => {
     ctx.body = await executionService.delExecution(id);
 });
 
-module.exports = executionRouter.routes();
+module.exports = executionRouter;

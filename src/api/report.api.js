@@ -54,4 +54,4 @@ reportRouter.get('/testsets/:id', async (ctx) => {
     ctx.body = await reportService.getTestSetReport(id);
 });
 
-module.exports = reportRouter.routes();
+module.exports = reportRouter;

@@ -122,4 +122,4 @@ artifactsRouter.del('/', async (ctx) => {
     ctx.body = await artifactService.delArtifact(id);
 });
 
-module.exports = artifactsRouter.routes();
+module.exports = artifactsRouter;
