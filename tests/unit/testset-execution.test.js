@@ -81,13 +81,11 @@ describe('testSetExecution : service', () => {
 
   describe('postTestSetExecutions', () => {
     it('should save testSetExecution', async () => {
-      console.log('start');
       fixtures.testSetExecution1.testSetId = fixture1testsetsResult.insertedIds[0]
       const result = await to.postTestSetExecution(fixtures.testSetExecution1);
       expect(result).to.be.an('object');
       expect(result.ok).to.be.eql(1);
       expect(result._id).to.not.be.undefined;
-      console.log('ok');
       const newTestSetExecution = await TestSetExecutions.findOne({ _id: result._id });
       expect(newTestSetExecution.title).to.equal(fixtures.testSetExecution1.title);
       expect(newTestSetExecution.createdAt).to.not.be.undefined;

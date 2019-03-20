@@ -28,7 +28,9 @@ class DatabaseManager {
     }
 
     /**
-     * Asynchronously connect to the database.
+     * Asynchronously connect to database.
+     * 
+     * @param {*} config Optional config override that can by used for testing. 
      */
     async connect(config) {
         if (config) {

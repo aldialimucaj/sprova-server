@@ -21,11 +21,12 @@ var server;
 before('Setting up the system', async () => {
   chai.use(chaiHttp);
   try {
-    mongod = new MongoMemoryServer({
+    mongod = await new MongoMemoryServer({
       instance: {
         port: 27027
       }
     });
+    await mongod.getConnectionString();
     await dbm.connect(config);
     server = require('../../src/server');
   } catch (e) {
