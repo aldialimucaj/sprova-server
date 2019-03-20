@@ -15,11 +15,10 @@ const { MongoMemoryServer } = require('mongodb-memory-server');
 let config = { db: { host: 'localhost', name: 'sprova', port: 27027 } };
 let mongod;
 
-const DatabaseManager = require('../../src/helpers/db');
-var db;
+const dbm = require('../../src/helpers/db');
 var server;
 
-before('setting up the system', async () => {
+before('Setting up the system', async () => {
   chai.use(chaiHttp);
   try {
     mongod = new MongoMemoryServer({
@@ -27,10 +26,7 @@ before('setting up the system', async () => {
         port: 27027
       }
     });
-    const databaseManager = new DatabaseManager(config)
-    const uriStr = await mongod.getConnectionString();
-
-    db = await databaseManager.connect();
+    await dbm.connect(config);
     server = require('../../src/server');
   } catch (e) {
     console.error(e)
@@ -42,7 +38,7 @@ describe('API Routes', () => {
     describe('GET /artifacts', () => {
       var newModel;
       before('Set up artifacts', async () => {
-        const Artifacts = db.collection('artifacts');
+        const Artifacts = await dbm.getCollection('artifacts');
         await Artifacts.deleteMany();
         newModel = await Artifacts.insertMany([{ "artifact": 1 }, { "artifact": 2 }])
       })
@@ -66,7 +62,7 @@ describe('API Routes', () => {
     describe('GET /projects', () => {
       var newModel;
       before('Set up projects', async () => {
-        const Projects = db.collection('projects');
+        const Projects = await dbm.getCollection('projects');
         await Projects.deleteMany();
         newModel = await Projects.insertMany([{ "project": 1 }, { "project": 2 }])
       })
@@ -90,7 +86,7 @@ describe('API Routes', () => {
     describe('GET /testcases', () => {
       var newModel;
       before('Set up testcases', async () => {
-        const TestCases = db.collection('testcases');
+        const TestCases = await dbm.getCollection('testcases');
         await TestCases.deleteMany();
         newModel = await TestCases.insertMany([{ "testcase": 1 }, { "testcase": 2 }])
       })
@@ -114,7 +110,7 @@ describe('API Routes', () => {
     describe('GET /users', () => {
       var newUsers;
       before('Set up users', async () => {
-        const Users = db.collection('users');
+        const Users = await dbm.getCollection('users');
         await Users.deleteMany();
         newUsers = await Users.insertMany([{ "user": 1 }, { "user": 2 }])
       })
@@ -134,7 +130,7 @@ describe('API Routes', () => {
     describe('GET /user/:id', () => {
       var newUsers;
       before('Set up users', async () => {
-        const Users = db.collection('users');
+        const Users = await dbm.getCollection('users');
         await Users.deleteMany();
         newUsers = await Users.insertMany([{ "user": 1, "admin": true }, { "user": 2 }])
       })

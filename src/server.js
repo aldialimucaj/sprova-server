@@ -88,6 +88,7 @@ app
     await testsetExecutionService.load();
     await testsetService.load();
     await userService.load();
+    log.info('Successfully loaded database services');
   } catch (e) {
     log.error(e)
   }
@@ -99,8 +100,10 @@ app
   // } catch (e) {
   //   log.error(e)
   // }
+  
+})();
 
-  log.info(`starting server http://0.0.0.0:${APP_PORT}`);
+log.info(`Starting server http://0.0.0.0:${APP_PORT}`);
   const server = app.listen(APP_PORT);
 
   function stop() {
@@ -109,5 +112,3 @@ app
 
   module.exports = server;
   module.exports.stop = stop;
-  
-})();

@@ -30,7 +30,10 @@ class DatabaseManager {
     /**
      * Asynchronously connect to the database.
      */
-    async connect() {
+    async connect(config) {
+        if (config) {
+            this.config = config;
+        }
         log.info('Connecting to database %s', this.connectUrl);
         const { name } = this.config.db;
         try {
