@@ -132,7 +132,28 @@ class ExecutionService {
      * @param {*} user 
      * @param {boolean} returnDocument should return created document in data property
      */
-    async postExecution(value, user, returnDocument) {
+    async postExecution(value) {
+        log.info(value);
+        if (value.isArray) {
+            log.info('is array');
+            const response = await this.Executions.insertMany(value);
+            return formatInsert(response);
+        } else {
+            log.info('is not array');
+            const response = await this.Executions.insertOne(value);
+            return formatInsert(response);
+
+        }
+    }
+
+    /**
+     * Create new execution object.
+     * 
+     * @param {*} value 
+     * @param {*} user 
+     * @param {boolean} returnDocument should return created document in data property
+     */
+    async postExecutions(value, user, returnDocument) {
         // precondictions
         if (!value.cycleId) {
             throw new Error("New execution should be likened to a specific cycle");
