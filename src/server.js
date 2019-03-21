@@ -19,6 +19,7 @@ const artifactService = require('./services/artifact.service');
 const authService = require('./helpers/auth');
 const cycleService = require('./services/cycle.service');
 const executionService = require('./services/execution.service');
+const executionContextService = require('./services/execution-context.service');
 const projectService = require('./services/project.service');
 const reportService = require('./services/report.service');
 const testcaseService = require('./services/testcase.service');
@@ -82,6 +83,7 @@ app
     await artifactService.load();
     await cycleService.load();
     await executionService.load();
+    await executionContextService.load();
     await projectService.load();
     await reportService.load();
     await testcaseService.load();

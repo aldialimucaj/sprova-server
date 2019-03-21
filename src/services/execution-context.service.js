@@ -62,7 +62,11 @@ class ExecutionContextService {
     async postExecutionContext(value) {
         value.userId = ObjectId(value.userId);
         value.projectId = ObjectId(value.projectId);
-        value.reference = value.reference && ObjectId(value.reference);
+
+        // Optional reference to cycle or testset
+        if (value.reference) {
+            value.reference = ObjectId(value.reference);
+        }
 
         value.createdAt = new Date();
 

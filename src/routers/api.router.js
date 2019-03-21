@@ -3,6 +3,7 @@ const Router = require('koa-router');
 const artifactApi = require('../api/artifact.api');
 const cycleApi = require('../api/cycle.api');
 const executionApi = require('../api/execution.api');
+const executionContextApi = require('../api/execution-context.api');
 const projectApi = require('../api/project.api');
 const reportApi = require('../api/report.api');
 const searchApi = require('../api/search.api');
@@ -18,6 +19,7 @@ const apiRouter = new Router({
 apiRouter.use('/artifacts', artifactApi.routes(), artifactApi.allowedMethods());
 apiRouter.use('/cycles', cycleApi.routes(), cycleApi.allowedMethods());
 apiRouter.use('/executions', executionApi.routes(), executionApi.allowedMethods());
+apiRouter.use('/execution-contexts', executionContextApi.routes(), executionContextApi.allowedMethods());
 apiRouter.use('/projects', projectApi.routes(), projectApi.allowedMethods());
 apiRouter.use('/reports', reportApi.routes(), reportApi.allowedMethods());
 apiRouter.use('/search', searchApi.routes(), searchApi.allowedMethods());
