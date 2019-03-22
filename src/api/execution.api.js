@@ -46,7 +46,7 @@ executionRouter.get('/:id', async (ctx) => {
 });
 
 /**
- * @api {post} /executions Post new execution
+ * @api {post} /executions Post new execution(s)
  * 
  * @apiExample {curl} Example usage:
  *     curl -X POST -d '{"key1":"value1", "key2":"value2"}' -H "Content-Type: application/json" http://localhost/api/executions 
@@ -58,10 +58,12 @@ executionRouter.get('/:id', async (ctx) => {
  * @apiSuccess {String} _id ID of newly added element
  */
 executionRouter.post('/', async (ctx) => {
-    const query = formatQueryFromParams(ctx.query);
     const value = ctx.request.body;
-    const user = ctx.state.user;
-    ctx.body = await executionService.postExecution(value, user, query.returnDocument);
+    if (Array.isArray(value)) {
+        ctx.body = await executionService.postExecutions(value);    
+    } else {
+        ctx.body = await executionService.postExecution(value);
+    }
     ctx.status = 201;
 });
 

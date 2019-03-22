@@ -1,7 +1,7 @@
 const ObjectId = require('mongodb').ObjectId;
 const dbm = require('../helpers/db');
 const log = require('../helpers/log');
-const { ExecutionStatus, ExecutionType, ArtifactType } = require('../helpers/enums');
+const { ExecutionStatus, ArtifactType } = require('../helpers/enums');
 const { formatInsert, formatUpdate, formatDelete } = require('../helpers/utils');
 const artifactService = require('./artifact.service');
 
@@ -133,17 +133,8 @@ class ExecutionService {
      * @param {boolean} returnDocument should return created document in data property
      */
     async postExecution(value) {
-        log.info(value);
-        if (value.isArray) {
-            log.info('is array');
-            const response = await this.Executions.insertMany(value);
-            return formatInsert(response);
-        } else {
-            log.info('is not array');
-            const response = await this.Executions.insertOne(value);
-            return formatInsert(response);
-
-        }
+        const response = await this.Executions.insertOne(value);
+        return formatInsert(response);
     }
 
     /**
@@ -153,45 +144,9 @@ class ExecutionService {
      * @param {*} user 
      * @param {boolean} returnDocument should return created document in data property
      */
-    async postExecutions(value, user, returnDocument) {
-        // precondictions
-        if (!value.cycleId) {
-            throw new Error("New execution should be likened to a specific cycle");
-        }
-        if (!value.testCaseId) {
-            throw new Error("New execution should be likened to a specific test case");
-        }
-
-
-        const cycleId = ObjectId(value.cycleId);
-        const testCaseId = ObjectId(value.testCaseId);
-        let testSetExecutionId;
-
-        // executions can be optionaly started from an execution set
-        if (value.testSetExecutionId) {
-            testSetExecutionId = ObjectId(value.testSetExecutionId);
-        }
-
-        const testCase = await this.TestCases.findOne({ _id: testCaseId });
-        if (!testCase) {
-            throw new Error(`TestCase with ID ${testCaseId} does not exist. Cannot create execution.`);
-        }
-        const execution = this.createExecution(user, testCase, cycleId, testSetExecutionId);
-        // status is optional as it ca be working or pending:default
-        if (value.status) {
-            execution.status = value.status;
-        }
-
-        const response = await this.Executions.insertOne(execution);
-
-        // we allso return the newly created execution
-        const result = formatInsert(response);
-
-        if (returnDocument) {
-            result.data = execution;
-        }
-
-        return result;
+    async postExecutions(value) {
+        const response = await this.Executions.insertMany(value);
+        return formatInsert(response);
     }
 
     /**
@@ -219,35 +174,6 @@ class ExecutionService {
     /* ************************************************************************* */
     /*                                 NON PUBLIC                                */
     /* ************************************************************************* */
-
-    /**
-     * Create execution object
-     * 
-     * @param {*} user 
-     * @param {*} testCase 
-     * @param {*} cycleId 
-     * @param {*} testSetId 
-     */
-    createExecution(user, testCase, cycleId, testSetExecutionId) {
-        const execution = {
-            status: ExecutionStatus.Pending,
-            executionType: ExecutionType.Manual,
-
-            testCaseId: testCase._id,
-            title: testCase.title,
-            description: testCase.description,
-            testSteps: testCase.testSteps.slice(0),
-
-            testSetExecutionId,
-            cycleId,
-
-            createdAt: new Date(),
-            updatedAt: new Date(),
-            user
-        };
-
-        return execution;
-    }
 
     /**
      * Reset execution to default status.
