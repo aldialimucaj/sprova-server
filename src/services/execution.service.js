@@ -133,6 +133,7 @@ class ExecutionService {
      * @param {boolean} returnDocument should return created document in data property
      */
     async postExecution(value) {
+        value.contextId = ObjectId(value.contextId);
         const response = await this.Executions.insertOne(value);
         return formatInsert(response);
     }
@@ -145,7 +146,12 @@ class ExecutionService {
      * @param {boolean} returnDocument should return created document in data property
      */
     async postExecutions(value) {
-        const response = await this.Executions.insertMany(value);
+        const mapped = value.map((item) => ({ 
+            ...item, 
+            testcaseId: ObjectId(item.testCaseId),
+            contextId: ObjectId(item.contextId)
+        }));
+        const response = await this.Executions.insertMany(mapped);
         return formatInsert(response);
     }
 
