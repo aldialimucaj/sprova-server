@@ -33,7 +33,8 @@ class ExecutionContextService {
     }
 
     async postExecutionContext(value) {
-        return await this.ExecutionContexts.insertOne(value);
+        const response = await this.ExecutionContexts.insertOne(value);
+        return response.ops[0];
     }
 
 }

@@ -1,6 +1,6 @@
 const Router = require('koa-router');
 const executionContextService = require('../services/execution-context.service');
-const { formatQueryFromParams, formatOptionsFromParams } = require('../helpers/utils');
+const { formatIDs, formatQueryFromParams, formatOptionsFromParams } = require('../helpers/utils');
 
 const executionContextRouter = new Router();
 
@@ -60,7 +60,7 @@ executionContextRouter.get('/:id', async (ctx) => {
 executionContextRouter.post('/', async (ctx) => {
     const value = ctx.request.body;
     value.createdAt = new Date();
-    ctx.body = await executionContextService.postExecutionContext(value);
+    ctx.body = await executionContextService.postExecutionContext(formatIDs(value));
     ctx.status = 201;
 });
 

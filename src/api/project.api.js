@@ -1,6 +1,6 @@
 const Router = require('koa-router');
 const projectService = require('../services/project.service');
-const { formatQueryFromParams, formatOptionsFromParams } = require('../helpers/utils');
+const { formatIDs, formatQueryFromParams, formatOptionsFromParams } = require('../helpers/utils');
 
 const projectRouter = new Router();
 
@@ -86,7 +86,7 @@ async function putProject(ctx) {
 async function postProject(ctx) {
     const value = ctx.request.body;
     value.createdAt = new Date();
-    ctx.body = await projectService.postProject(value);
+    ctx.body = await projectService.postProject(formatIDs(value));
     ctx.status = 201;
 }
 

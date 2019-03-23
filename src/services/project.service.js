@@ -34,7 +34,8 @@ class ProjectService {
 
     async postProject(value) {
         // TODO: make possible to define own _id as it allows us to fetch through the URL
-        return await this.Projects.insertOne(value);
+        const response = await this.Projects.insertOne(value);
+        return response.ops[0];
     }
 }
 

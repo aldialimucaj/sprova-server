@@ -1,6 +1,6 @@
 const Router = require('koa-router');
 const executionService = require('../services/execution.service');
-const { formatQueryFromParams, formatOptionsFromParams } = require('../helpers/utils');
+const { formatIDs, formatQueryFromParams, formatOptionsFromParams } = require('../helpers/utils');
 
 const executionRouter = new Router();
 
@@ -70,11 +70,14 @@ async function getExecution(ctx) {
 async function postExecutions(ctx) {
     const value = ctx.request.body;
     if (Array.isArray(value)) {
-        value.forEach(item => item.createdAt = new Date());
-        ctx.body = await executionService.postExecutions(value);    
+        const mapped = value.map(item => {
+            item.createdAt = new Date();
+            return formatIDs(item);
+        });
+        ctx.body = await executionService.postExecutions(mapped);    
     } else {
         value.createdAt = new Date();
-        ctx.body = await executionService.postExecution(value);
+        ctx.body = await executionService.postExecution(formatIDs(value));
     }
     ctx.status = 201;
 }

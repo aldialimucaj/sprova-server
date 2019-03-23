@@ -124,11 +124,13 @@ class ExecutionService {
     }
 
     async postExecution(value) {
-        return await this.Executions.insertOne(value);
+        const response = await this.Executions.insertOne(value);
+        return response.ops[0];
     }
 
     async postExecutions(value) {
-        return await this.Executions.insertMany(value);
+        const response = await this.Executions.insertMany(value);
+        return response.ops;
     }
 
     async delExecution(_id) {
