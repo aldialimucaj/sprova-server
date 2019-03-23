@@ -1,8 +1,8 @@
 const ObjectId = require('mongodb').ObjectId;
 const dbm = require('../helpers/db');
 const log = require('../helpers/log');
-const { ExecutionStatus, ArtifactType } = require('../helpers/enums');
-const { formatInsert, formatUpdate, formatDelete } = require('../helpers/utils');
+const { ArtifactType } = require('../helpers/enums');
+const { formatUpdate, formatDelete } = require('../helpers/utils');
 const artifactService = require('./artifact.service');
 
 class ExecutionService {
@@ -17,9 +17,7 @@ class ExecutionService {
         return await this.Executions.find(query, options).toArray();
     }
 
-    async getExecution(id) {
-        const _id = ObjectId(id);
-
+    async getExecution(_id) {
         return await this.Executions.findOne({ _id });
     }
 
@@ -125,96 +123,19 @@ class ExecutionService {
         return result;
     }
 
-    /**
-     * Create new execution object.
-     * 
-     * @param {*} value 
-     * @param {*} user 
-     * @param {boolean} returnDocument should return created document in data property
-     */
     async postExecution(value) {
-        value.contextId = ObjectId(value.contextId);
-        const response = await this.Executions.insertOne(value);
-        return formatInsert(response);
+        return await this.Executions.insertOne(value);
     }
 
-    /**
-     * Create new execution object.
-     * 
-     * @param {*} value 
-     * @param {*} user 
-     * @param {boolean} returnDocument should return created document in data property
-     */
     async postExecutions(value) {
-        const mapped = value.map((item) => ({ 
-            ...item, 
-            testcaseId: ObjectId(item.testCaseId),
-            contextId: ObjectId(item.contextId)
-        }));
-        const response = await this.Executions.insertMany(mapped);
-        return formatInsert(response);
+        return await this.Executions.insertMany(value);
     }
 
-    /**
-     * Find executions by applying query values to executions.find();
-     * 
-     * @param {*} query query object must set like { query: { title:"test" }, options : { limit: 10 } }
-     * @param {*} options query options like limit and skip
-     */
-    async findExecutions(query, options) {
-        return await this.Executions.find(query, options).toArray();
-    }
-
-    /**
-     * Remove execution
-     * 
-     * @param {*} id Execution ID
-     */
-    async delExecution(id) {
-        const _id = ObjectId(id);
+    async delExecution(_id) {
         const response = await this.Executions.deleteOne({ _id });
-
         return formatDelete(response, _id);
     }
 
-    /* ************************************************************************* */
-    /*                                 NON PUBLIC                                */
-    /* ************************************************************************* */
-
-    /**
-     * Reset execution to default status.
-     * This includes overriding the original executor and reseting the test steps 
-     * and execution status. Also timestamps are updated.
-     * 
-     * @param {String} id Execution ID
-     * @param {User} user User taking this action
-     */
-    async resetExecution(id, user) {
-        const _id = ObjectId(id);
-        let execution = await this.Executions.findOne({ _id });
-        let testCase = await this.TestCases.findOne({ _id: execution.testCaseId });
-
-        if (!testCase) {
-            throw new Error(`No test case with ObjectId('${execution.testCaseId}') for executionId = ObjectId('${_id}')`);
-        }
-
-        // reset test steps
-        if (!testCase.testSteps) {
-            execution.testSteps = [];
-        } else {
-            // copy test steps form test case
-            execution.testSteps = testCase.testSteps.slice(0);
-        }
-
-        // fingerprinting
-        execution.status = ExecutionStatus.Pending;
-        execution.updatedAt = new Date();
-        execution.startedAt = null;
-        execution.finishedAt = null;
-        execution.user = user;
-
-        return await this.Executions.updateOne({ _id }, { $set: execution });
-    }
 }
 
 module.exports = new ExecutionService();

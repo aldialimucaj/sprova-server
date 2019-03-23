@@ -4,6 +4,16 @@ const { formatQueryFromParams, formatOptionsFromParams } = require('../helpers/u
 
 const executionRouter = new Router();
 
+executionRouter.get('/executions', getExecutions);
+executionRouter.get('/executions/:id', getExecution);
+executionRouter.post('/executions', postExecutions);
+executionRouter.put('/executions/:id', putExecution);
+executionRouter.put('/executions/:id/status', putExecutionStatus);
+executionRouter.put('/executions/:id/steps/:stepIdx', putExecutionStep);
+executionRouter.put('/executions/:id/steps/:stepIdx/status', putExecutionStepStatus);
+executionRouter.put('/executions/:id/steps/:stepIdx/artifacts', putExecutionStepArtifact);
+executionRouter.del('/executions/:id', deleteExecution);
+
 /**
  * @api {get} /executions Request executions
  * 
@@ -19,12 +29,12 @@ const executionRouter = new Router();
  * 
  * @apiSuccess {Array} - list of executions
  */
-executionRouter.get('/', async (ctx) => {
+async function getExecutions(ctx) {
     const query = formatQueryFromParams(ctx.query);
     const options = formatOptionsFromParams(ctx.query);
     
     ctx.body = await executionService.getExecutions(query, options);
-});
+}
 
 /**
  * @api {get} /executions/:id Request execution
@@ -40,10 +50,10 @@ executionRouter.get('/', async (ctx) => {
  * @apiSuccess {String} title
  * @apiSuccess {String} description
  */
-executionRouter.get('/:id', async (ctx) => {
-    const id = ctx.params.id;
+async function getExecution(ctx) {
+    const { id } = ctx.params;
     ctx.body = await executionService.getExecution(id);
-});
+}
 
 /**
  * @api {post} /executions Post new execution(s)
@@ -57,15 +67,17 @@ executionRouter.get('/:id', async (ctx) => {
  * @apiSuccess {Number} ok 1 if successful; 0 if unsuccessful
  * @apiSuccess {String} _id ID of newly added element
  */
-executionRouter.post('/', async (ctx) => {
+async function postExecutions(ctx) {
     const value = ctx.request.body;
     if (Array.isArray(value)) {
+        value.forEach(item => item.createdAt = new Date());
         ctx.body = await executionService.postExecutions(value);    
     } else {
+        value.createdAt = new Date();
         ctx.body = await executionService.postExecution(value);
     }
     ctx.status = 201;
-});
+}
 
 /**
  * @api {put} /executions/:id Edit execution
@@ -81,12 +93,11 @@ executionRouter.post('/', async (ctx) => {
  * @apiSuccess {Number} ok 1 if successful; 0 if  unsuccessful
  * @apiSuccess {String} _id ID of edited element
  */
-executionRouter.put('/:id', async (ctx) => {
-    const id = ctx.params.id;
+async function putExecution(ctx) {
+    const { id } = ctx.params;
     const value = ctx.request.body;
-    value.user = ctx.state.user;
     ctx.body = await executionService.putExecution(id, value);
-});
+}
 
 /**
  * @api {put} /executions/:id/status Edit execution status
@@ -102,12 +113,11 @@ executionRouter.put('/:id', async (ctx) => {
  * @apiSuccess {Number} ok 1 if successful; 0 if  unsuccessful
  * @apiSuccess {String} _id ID of edited element
  */
-executionRouter.put('/:id/status', async (ctx) => {
-    const id = ctx.params.id;
+async function putExecutionStatus(ctx) {
+    const { id } = ctx.params;
     const value = ctx.request.body;
-    value.user = ctx.state.user;
     ctx.body = await executionService.putExecutionStatus(id, value);
-});
+}
 
 /**
  * @api {put} /executions/:id/steps/:stepIdx Edit execution step
@@ -123,13 +133,13 @@ executionRouter.put('/:id/status', async (ctx) => {
  * @apiSuccess {Number} ok 1 if successful; 0 if  unsuccessful
  * @apiSuccess {String} _id ID of edited element
  */
-executionRouter.put('/:id/steps/:stepIdx', async (ctx) => {
+async function putExecutionStep(ctx) {
     const id = ctx.params.id;
     const stepIdx = ctx.params.stepIdx;
     const value = ctx.request.body;
 
     ctx.body = await executionService.putStepUpdate(id, stepIdx, value);
-});
+}
 
 /**
  * @api {put} /executions/:id/steps/:stepIdx/status Edit execution step status
@@ -145,13 +155,13 @@ executionRouter.put('/:id/steps/:stepIdx', async (ctx) => {
  * @apiSuccess {Number} ok 1 if successful; 0 if  unsuccessful
  * @apiSuccess {String} _id ID of edited element
  */
-executionRouter.put('/:id/steps/:stepIdx/status', async (ctx) => {
+async function putExecutionStepStatus(ctx) {
     const id = ctx.params.id;
     const stepIdx = ctx.params.stepIdx;
     const value = ctx.request.body;
 
     ctx.body = await executionService.putStepStatus(id, stepIdx, value);
-});
+}
 
 /**
  * @api {put} /executions/:id/steps/:stepIdx/artifacts Edit execution step status
@@ -168,7 +178,7 @@ executionRouter.put('/:id/steps/:stepIdx/status', async (ctx) => {
  * @apiSuccess {Number} ok 1 if successful; 0 if  unsuccessful
  * @apiSuccess {String} _id ID of edited element
  */
-executionRouter.put('/:id/steps/:stepIdx/artifacts', async (ctx) => {
+async function putExecutionStepArtifact(ctx) {
     const id = ctx.params.id;
     const stepIdx = ctx.params.stepIdx;
     const value = ctx.request.body;
@@ -176,7 +186,7 @@ executionRouter.put('/:id/steps/:stepIdx/artifacts', async (ctx) => {
     value.user = ctx.state.user;
 
     ctx.body = await executionService.putStepUpdateArtifact(id, stepIdx, value);
-});
+}
 
 /**
  * @api {del} /executions/:id Delete execution
@@ -191,9 +201,9 @@ executionRouter.put('/:id/steps/:stepIdx/artifacts', async (ctx) => {
  * 
  * @apiSuccess {Number} ok 1 if successful; 0 if  unsuccessful
  */
-executionRouter.del('/:id', async (ctx) => {
-    const id = ctx.params.id;
+async function deleteExecution(ctx) {
+    const { id } = ctx.params;
     ctx.body = await executionService.delExecution(id);
-});
+}
 
 module.exports = executionRouter;

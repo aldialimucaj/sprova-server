@@ -41,7 +41,7 @@ executionContextRouter.get('/', async (ctx) => {
  * @apiSuccess {String} description
  */
 executionContextRouter.get('/:id', async (ctx) => {
-    const id = ctx.params.id;
+    const { id } = ctx.params;
     ctx.body = await executionContextService.getExecutionContext(id);
 });
 
@@ -58,10 +58,9 @@ executionContextRouter.get('/:id', async (ctx) => {
  * @apiSuccess {String} _id ID of newly added element
  */
 executionContextRouter.post('/', async (ctx) => {
-    const query = formatQueryFromParams(ctx.query);
     const value = ctx.request.body;
-    const user = ctx.state.user;
-    ctx.body = await executionContextService.postExecutionContext(value, user, query.returnDocument);
+    value.createdAt = new Date();
+    ctx.body = await executionContextService.postExecutionContext(value);
     ctx.status = 201;
 });
 
@@ -80,9 +79,8 @@ executionContextRouter.post('/', async (ctx) => {
  * @apiSuccess {String} _id ID of edited element
  */
 executionContextRouter.put('/:id', async (ctx) => {
-    const id = ctx.params.id;
+    const { id } = ctx.params;
     const value = ctx.request.body;
-    value.user = ctx.state.user;
     ctx.body = await executionContextService.putExecutionContext(id, value);
 });
 
@@ -100,7 +98,7 @@ executionContextRouter.put('/:id', async (ctx) => {
  * @apiSuccess {Number} ok 1 if successful; 0 if  unsuccessful
  */
 executionContextRouter.del('/:id', async (ctx) => {
-    const id = ctx.params.id;
+    const { id } = ctx.params;
     ctx.body = await executionContextService.delExecutionContext(id);
 });
 
