@@ -15,8 +15,7 @@ class ArtifactService {
         return await this.Artifacts.find(query, options).toArray();
     }
 
-    async getArtifact(id) {
-        const _id = ObjectId(id);
+    async getArtifact(_id) {
         return await this.Artifacts.findOne({ _id });
     }
 

@@ -16,7 +16,7 @@ const apiRouter = new Router({
     prefix: '/api'
 });
 
-apiRouter.use('/artifacts', artifactApi.routes(), artifactApi.allowedMethods());
+apiRouter.use(artifactApi.routes(), artifactApi.allowedMethods());
 apiRouter.use('/cycles', cycleApi.routes(), cycleApi.allowedMethods());
 apiRouter.use(executionApi.routes(), executionApi.allowedMethods());
 apiRouter.use('/execution-contexts', executionContextApi.routes(), executionContextApi.allowedMethods());
