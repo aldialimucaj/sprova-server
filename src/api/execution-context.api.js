@@ -5,6 +5,12 @@ const { formatIDs, formatQueryFromParams, formatOptionsFromParams } = require('.
 
 const executionContextRouter = new Router();
 
+executionContextRouter.get('/execution-contexts', getExecutionContexts);
+executionContextRouter.get('/execution-contexts/:id', getExecutionContext);
+executionContextRouter.post('/execution-contexts', postExecutionContext);
+executionContextRouter.put('/execution-contexts/:id', putExecutionContext);
+executionContextRouter.del('/execution-contexts/:id', deleteExecutionContext);
+
 /**
  * @api {get} /execution-contexts Request execution contexts
  * 
@@ -20,12 +26,12 @@ const executionContextRouter = new Router();
  * 
  * @apiSuccess {Array} - list of execution contexts
  */
-executionContextRouter.get('/', async (ctx) => {
+async function getExecutionContexts(ctx) {
     const query = formatQueryFromParams(ctx.query);
     const options = formatOptionsFromParams(ctx.query);
     
     ctx.body = await executionContextService.getExecutionContexts(query, options);
-});
+}
 
 /**
  * @api {get} /execution-contexts/:id Request execution context
@@ -41,11 +47,11 @@ executionContextRouter.get('/', async (ctx) => {
  * @apiSuccess {String} title
  * @apiSuccess {String} description
  */
-executionContextRouter.get('/:id', async (ctx) => {
+async function getExecutionContext(ctx) {
     const { id } = ctx.params;
     const _id = ObjectId(id);
     ctx.body = await executionContextService.getExecutionContext(_id);
-});
+}
 
 /**
  * @api {post} /execution-contexts Post new execution context
@@ -59,12 +65,12 @@ executionContextRouter.get('/:id', async (ctx) => {
  * @apiSuccess {Number} ok 1 if successful; 0 if unsuccessful
  * @apiSuccess {String} _id ID of newly added element
  */
-executionContextRouter.post('/', async (ctx) => {
+async function postExecutionContext(ctx) {
     const value = ctx.request.body;
     value.createdAt = new Date();
     ctx.body = await executionContextService.postExecutionContext(formatIDs(value));
     ctx.status = 201;
-});
+}
 
 /**
  * @api {put} /execution-contexts/:id Edit execution context
@@ -80,12 +86,12 @@ executionContextRouter.post('/', async (ctx) => {
  * @apiSuccess {Number} ok 1 if successful; 0 if  unsuccessful
  * @apiSuccess {String} _id ID of edited element
  */
-executionContextRouter.put('/:id', async (ctx) => {
+async function putExecutionContext(ctx) {
     const { id } = ctx.params;
     const _id = ObjectId(id);
     const value = ctx.request.body;
     ctx.body = await executionContextService.putExecutionContext(_id, formatIDs(value));
-});
+}
 
 /**
  * @api {del} /execution-contexts/:id Delete execution
@@ -100,10 +106,10 @@ executionContextRouter.put('/:id', async (ctx) => {
  * 
  * @apiSuccess {Number} ok 1 if successful; 0 if  unsuccessful
  */
-executionContextRouter.del('/:id', async (ctx) => {
+async function deleteExecutionContext(ctx) {
     const { id } = ctx.params;
     const _id = ObjectId(id);
     ctx.body = await executionContextService.delExecutionContext(_id);
-});
+}
 
 module.exports = executionContextRouter;
