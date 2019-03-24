@@ -1,7 +1,7 @@
 const ObjectId = require('mongodb').ObjectId;
 const dbm = require('../helpers/db');
 const log = require('../helpers/log');
-const { formatInsert, formatUpdate, formatDelete } = require('../helpers/utils');
+const { formatUpdate, formatDelete } = require('../helpers/utils');
 
 class CycleService {
 
