@@ -17,7 +17,7 @@ const apiRouter = new Router({
 });
 
 apiRouter.use(artifactApi.routes(), artifactApi.allowedMethods());
-apiRouter.use('/cycles', cycleApi.routes(), cycleApi.allowedMethods());
+apiRouter.use(cycleApi.routes(), cycleApi.allowedMethods());
 apiRouter.use(executionApi.routes(), executionApi.allowedMethods());
 apiRouter.use(executionContextApi.routes(), executionContextApi.allowedMethods());
 apiRouter.use(projectApi.routes(), projectApi.allowedMethods());

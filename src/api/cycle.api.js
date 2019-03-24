@@ -1,8 +1,17 @@
+const ObjectId = require('mongodb').ObjectId;
 const Router = require('koa-router');
 const cycleService = require('../services/cycle.service');
-const { formatQueryFromParams, formatOptionsFromParams } = require('../helpers/utils');
+const { formatIDs, formatQueryFromParams, formatOptionsFromParams } = require('../helpers/utils');
 
 const cycleRouter = new Router();
+
+cycleRouter.get('/cycles', getCycles);
+cycleRouter.get('/cycles/:id', getCycle);
+cycleRouter.get('/cycles/:id/testcases', getCycleTestCases);
+cycleRouter.get('/cycles/:id/testcasesstats', getCyclesTestCaseStats);
+cycleRouter.post('/cycles', postCycles);
+cycleRouter.put('/cycles/:id', putCycle);
+cycleRouter.del('/cycles/:id', deleteCycle);
 
 /**
  * @api {get} /cycles Request cycles
@@ -19,11 +28,12 @@ const cycleRouter = new Router();
  * 
  * @apiSuccess {Array} - list of cycles
  */
-cycleRouter.get('/', async (ctx) => {
+async function getCycles(ctx) {
     const query = formatQueryFromParams(ctx.query);
     const options = formatOptionsFromParams(ctx.query);
+
     ctx.body = await cycleService.getCycles(query, options);
-});
+}
 
 /**
  * @api {get} /cycles/:id Request cycle
@@ -39,10 +49,11 @@ cycleRouter.get('/', async (ctx) => {
  * @apiSuccess {String} title
  * @apiSuccess {String} description
  */
-cycleRouter.get('/:id', async (ctx) => {
-    const id = ctx.params.id;
-    ctx.body = await cycleService.getCycle(id);
-});
+async function getCycle(ctx) {
+    const { id } = ctx.params;
+    const _id = ObjectId(id);
+    ctx.body = await cycleService.getCycle(_id);
+}
 
 /**
  * @api {get} /cycles/:id/testcases Request test cases for this cycle
@@ -52,13 +63,14 @@ cycleRouter.get('/:id', async (ctx) => {
  * 
  * @apiSuccess {Array} - list of test cases
  */
-cycleRouter.get('/:id/testcases', async (ctx) => {
-    const id = ctx.params.id;
+async function getCycleTestCases(ctx) {
+    const { id } = ctx.params;
+    const _id = ObjectId(id);
     const query = formatQueryFromParams(ctx.query);
     const options = formatOptionsFromParams(ctx.query);
 
-    ctx.body = await cycleService.getCycleTestCases(id, query, options);
-});
+    ctx.body = await cycleService.getCycleTestCases(_id, query, options);
+}
 
 /**
  * @api {get} /cycles/:id/testcasestats Request test cases with statistics for this cycle
@@ -68,13 +80,14 @@ cycleRouter.get('/:id/testcases', async (ctx) => {
  * 
  * @apiSuccess {Array} - list of test cases
  */
-cycleRouter.get('/:id/testcasesstats', async (ctx) => {
-    const id = ctx.params.id;
+async function getCyclesTestCaseStats(ctx) {
+    const { id } = ctx.params;
+    const _id = ObjectId(id);
     const query = formatQueryFromParams(ctx.query);
     const options = formatOptionsFromParams(ctx.query);
 
-    ctx.body = await cycleService.getTestCasesStats(id, query, options);
-});
+    ctx.body = await cycleService.getTestCasesStats(_id, query, options);
+}
 
 /**
  * @api {post} /cycles Post new cycle
@@ -88,11 +101,20 @@ cycleRouter.get('/:id/testcasesstats', async (ctx) => {
  * @apiSuccess {Number} ok 1 if successful; 0 if unsuccessful
  * @apiSuccess {String} _id ID of newly added element
  */
-cycleRouter.post('/', async (ctx) => {
+async function postCycles(ctx) {
     const value = ctx.request.body;
-    value.user = ctx.state.user;
-    ctx.body = await cycleService.postCycle(value);
-});
+    if (Array.isArray(value)) {
+        const mapped = value.map(item => {
+            item.createdAt = new Date();
+            return formatIDs(item);
+        });
+        ctx.body = await cycleService.postCycles(mapped);    
+    } else {
+        value.createdAt = new Date();
+        ctx.body = await cycleService.postCycle(formatIDs(value));
+    }
+    ctx.status = 201;
+}
 
 /**
  * @api {put} /cycles/:id Edit cycle
@@ -108,12 +130,12 @@ cycleRouter.post('/', async (ctx) => {
  * @apiSuccess {Number} ok 1 if successful; 0 if  unsuccessful
  * @apiSuccess {String} _id ID of edited element
  */
-cycleRouter.put('/:id', async (ctx) => {
-    const id = ctx.params.id;
+async function putCycle(ctx) {
+    const { id } = ctx.params;
+    const _id = ObjectId(id);
     const value = ctx.request.body;
-    value.user = ctx.state.user;
-    ctx.body = await cycleService.putCycle(id, value);
-});
+    ctx.body = await cycleService.putCycle(_id, value);
+}
 
 /**
  * @api {del} /cycles/:id Delete cycle
@@ -128,12 +150,10 @@ cycleRouter.put('/:id', async (ctx) => {
  * 
  * @apiSuccess {Number} ok 1 if successful; 0 if  unsuccessful
  */
-cycleRouter.del('/:id', async (ctx) => {
-    const id = ctx.params.id;
-    if (!id) {
-        throw new Error("You cannot delete what you don't know to exist. Invalid ID.");
-    }
-    ctx.body = await cycleService.delCycle(id);
-});
+async function deleteCycle(ctx) {
+    const { id } = ctx.params;
+    const _id = ObjectId(id);
+    ctx.body = await cycleService.delExecution(_id);
+}
 
 module.exports = cycleRouter;

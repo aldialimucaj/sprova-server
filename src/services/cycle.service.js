@@ -17,14 +17,11 @@ class CycleService {
         return await this.Cycles.find(query, options).toArray();
     }
 
-    async getCycle(id) {
-        const _id = ObjectId(id);
-
+    async getCycle(_id) {
         return await this.Cycles.findOne({ _id });
     }
 
-    async getCycleTestCases(cycleId, query, options) {
-        const _id = ObjectId(cycleId);
+    async getCycleTestCases(_id, query, options) {
         let cycle = await this.Cycles.findOne({ _id });
         const extraQuery = Object.assign(query, { _id: { $in: cycle.testCases } });
 
@@ -68,16 +65,7 @@ class CycleService {
      * @param {*} id 
      * @param {*} value 
      */
-    async putCycle(id, value) {
-        const _id = ObjectId(id);
-
-        // projectId comes in as string
-        value.projectId = ObjectId(value.projectId)
-        value.updatedAt = new Date();
-
-        if (value.testCases) {
-            value.testCases = value.testCases.map(t => ObjectId(t));
-        }
+    async putCycle(_id, value) {
         // make sure not to change the id when editing
         delete value._id;
         // make sure createdAt was not changed
@@ -94,20 +82,18 @@ class CycleService {
      * @param {*} value
      */
     async postCycle(value) {
-        // TODO: make possible to define own _id as it allows us to fetch through the URL
-        delete value._id;
-        // projectId comes in as string
-        value.projectId = ObjectId(value.projectId)
-        if (value.testCases) {
-            value.testCases = value.testCases.map(t => ObjectId(t));
-        }
+        const response = await this.Cycles.insertOne(value);
+        return response.ops[0];
+    }
 
-        value.createdAt = new Date();
-        value.updatedAt = new Date();
-
-        const result = await this.Cycles.insertOne(value);
-
-        return formatInsert(result);
+    /**
+     * Create models
+     * 
+     * @param {*} value
+     */
+    async postCycles(value) {
+        const response = await this.Cycles.insertMany(value);
+        return response.ops;
     }
 
     /**
@@ -168,10 +154,8 @@ class CycleService {
         return await this.TestSets.findOne(query);
     }
 
-    async delCycle(id) {
-        const _id = ObjectId(id);
+    async delCycle(_id) {
         const response = await this.Cycles.deleteOne({ _id });
-
         return formatDelete(response, _id);
     }
 
