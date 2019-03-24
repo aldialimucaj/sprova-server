@@ -1,3 +1,4 @@
+const ObjectId = require('mongodb').ObjectId;
 const Router = require('koa-router');
 const executionContextService = require('../services/execution-context.service');
 const { formatIDs, formatQueryFromParams, formatOptionsFromParams } = require('../helpers/utils');
@@ -42,7 +43,8 @@ executionContextRouter.get('/', async (ctx) => {
  */
 executionContextRouter.get('/:id', async (ctx) => {
     const { id } = ctx.params;
-    ctx.body = await executionContextService.getExecutionContext(id);
+    const _id = ObjectId(id);
+    ctx.body = await executionContextService.getExecutionContext(_id);
 });
 
 /**
@@ -80,8 +82,9 @@ executionContextRouter.post('/', async (ctx) => {
  */
 executionContextRouter.put('/:id', async (ctx) => {
     const { id } = ctx.params;
+    const _id = ObjectId(id);
     const value = ctx.request.body;
-    ctx.body = await executionContextService.putExecutionContext(id, value);
+    ctx.body = await executionContextService.putExecutionContext(_id, formatIDs(value));
 });
 
 /**
@@ -99,7 +102,8 @@ executionContextRouter.put('/:id', async (ctx) => {
  */
 executionContextRouter.del('/:id', async (ctx) => {
     const { id } = ctx.params;
-    ctx.body = await executionContextService.delExecutionContext(id);
+    const _id = ObjectId(id);
+    ctx.body = await executionContextService.delExecutionContext(_id);
 });
 
 module.exports = executionContextRouter;

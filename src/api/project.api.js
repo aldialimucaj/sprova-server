@@ -1,3 +1,4 @@
+const ObjectId = require('mongodb').ObjectId;
 const Router = require('koa-router');
 const projectService = require('../services/project.service');
 const { formatIDs, formatQueryFromParams, formatOptionsFromParams } = require('../helpers/utils');
@@ -48,7 +49,8 @@ async function getProjects(ctx) {
  */
 async function getProject(ctx) {
     const { id } = ctx.params;
-    ctx.body = await projectService.getProject(id);
+    const _id = ObjectId(id);
+    ctx.body = await projectService.getProject(_id);
 }
 
 /**
@@ -67,8 +69,9 @@ async function getProject(ctx) {
  */
 async function putProject(ctx) {
     const { id } = ctx.params;
+    const _id = ObjectId(id);
     const value = ctx.request.body;
-    ctx.body = await projectService.putProject(id, value);
+    ctx.body = await projectService.putProject(_id, formatIDs(value));
 }
 
 /**
@@ -105,7 +108,8 @@ async function postProject(ctx) {
  */
 async function deleteProject(ctx) {
     const { id } = ctx.params;
-    ctx.body = await projectService.delProject(id);
+    const _id = ObjectId(id);
+    ctx.body = await projectService.delProject(_id);
 }
 
 module.exports = projectRouter;

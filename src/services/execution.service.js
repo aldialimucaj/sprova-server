@@ -28,13 +28,12 @@ class ExecutionService {
      * @param {*} value update execution model. if empty then execution is resetted
      * @param {*} user user taking this action. cannot go to value because emty value == reset
      */
-    async putExecution(id, value, user) {
+    async putExecution(_id, value, user) {
         var response = {};
-        const _id = ObjectId(id);
 
         // if there is no body, then this is a RESET action
         if (!value || Object.keys(value).length === 0) {
-            response = await this.resetExecution(id, user);
+            response = await this.resetExecution(_id, user);
         } else {
             // make sure not to change constant properties
             delete value._id;

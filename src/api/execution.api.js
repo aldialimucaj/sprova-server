@@ -1,3 +1,4 @@
+const ObjectId = require('mongodb').ObjectId;
 const Router = require('koa-router');
 const executionService = require('../services/execution.service');
 const { formatIDs, formatQueryFromParams, formatOptionsFromParams } = require('../helpers/utils');
@@ -52,7 +53,8 @@ async function getExecutions(ctx) {
  */
 async function getExecution(ctx) {
     const { id } = ctx.params;
-    ctx.body = await executionService.getExecution(id);
+    const _id = ObjectId(id);
+    ctx.body = await executionService.getExecution(_id);
 }
 
 /**
@@ -98,8 +100,9 @@ async function postExecutions(ctx) {
  */
 async function putExecution(ctx) {
     const { id } = ctx.params;
+    const _id = ObjectId(id);
     const value = ctx.request.body;
-    ctx.body = await executionService.putExecution(id, value);
+    ctx.body = await executionService.putExecution(_id, formatIDs(value));
 }
 
 /**
@@ -118,8 +121,9 @@ async function putExecution(ctx) {
  */
 async function putExecutionStatus(ctx) {
     const { id } = ctx.params;
+    const _id = ObjectId(id);
     const value = ctx.request.body;
-    ctx.body = await executionService.putExecutionStatus(id, value);
+    ctx.body = await executionService.putExecutionStatus(_id, value);
 }
 
 /**
@@ -137,11 +141,12 @@ async function putExecutionStatus(ctx) {
  * @apiSuccess {String} _id ID of edited element
  */
 async function putExecutionStep(ctx) {
-    const id = ctx.params.id;
+    const { id } = ctx.params;
+    const _id = ObjectId(id);
     const stepIdx = ctx.params.stepIdx;
     const value = ctx.request.body;
 
-    ctx.body = await executionService.putStepUpdate(id, stepIdx, value);
+    ctx.body = await executionService.putStepUpdate(_id, stepIdx, value);
 }
 
 /**
@@ -206,7 +211,8 @@ async function putExecutionStepArtifact(ctx) {
  */
 async function deleteExecution(ctx) {
     const { id } = ctx.params;
-    ctx.body = await executionService.delExecution(id);
+    const _id = ObjectId(id);
+    ctx.body = await executionService.delExecution(_id);
 }
 
 module.exports = executionRouter;
