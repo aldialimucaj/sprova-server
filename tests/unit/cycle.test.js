@@ -69,7 +69,7 @@ describe('cycle : service', () => {
 
   describe('getCycle', () => {
     it('should return one cycle', async () => {
-      const result = await to.getCycle(fixtures.initialObjects[0]._id.toString());
+      const result = await to.getCycle(fixtures.initialObjects[0]._id);
       expect(result).to.be.an('object');
       expect(result).to.eql(fixtures.initialObjects[0]);
     });
@@ -79,24 +79,22 @@ describe('cycle : service', () => {
     it('should save cycle', async () => {
       const result = await to.postCycle(fixtures.cycle1);
       expect(result).to.be.an('object');
-      expect(result.ok).to.be.eql(1);
+      expect(result.title).to.be.eql(fixtures.cycle1.title);
       expect(result._id).to.not.be.undefined;
       const newCycle = await Cycles.findOne({ _id: result._id });
       expect(newCycle.title).to.equal(fixtures.cycle1.title);
-      expect(newCycle.createdAt).to.not.be.undefined;
-      expect(newCycle.updatedAt).to.not.be.undefined;
     });
   });
 
   describe('putCycle', () => {
     it('should change cycle', async () => {
       const changes = { title: "test-cycle" };
-      const oldCycle = { title: "test-put-cycle" };
-      const newCycleResult = await Cycles.insertOne(fixtures.cycle2);
-      const result = await to.putCycle(newCycleResult.insertedId.toString(), changes);
+      const response = await Cycles.insertOne(fixtures.cycle2);
+      const newCycleResult = response.ops[0];
+      const result = await to.putCycle(newCycleResult._id, changes);
       expect(result.ok).to.be.eql(1);
-      expect(result._id).to.be.eql(newCycleResult.insertedId);
-      const newCycle = await Cycles.findOne({ _id: newCycleResult.insertedId });
+      expect(result._id).to.be.eql(newCycleResult._id);
+      const newCycle = await Cycles.findOne({ _id: newCycleResult._id });
       expect(newCycle).to.be.an('object');
       expect(newCycle.title).to.equal(changes.title);
     });
@@ -105,11 +103,11 @@ describe('cycle : service', () => {
   describe('delCycle', () => {
     it('should change cycle', async () => {
       let newCycleResult = await Cycles.insertOne(fixtures.cycle3);
-      const result = await to.delCycle(newCycleResult.insertedId.toString());
-      let newCycle = await Cycles.findOne({ _id: newCycleResult.insertedId });
+      const result = await to.delCycle(newCycleResult._id);
+      let newCycle = await Cycles.findOne({ _id: newCycleResult._id });
       expect(newCycle).to.be.null;
       expect(result.ok).to.be.eql(1);
-      expect(result._id).to.be.eql(newCycleResult.insertedId);
+      expect(result._id).to.be.eql(newCycleResult._id);
     });
   });
 

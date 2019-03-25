@@ -65,7 +65,7 @@ describe('project : service', () => {
 
   describe('getProject', () => {
     it('should return one project', async () => {
-      const result = await to.getProject(fixtures.initialObjects[0]._id.toString());
+      const result = await to.getProject(fixtures.initialObjects[0]._id);
       expect(result).to.be.an('object');
       expect(result).to.eql(fixtures.initialObjects[0]);
     });
@@ -75,21 +75,18 @@ describe('project : service', () => {
     it('should save project', async () => {
       const result = await to.postProject(fixtures.project1);
       expect(result).to.be.an('object');
-      expect(result.ok).to.be.eql(1);
+      expect(result.title).to.be.eql(fixtures.project1.title);
       expect(result._id).to.not.be.undefined;
       const newProject = await Projects.findOne({ _id: result._id });
       expect(newProject.title).to.equal(fixtures.project1.title);
-      expect(newProject.createdAt).to.not.be.undefined;
-      expect(newProject.updatedAt).to.not.be.undefined;
     });
   });
 
   describe('putProject', () => {
     it('should change project', async () => {
       const changes = { title: "test-project" };
-      const oldProject = { title: "test-put-project" };
       const newProjectResult = await Projects.insertOne(fixtures.project2);
-      const result = await to.putProject(newProjectResult.insertedId.toString(), changes);
+      const result = await to.putProject(newProjectResult.insertedId, changes);
       expect(result.ok).to.be.eql(1);
       expect(result._id).to.be.eql(newProjectResult.insertedId);
       const newProject = await Projects.findOne({ _id: newProjectResult.insertedId });
@@ -101,7 +98,7 @@ describe('project : service', () => {
   describe('delProject', () => {
     it('should change project', async () => {
       let newProjectResult = await Projects.insertOne(fixtures.project3);
-      const result = await to.delProject(newProjectResult.insertedId.toString());
+      const result = await to.delProject(newProjectResult.insertedId);
       let newProject = await Projects.findOne({ _id: newProjectResult.insertedId });
       expect(newProject).to.be.null;
       expect(result.ok).to.be.eql(1);

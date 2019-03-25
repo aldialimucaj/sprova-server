@@ -69,7 +69,7 @@ describe('execution : service', () => {
 
   describe('getExecution', () => {
     it('should return one execution', async () => {
-      const result = await to.getExecution(fixtures.initialObjects[0]._id.toString());
+      const result = await to.getExecution(fixtures.initialObjects[0]._id);
       expect(result).to.be.an('object');
       expect(result).to.eql(fixtures.initialObjects[0]);
     });
@@ -78,12 +78,9 @@ describe('execution : service', () => {
   describe('postExecutions', () => {
     it('should save execution', async () => {
       fixtures.testCase1._id = ObjectId(fixtures.testCase1._id);
-      const testCase1Result = await TestCases.insertOne(fixtures.testCase1);
-
-      const result = await to.postExecution(fixtures.execution1, fixtures.user1, true);
-
+      const result = await to.postExecution(fixtures.execution1);
       expect(result).to.be.an('object');
-      expect(result.ok).to.be.eql(1);
+      expect(result.executionType).to.equal(fixtures.execution1.executionType);
       expect(result._id).to.not.be.undefined;
       const newExecution = await Executions.findOne({ _id: result._id });
       expect(newExecution.title).to.equal(fixtures.execution1.title);
@@ -91,8 +88,6 @@ describe('execution : service', () => {
       expect(newExecution.testCaseId.toString()).to.equal(fixtures.testCase1._id.toString());
       expect(newExecution.testSteps).to.eql(fixtures.testCase1.testSteps);
       expect(newExecution.createdAt).to.not.be.undefined;
-      expect(newExecution.updatedAt).to.not.be.undefined;
-      expect(result.data).to.not.be.undefined;
     });
   });
 
@@ -106,7 +101,7 @@ describe('execution : service', () => {
       };
       const changes = { title: "test-execution" };
       const newExecutionResult = await Executions.insertOne(fixtures.execution2);
-      const result = await to.putExecution(newExecutionResult.insertedId.toString(), changes);
+      const result = await to.putExecution(newExecutionResult.insertedId, changes);
       expect(result.ok).to.be.eql(1);
       expect(result._id).to.be.eql(newExecutionResult.insertedId);
       const newExecution = await Executions.findOne({ _id: newExecutionResult.insertedId });

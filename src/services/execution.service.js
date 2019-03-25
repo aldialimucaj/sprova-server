@@ -3,6 +3,7 @@ const dbm = require('../helpers/db');
 const log = require('../helpers/log');
 const { ArtifactType } = require('../helpers/enums');
 const { formatUpdate, formatDelete } = require('../helpers/utils');
+const { ExecutionStatus, ExecutionType } = require('../helpers/enums');
 const artifactService = require('./artifact.service');
 
 class ExecutionService {
@@ -135,6 +136,74 @@ class ExecutionService {
     async delExecution(_id) {
         const response = await this.Executions.deleteOne({ _id });
         return formatDelete(response, _id);
+    }
+
+    /* ************************************************************************* */
+    /*                                 NON PUBLIC                                */
+    /* ************************************************************************* */
+
+    /**
+     * Create execution object
+     * 
+     * @param {*} user 
+     * @param {*} testCase 
+     * @param {*} cycleId 
+     * @param {*} testSetId 
+     */
+    createExecution(user, testCase, cycleId, testSetExecutionId) {
+        const execution = {
+            status: ExecutionStatus.Pending,
+            executionType: ExecutionType.Manual,
+
+            testCaseId: testCase._id,
+            title: testCase.title,
+            description: testCase.description,
+            testSteps: testCase.testSteps.slice(0),
+
+            testSetExecutionId,
+            cycleId,
+
+            createdAt: new Date(),
+            updatedAt: new Date(),
+            user
+        };
+
+        return execution;
+    }
+
+    /**
+     * Reset execution to default status.
+     * This includes overriding the original executor and reseting the test steps 
+     * and execution status. Also timestamps are updated.
+     * 
+     * @param {String} id Execution ID
+     * @param {User} user User taking this action
+     */
+    async resetExecution(id, user) {
+        const _id = ObjectId(id);
+        let execution = await this.Executions.findOne({ _id });
+        let testCase = await this.TestCases.findOne({ _id: execution.testCaseId });
+
+        if (!testCase) {
+            throw new Error(`No test case with ObjectId('${execution.testCaseId}') for executionId = ObjectId('${_id}')`);
+        }
+
+        // reset test steps
+        if (!testCase.testSteps) {
+            execution.testSteps = [];
+        } else {
+            // copy test steps form test case
+            execution.testSteps = testCase.testSteps.slice(0);
+        }
+
+        // fingerprinting
+        execution.status = ExecutionStatus.Pending;
+        execution.updatedAt = new Date();
+        execution.startedAt = null;
+        execution.finishedAt = null;
+        execution.user = user;
+
+        return await this.Executions.updateOne({ _id }, { $set: execution });
     }
 
 }

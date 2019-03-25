@@ -68,7 +68,7 @@ describe('artifact : service', () => {
 
   describe('getArtifact', () => {
     it('should return one artifact', async () => {
-      const result = await to.getArtifact(fixtures.initialObjects[0]._id.toString());
+      const result = await to.getArtifact(fixtures.initialObjects[0]._id);
       expect(result).to.be.an('object');
       expect(result).to.eql(fixtures.initialObjects[0]);
     });
