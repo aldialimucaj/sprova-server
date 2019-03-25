@@ -105,12 +105,12 @@ async function postCycles(ctx) {
     const value = ctx.request.body;
     if (Array.isArray(value)) {
         const mapped = value.map(item => {
-            item.createdAt = new Date();
+            item.createdAt = Date.now();
             return formatIDs(item);
         });
         ctx.body = await cycleService.postCycles(mapped);    
     } else {
-        value.createdAt = new Date();
+        value.createdAt = Date.now();
         ctx.body = await cycleService.postCycle(formatIDs(value));
     }
     ctx.status = 201;

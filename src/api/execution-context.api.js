@@ -68,7 +68,7 @@ async function getExecutionContext(ctx) {
  */
 async function postExecutionContext(ctx) {
     const value = ctx.request.body;
-    value.createdAt = new Date();
+    value.createdAt = Date.now();
 
     ctx.body = await executionContextService.postExecutionContext(formatIDs(value));
     ctx.status = 201;
@@ -112,7 +112,7 @@ async function putExecutionContext(ctx) {
 async function deleteExecutionContext(ctx) {
     const { id } = ctx.params;
     const _id = ObjectId(id);
-    
+
     ctx.body = await executionContextService.delExecutionContext(_id);
 }
 

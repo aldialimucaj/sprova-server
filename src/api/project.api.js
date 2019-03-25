@@ -90,7 +90,7 @@ async function putProject(ctx) {
  */
 async function postProject(ctx) {
     const value = ctx.request.body;
-    value.createdAt = new Date();
+    value.createdAt = Date.now();
 
     ctx.body = await projectService.postProject(formatIDs(value));
     ctx.status = 201;

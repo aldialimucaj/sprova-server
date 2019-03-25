@@ -42,7 +42,7 @@ async function putUser(ctx) {
 
 async function postUser(ctx) {
     const value = ctx.request.body;
-    value.createdAt = new Date();
+    value.createdAt = Date.now();
 
     ctx.body = await userService.postUser(formatIDs(value));
 }
