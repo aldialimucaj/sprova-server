@@ -17,9 +17,9 @@ class ExecutionContextService {
         return await this.ExecutionContexts.findOne({ _id });
     }
 
-    async delExecutionContext(_id) {
-        const response = await this.ExecutionContexts.deleteOne({ _id });
-        return formatDelete(response, _id);
+    async postExecutionContext(value) {
+        const response = await this.ExecutionContexts.insertOne(value);
+        return response.ops[0];
     }
 
     async putExecutionContext(_id, value) {
@@ -32,9 +32,9 @@ class ExecutionContextService {
         return formatUpdate(response, _id);
     }
 
-    async postExecutionContext(value) {
-        const response = await this.ExecutionContexts.insertOne(value);
-        return response.ops[0];
+    async delExecutionContext(_id) {
+        const response = await this.ExecutionContexts.deleteOne({ _id });
+        return formatDelete(response, _id);
     }
 
 }
