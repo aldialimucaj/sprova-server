@@ -3,6 +3,7 @@
 
 var describe = require('mocha').describe;
 var before = require('mocha').before;
+var beforeEach = require('mocha').beforeEach;
 var after = require('mocha').after;
 var it = require('mocha').it;
 
@@ -41,9 +42,12 @@ describe('API Routes', () => {
       before('Set up artifacts', async () => {
         const Artifacts = await dbm.getCollection('artifacts');
         await Artifacts.deleteMany();
-        newModel = await Artifacts.insertMany([{ "artifact": 1 }, { "artifact": 2 }])
+        newModel = await Artifacts.insertMany([
+          { "artifact": 1 }, 
+          { "artifact": 2 }
+        ])
       })
-      it('should return all artifacts', () => {
+      it('should return all artifacts', (done) => {
         chai.request(server)
           .get('/api/artifacts')
           .end((err, res) => {
@@ -52,6 +56,7 @@ describe('API Routes', () => {
             expect(res.body).to.be.an('array');
             expect(res.body).to.have.lengthOf(2);
             expect(res.body[0]._id).to.eql(newModel.ops['0']._id.toString());
+            done();
           });
       });
     });
@@ -71,7 +76,7 @@ describe('API Routes', () => {
         ])
         cycles = response.ops;
       })
-      it('should return all cycles', () => {
+      it('should return all cycles', (done) => {
         chai.request(server)
           .get('/api/cycles')
           .end((err, res) => {
@@ -80,6 +85,7 @@ describe('API Routes', () => {
             expect(res.body).to.be.an('array');
             expect(res.body).to.have.lengthOf(2);
             expect(res.body[0]._id).to.eql(cycles[0]._id.toString());
+            done();
           });
       });
     });
@@ -92,10 +98,12 @@ describe('API Routes', () => {
       var newModel;
       before('Set up projects', async () => {
         const Projects = await dbm.getCollection('projects');
-        await Projects.deleteMany();
-        newModel = await Projects.insertMany([{ "project": 1 }, { "project": 2 }])
+        newModel = await Projects.insertMany([
+          { "project": 1 }, 
+          { "project": 2 }
+        ])
       })
-      it('should return all projects', () => {
+      it('should return all projects', (done) => {
         chai.request(server)
           .get('/api/projects')
           .end((err, res) => {
@@ -104,6 +112,7 @@ describe('API Routes', () => {
             expect(res.body).to.be.an('array');
             expect(res.body).to.have.lengthOf(2);
             expect(res.body[0]._id).to.eql(newModel.ops['0']._id.toString());
+            done();
           });
       });
     });
@@ -113,13 +122,17 @@ describe('API Routes', () => {
 
   describe('TEST CASES', () => {
     describe('GET /testcases', () => {
-      var newModel;
+      var testCases;
       before('Set up testcases', async () => {
         const TestCases = await dbm.getCollection('testcases');
         await TestCases.deleteMany();
-        newModel = await TestCases.insertMany([{ "testcase": 1 }, { "testcase": 2 }])
+        const response = await TestCases.insertMany([
+          { "testcase": 1 }, 
+          { "testcase": 2 }
+        ])
+        testCases = response.ops;
       })
-      it('should return all testcases', () => {
+      it('should return all testcases', (done) => {
         chai.request(server)
           .get('/api/testcases')
           .end((err, res) => {
@@ -127,7 +140,8 @@ describe('API Routes', () => {
             res.status.should.eql(200);
             expect(res.body).to.be.an('array');
             expect(res.body).to.have.lengthOf(2);
-            expect(res.body[0]._id).to.eql(newModel.ops['0']._id.toString());
+            expect(res.body[0]._id).to.eql(testCases[0]._id.toString());
+            done();
           });
       });
     });

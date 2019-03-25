@@ -17,9 +17,14 @@ class ProjectService {
         return await this.Projects.findOne({ _id });
     }
 
-    async delProject(_id) {
-        const result = await this.Projects.deleteOne({ _id });
-        return formatDelete(result, _id);
+    async postProject(value) {
+        const result = await this.Projects.insertOne(value);
+        return result.ops[0];
+    }
+
+    async postProjects(value) {
+        const result = await this.Projects.insertMany(value);
+        return result.ops;
     }
 
     async putProject(_id, value) {
@@ -28,14 +33,13 @@ class ProjectService {
         // make sure createdAt was not changed
         delete value.createdAt;
 
-        const response = await this.Projects.updateOne({ _id }, { $set: value });
-        return formatUpdate(response, _id);
+        const result = await this.Projects.updateOne({ _id }, { $set: value });
+        return formatUpdate(result, _id);
     }
 
-    async postProject(value) {
-        // TODO: make possible to define own _id as it allows us to fetch through the URL
-        const response = await this.Projects.insertOne(value);
-        return response.ops[0];
+    async delProject(_id) {
+        const result = await this.Projects.deleteOne({ _id });
+        return formatDelete(result, _id);
     }
 }
 

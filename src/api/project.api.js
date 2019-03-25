@@ -50,6 +50,7 @@ async function getProjects(ctx) {
 async function getProject(ctx) {
     const { id } = ctx.params;
     const _id = ObjectId(id);
+
     ctx.body = await projectService.getProject(_id);
 }
 
@@ -71,6 +72,7 @@ async function putProject(ctx) {
     const { id } = ctx.params;
     const _id = ObjectId(id);
     const value = ctx.request.body;
+
     ctx.body = await projectService.putProject(_id, formatIDs(value));
 }
 
@@ -89,6 +91,7 @@ async function putProject(ctx) {
 async function postProject(ctx) {
     const value = ctx.request.body;
     value.createdAt = new Date();
+
     ctx.body = await projectService.postProject(formatIDs(value));
     ctx.status = 201;
 }
@@ -109,6 +112,7 @@ async function postProject(ctx) {
 async function deleteProject(ctx) {
     const { id } = ctx.params;
     const _id = ObjectId(id);
+    
     ctx.body = await projectService.delProject(_id);
 }
 

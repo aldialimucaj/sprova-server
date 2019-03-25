@@ -3,7 +3,13 @@ const { formatQueryFromParams, formatOptionsFromParams, formatIDs } = require('.
 const testCaseService = require('../services/testcase.service');
 const ObjectId = require('mongodb').ObjectId
 
-const testcaseRouter = new Router();
+const testCaseRouter = new Router();
+
+testCaseRouter.get('/testcases', getTestCases);
+testCaseRouter.get('/testcases/:id', getTestCase);
+testCaseRouter.post('/testcases', postTestCases);
+testCaseRouter.put('/testcases/:id', putTestCase);
+testCaseRouter.del('/testcases/:id', deleteTestCase);
 
 /**
  * @api {get} /testcases Request testcases
@@ -20,13 +26,12 @@ const testcaseRouter = new Router();
  * 
  * @apiSuccess {Array} - list of testcases
  */
-testcaseRouter.get('/', async (ctx) => {
-    const options = formatOptionsFromParams(ctx.query);
+async function getTestCases(ctx) {
     const query = formatQueryFromParams(ctx.query);
-    const withParentFlag = !!ctx.query.withParentFlag;
+    const options = formatOptionsFromParams(ctx.query);
 
-    ctx.body = await testCaseService.getTestCases(query, options, withParentFlag);
-});
+    ctx.body = await testCaseService.getTestCases(query, options);
+}
 
 /**
  * @api {get} /testcases/:id Request testcase
@@ -43,11 +48,39 @@ testcaseRouter.get('/', async (ctx) => {
  * @apiSuccess {String} title
  * @apiSuccess {String} description
  */
-testcaseRouter.get('/:id', async (ctx) => {
-    const id = ctx.params.id;
-    const withParentFlag = ctx.query.withParentFlag && ctx.query.withParentFlag.toLowerCase() === 'true';
-    ctx.body = await testCaseService.getTestCase(id, withParentFlag);
-});
+async function getTestCase(ctx) {
+    const { id } = ctx.params;
+    const _id = ObjectId(id);
+    
+    ctx.body = await testCaseService.getTestCase(_id);
+}
+
+/**
+ * @api {post} /testcases Post new testcase
+ * 
+ * @apiExample {curl} Example usage:
+ *     curl -X POST -d '{"key1":"value1", "key2":"value2"}' -H "Content-Type: application/json" http://localhost/api/testcases 
+ * 
+ * @apiName postTestCase
+ * @apiGroup TestCases
+ * 
+ * @apiSuccess {Number} ok 1 if successful; 0 if unsuccessful
+ * @apiSuccess {String} _id ID of newly added element
+ */
+async function postTestCases(ctx) {
+    const value = ctx.request.body;
+    if (Array.isArray(value)) {
+        const mapped = value.map(item => {
+            item.createdAt = new Date();
+            return formatIDs(item);
+        });
+        ctx.body = await testCaseService.postTestCases(mapped);    
+    } else {
+        value.createdAt = new Date();
+        ctx.body = await testCaseService.postTestCase(formatIDs(value));
+    }
+    ctx.status = 201;
+}
 
 /**
  * @api {put} /testcases/:id Edit testcase
@@ -63,51 +96,13 @@ testcaseRouter.get('/:id', async (ctx) => {
  * @apiSuccess {Number} ok 1 if successful; 0 if  unsuccessful
  * @apiSuccess {String} _id ID of edited element
  */
-testcaseRouter.put('/:id', async (ctx) => {
-    const id = ctx.params.id;
-    let value = ctx.request.body;
-    if (Array.isArray(value)) {
-        value = value.map(v => {
-            v.user = ctx.state.user;
-            return formatIDs(v);
-        })
-    } else {
-        value.user = ctx.state.user;
-        value = formatIDs(value);
-    }
+async function putTestCase(ctx) {
+    const { id } = ctx.params;
+    const _id = ObjectId(id);
+    const value = ctx.request.body;
 
-    ctx.body = await testCaseService.putTestCase(id, value);
-});
-
-/**
- * @api {post} /testcases Post new testcase
- * 
- * @apiExample {curl} Example usage:
- *     curl -X POST -d '{"key1":"value1", "key2":"value2"}' -H "Content-Type: application/json" http://localhost/api/testcases 
- * 
- * @apiName postTestCase
- * @apiGroup TestCases
- * 
- * @apiSuccess {Number} ok 1 if successful; 0 if unsuccessful
- * @apiSuccess {String} _id ID of newly added element
- */
-testcaseRouter.post('/', async (ctx) => {
-    let value = ctx.request.body;
-    const query = formatQueryFromParams(ctx.query);
-
-    if (Array.isArray(value)) {
-        value = value.map(v => {
-            v.user = ctx.state.user;
-            return formatIDs(v);
-        })
-    } else {
-        value.user = ctx.state.user;
-        value = formatIDs(value);
-    }
-
-    ctx.body = await testCaseService.postTestCase(value, query);
-    ctx.status = 201;
-});
+    ctx.body = await testCaseService.putTestCase(_id, formatIDs(value));
+}
 
 /**
  * @api {del} /testcases/:id Delete testcase
@@ -122,15 +117,11 @@ testcaseRouter.post('/', async (ctx) => {
  * 
  * @apiSuccess {Number} ok 1 if successful; 0 if  unsuccessful
  */
-testcaseRouter.del('/:id', async (ctx) => {
-    let id = ctx.params.id;
-    if (id.includes(',')) {
-        id = id.split(',').map(v => ObjectId(v));
-    } else {
-        id = ObjectId(id);
-    }
+async function deleteTestCase(ctx) {
+    const { id } = ctx.params;
+    const _id = ObjectId(id);
 
-    ctx.body = await testCaseService.delTestCase(id);
-});
+    ctx.body = await testCaseService.delTestCase(_id);
+}
 
-module.exports = testcaseRouter;
+module.exports = testCaseRouter;
