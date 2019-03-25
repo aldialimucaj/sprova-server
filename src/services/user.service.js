@@ -1,10 +1,5 @@
-const ObjectId = require('mongodb').ObjectId;
 const dbm = require('../helpers/db');
-const {
-    formatInsert,
-    formatUpdate,
-    formatDelete
-} = require('../helpers/utils');
+const { formatUpdate, formatDelete } = require('../helpers/utils');
 const log = require('../helpers/log');
 const utils = require('../helpers/utils');
 
@@ -19,67 +14,47 @@ class UserService {
     }
 
     async getUsers(query, options) {
-        return await this.Users.find(query, options).toArray();
+        const result = await this.Users.find(query, options).toArray();
+        return result.map(user => this.formatUser(user));
     }
 
-    async getUser(id) {
-        const _id = ObjectId(id);
+    async getUser(_id) {
         let result = await this.Users.findOne({ _id });
-
         return this.formatUser(result);
     }
 
-    /**
-     * Create model
-     * 
-     * @param {*} value 
-     */
     async postUser(value) {
-        var result;
-
         const username = value.username;
-
         value.password = utils.sha512(value.password);
-        value.createdAt = new Date();
 
         try {
             let existingUser = await this.Users.findOne({ username });
-            if (!existingUser) {
-                let response = await this.Users.insertOne(value);
-                result = formatInsert(response);
-            } else {
-                result = {
+            if (existingUser) {
+                return {
                     ok: 0,
                     error: 'Username already exists'
                 };
             }
+            let response = await this.Users.insertOne(value);
+            return response.ops[0];
         } catch (e) {
-            result = e;
+            return e;
         }
-
-        return result;
     }
 
-    async putUser(id, value) {
-        const _id = ObjectId(id);
-
+    async putUser(_id, value) {
         // make sure not to change the id when editing
         delete value._id;
         // make sure createdAt was not changed
         delete value.createdAt;
 
-        value.updatedAt = new Date();
-
-        const response = await this.Users.updateOne({ _id }, { $set: value });
-
-        return formatUpdate(response, _id);
+        const result = await this.Users.updateOne({ _id }, { $set: value });
+        return formatUpdate(result, _id);
     }
 
-    async delUser(id) {
-        const _id = ObjectId(id);
-        const response = await this.Users.deleteOne({ _id });
-
-        return formatDelete(response, _id);
+    async delUser(_id) {
+        const result = await this.Users.deleteOne({ _id });
+        return formatDelete(result, _id);
     }
 
     /* ************************************************************************* */

@@ -26,6 +26,6 @@ apiRouter.use('/search', searchApi.routes(), searchApi.allowedMethods());
 apiRouter.use(testCaseApi.routes(), testCaseApi.allowedMethods());
 apiRouter.use('/testset-executions', testSetExecutionApi.routes(), testSetExecutionApi.allowedMethods());
 apiRouter.use('/testsets', testSetApi.routes(), testSetApi.allowedMethods());
-apiRouter.use('/users', userApi.routes(), userApi.allowedMethods());
+apiRouter.use(userApi.routes(), userApi.allowedMethods());
 
 module.exports = apiRouter;

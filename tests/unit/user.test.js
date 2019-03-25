@@ -59,7 +59,7 @@ describe('user : service', () => {
 
   describe('getUser', () => {
     it('should return one user', async () => {
-      const result = await to.getUser(fixture1Result.insertedIds[0].toString());
+      const result = await to.getUser(fixture1Result.insertedIds[0]);
       expect(result).to.be.an('object');
 
       expect(result).to.eql(fixture1[0]);
@@ -69,13 +69,11 @@ describe('user : service', () => {
   describe('postUsers', () => {
     it('should save user', async () => {
       const result = await to.postUser(fixtures.user1);
-      const _id = result._id;
-      const newUser = await Users.findOne({ _id });
+      const newUser = await Users.findOne({ _id: result._id });
 
       expect(result).to.be.an('object');
-      expect(result.ok).to.be.eql(1);
-      expect(fixtures.user1.title).to.equal(newUser.title);
-      expect(fixtures.user1.createdAt).to.not.be.undefined;
+      expect(result.title).to.be.eql(fixtures.user1.title);
+      expect(newUser).to.not.be.undefined;
     });
   });
 
@@ -83,7 +81,7 @@ describe('user : service', () => {
     it('should change user', async () => {
       let newUserResult = await Users.insertOne(fixtures.user2);
       const changes = { username: "test-noput-user" };
-      const result = await to.putUser(newUserResult.insertedId.toString(), changes);
+      const result = await to.putUser(newUserResult.insertedId, changes);
       expect(result.ok).to.be.eql(1);
       let newUser = await Users.findOne({ _id: newUserResult.insertedId });
       expect(newUser).to.be.an('object');
