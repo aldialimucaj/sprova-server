@@ -57,6 +57,34 @@ describe('API Routes', () => {
     });
   });
 
+  // ============================================================================
+
+  describe('Cycles', () => {
+    describe('GET /cycles', () => {
+      let cycles;
+      before('Set up cycles', async () => {
+        const Cycles = await dbm.getCollection('cycles');
+        await Cycles.deleteMany();
+        const response = await Cycles.insertMany([
+          { "cycles": 1 }, 
+          { "cycles": 2 }
+        ])
+        cycles = response.ops;
+      })
+      it('should return all cycles', () => {
+        chai.request(server)
+          .get('/api/cycles')
+          .end((err, res) => {
+            should.not.exist(err);
+            res.status.should.eql(200);
+            expect(res.body).to.be.an('array');
+            expect(res.body).to.have.lengthOf(2);
+            expect(res.body[0]._id).to.eql(cycles[0]._id.toString());
+          });
+      });
+    });
+  });
+
   // ============================================================================  
 
   describe('PROJECTS', () => {
