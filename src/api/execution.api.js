@@ -33,8 +33,14 @@ executionRouter.del('/executions/:id', deleteExecution);
 async function getExecutions(ctx) {
     const query = formatQueryFromParams(ctx.query);
     const options = formatOptionsFromParams(ctx.query);
+
+    if (query.withTitle) {
+        delete query.withTitle;
+        ctx.body = await executionService.getExecutionsWithTitle(query, options);
+    } else {
+        ctx.body = await executionService.getExecutions(query, options);
+    }
     
-    ctx.body = await executionService.getExecutions(query, options);
 }
 
 /**

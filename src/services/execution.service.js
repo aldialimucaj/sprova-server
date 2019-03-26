@@ -18,6 +18,17 @@ class ExecutionService {
         return await this.Executions.find(query, options).toArray();
     }
 
+    async getExecutionsWithTitle(query, options) {
+        const executions = await this.Executions.find(query, options).toArray();
+        return await Promise.all(executions.map(async execution => {
+            const { title } = await this.TestCases.findOne({ _id: execution.testCaseId });
+            return {
+                ...execution,
+                testCaseTitle: title
+            }
+        }));
+    }
+
     async getExecution(_id) {
         return await this.Executions.findOne({ _id });
     }
