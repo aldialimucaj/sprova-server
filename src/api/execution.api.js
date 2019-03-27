@@ -11,6 +11,7 @@ executionRouter.get('/executions/:id/steps', getExecutionSteps);
 executionRouter.post('/executions', postExecutions);
 executionRouter.put('/executions/:id', putExecution);
 executionRouter.put('/executions/:id/status', putExecutionStatus);
+executionRouter.put('/executions/:id/steps', putExecutionSteps);
 executionRouter.put('/executions/:id/steps/:stepIdx', putExecutionStep);
 executionRouter.put('/executions/:id/steps/:stepIdx/status', putExecutionStepStatus);
 executionRouter.put('/executions/:id/steps/:stepIdx/artifacts', putExecutionStepArtifact);
@@ -153,6 +154,30 @@ async function putExecutionStatus(ctx) {
     const _id = ObjectId(id);
     const value = ctx.request.body;
     ctx.body = await executionService.putExecutionStatus(_id, value);
+}
+
+/**
+ * @api {post} /executions Post new execution(s)
+ * 
+ * @apiExample {curl} Example usage:
+ *     curl -X POST -d '{"key1":"value1", "key2":"value2"}' -H "Content-Type: application/json" http://localhost/api/executions 
+ * 
+ * @apiName postExecution
+ * @apiGroup Executions
+ * 
+ * @apiSuccess {Number} ok 1 if successful; 0 if unsuccessful
+ * @apiSuccess {String} _id ID of newly added element
+ */
+async function putExecutionSteps(ctx) {
+    const { id } = ctx.params;
+    const _id = ObjectId(id);
+    const value = ctx.request.body;
+    
+    if (Array.isArray(value)) {
+        ctx.body = await executionService.putExecutionSteps(_id, value);    
+    } else {
+        ctx.body = await executionService.putExecutionStep(_id, value);
+    }
 }
 
 /**

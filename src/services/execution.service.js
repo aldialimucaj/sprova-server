@@ -77,6 +77,43 @@ class ExecutionService {
         return formatUpdate(response, _id);
     }
 
+    async putExecutionStep(_id, value) {
+        const response = await this.Executions.updateOne(
+            { 
+                _id 
+            }, 
+            { 
+                $set: { 
+                    'steps.$[step]': value 
+                } 
+            },
+            { 
+                arrayFilters: [ 
+                    { 
+                        'step.action': value.action,
+                        'step.expected': value.expected
+                    }  
+                ] 
+            }
+        );
+
+        return formatUpdate(response, _id);
+    }
+
+    async putExecutionSteps(_id, value) {
+        // TODO: Implement
+    }
+
+    // async putExecutionSteps(_id, value) {
+    //     //TODO: make sure it is an execution with the specified format
+    //     const _id = ObjectId(id);
+    //     const testStep = `testSteps.${stepIdx}`;
+
+    //     const response = await this.Executions.updateOne({ _id }, { $set: { [testStep]: value, updatedAt: new Date() } });
+
+    //     return formatUpdate(response, _id);
+    // }
+
     /**
      * Update specific step. This includes the stauts and other attribues like comments etc.
      * 
