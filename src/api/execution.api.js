@@ -7,6 +7,7 @@ const executionRouter = new Router();
 
 executionRouter.get('/executions', getExecutions);
 executionRouter.get('/executions/:id', getExecution);
+executionRouter.get('/executions/:id/steps', getExecutionSteps);
 executionRouter.post('/executions', postExecutions);
 executionRouter.put('/executions/:id', putExecution);
 executionRouter.put('/executions/:id/status', putExecutionStatus);
@@ -60,7 +61,29 @@ async function getExecutions(ctx) {
 async function getExecution(ctx) {
     const { id } = ctx.params;
     const _id = ObjectId(id);
+
     ctx.body = await executionService.getExecution(_id);
+}
+
+/**
+ * @api {get} /executions/:id/steps Request execution steps
+ * 
+ * @apiExample {curl} Example usage:
+ *     curl -i http://localhost/api/executions/5af582d1dccd6600137334a0/steps
+ * 
+ * @apiName getExecutionSteps
+ * @apiGroup Executions
+ * 
+ * @apiParam {Number} id execution's unique ID.
+ * 
+ * @apiSuccess {String} title
+ * @apiSuccess {String} description
+ */
+async function getExecutionSteps(ctx) {
+    const { id } = ctx.params;
+    const _id = ObjectId(id);
+
+    ctx.body = await executionService.getExecutionSteps(_id);
 }
 
 /**

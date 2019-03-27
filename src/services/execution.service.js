@@ -33,6 +33,11 @@ class ExecutionService {
         return await this.Executions.findOne({ _id });
     }
 
+    async getExecutionSteps(_id) {
+        const result = await this.Executions.findOne({ _id });
+        return result.steps;
+    }
+
     /**
      * Update model
      * 
