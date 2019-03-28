@@ -67,13 +67,8 @@ class ExecutionService {
         return formatUpdate(response, _id);
     }
 
-    async putExecutionStatus(id, value) {
-        const _id = ObjectId(id);
-        const status = value.status;
-        const user = value.user;
-
-        const response = await this.Executions.updateOne({ _id }, { $set: { status, user } });
-
+    async putExecutionStatus(_id, status) {
+        const response = await this.Executions.updateOne({ _id }, { $set: { status } });
         return formatUpdate(response, _id);
     }
 

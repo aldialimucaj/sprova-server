@@ -132,6 +132,7 @@ async function putExecution(ctx) {
     const { id } = ctx.params;
     const _id = ObjectId(id);
     const value = ctx.request.body;
+
     ctx.body = await executionService.putExecution(_id, formatIDs(value));
 }
 
@@ -152,8 +153,9 @@ async function putExecution(ctx) {
 async function putExecutionStatus(ctx) {
     const { id } = ctx.params;
     const _id = ObjectId(id);
-    const value = ctx.request.body;
-    ctx.body = await executionService.putExecutionStatus(_id, value);
+    const { status } = ctx.request.body;
+
+    ctx.body = await executionService.putExecutionStatus(_id, status);
 }
 
 /**
