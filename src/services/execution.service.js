@@ -90,8 +90,7 @@ class ExecutionService {
             { 
                 arrayFilters: [ 
                     { 
-                        'step.action': value.action,
-                        'step.expected': value.expected
+                        'step.key': value.key
                     }  
                 ] 
             }
@@ -100,8 +99,11 @@ class ExecutionService {
         return formatUpdate(response, _id);
     }
 
-    async putExecutionSteps(_id, value) {
-        // TODO: Implement
+    async putExecutionSteps(_id, values) {
+        // TODO: This might not be the most efficient way to updateMany nested documents in an array.
+        await Promise.all(values.map(async value => {
+            return await this.putExecutionStep(_id, value);
+        }, this));
     }
 
     // async putExecutionSteps(_id, value) {
