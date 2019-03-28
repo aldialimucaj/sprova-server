@@ -3,7 +3,6 @@
 
 var describe = require('mocha').describe;
 var before = require('mocha').before;
-var beforeEach = require('mocha').beforeEach;
 var after = require('mocha').after;
 var it = require('mocha').it;
 

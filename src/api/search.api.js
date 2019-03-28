@@ -3,8 +3,6 @@ const cycleService = require('../services/cycle.service');
 const executionService = require('../services/execution.service');
 const projectService = require('../services/project.service');
 const testCaseService = require('../services/testcase.service');
-const testSetExecutionService = require('../services/testset-execution.service');
-const testSetService = require('../services/testset.service');
 const { formatIDs } = require('../helpers/utils');
 
 const searchRouter = new Router();
@@ -102,39 +100,6 @@ searchRouter.post('/executions', async (ctx) => {
 searchRouter.post('/testcases', async (ctx) => {
     const value = ctx.request.body;
     ctx.body = await testCaseService.findTestCases(value);
-});
-
-/**
- * @api {post} /search/testset-executions Search for test set executions
- * 
- * @apiExample {curl} Example usage:
- *     curl -X POST -d '{"key1":"value1", "key2":"value2"}' -H "Content-Type: application/json" http://localhost/api/search/testset-executions 
- * 
- * @apiName findTestSetExecutions
- * @apiGroup Search
- * 
- * @apiSuccess {Array} - list of test set executions
- */
-searchRouter.post('/testset-executions', async (ctx) => {
-    const value = ctx.request.body;
-    ctx.body = await testSetExecutionService.findTestSetExecutions(value);
-});
-
-/**
- * @api {post} /search/testsets Search for test set resources
- * 
- * @apiExample {curl} Example usage:
- *     curl -X POST -d '{"key1":"value1", "key2":"value2"}' -H "Content-Type: application/json" http://localhost/api/search/testsets 
- * 
- * @apiName postTestSet
- * @apiGroup Search
- * 
- * @apiSuccess {Array} - list of test sets
- */
-searchRouter.post('/testsets', async (ctx) => {
-    const value = ctx.request.body;
-    value.user = ctx.state.user;
-    ctx.body = await testSetService.findTestSets(value);
 });
 
 module.exports = searchRouter;

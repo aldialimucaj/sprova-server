@@ -8,8 +8,6 @@ const projectApi = require('../api/project.api');
 const reportApi = require('../api/report.api');
 const searchApi = require('../api/search.api');
 const testCaseApi = require('../api/testcase.api');
-const testSetApi = require('../api/testset.api');
-const testSetExecutionApi = require('../api/testset-execution.api');
 const userApi = require('../api/user.api');
 
 const apiRouter = new Router({
@@ -24,8 +22,6 @@ apiRouter.use(projectApi.routes(), projectApi.allowedMethods());
 apiRouter.use('/reports', reportApi.routes(), reportApi.allowedMethods());
 apiRouter.use('/search', searchApi.routes(), searchApi.allowedMethods());
 apiRouter.use(testCaseApi.routes(), testCaseApi.allowedMethods());
-apiRouter.use('/testset-executions', testSetExecutionApi.routes(), testSetExecutionApi.allowedMethods());
-apiRouter.use('/testsets', testSetApi.routes(), testSetApi.allowedMethods());
 apiRouter.use(userApi.routes(), userApi.allowedMethods());
 
 module.exports = apiRouter;

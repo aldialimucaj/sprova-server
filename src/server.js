@@ -23,8 +23,6 @@ const executionContextService = require('./services/execution-context.service');
 const projectService = require('./services/project.service');
 const reportService = require('./services/report.service');
 const testcaseService = require('./services/testcase.service');
-const testsetExecutionService = require('./services/testset-execution.service');
-const testsetService = require('./services/testset.service');
 const userService = require('./services/user.service');
 
 // const testCaseGraphQL = require('./graphql/testcase.gql');
@@ -87,8 +85,6 @@ app
     await projectService.load();
     await reportService.load();
     await testcaseService.load();
-    await testsetExecutionService.load();
-    await testsetService.load();
     await userService.load();
     log.info('Successfully loaded database services');
   } catch (e) {
