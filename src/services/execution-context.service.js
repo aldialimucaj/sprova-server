@@ -32,6 +32,11 @@ class ExecutionContextService {
         return formatUpdate(response, _id);
     }
 
+    async putExecutionContextStatus(_id, status) {
+        const response = await this.ExecutionContexts.updateOne({ _id }, { $set: { status } });
+        return formatUpdate(response, _id);
+    }
+
     async delExecutionContext(_id) {
         const response = await this.ExecutionContexts.deleteOne({ _id });
         return formatDelete(response, _id);

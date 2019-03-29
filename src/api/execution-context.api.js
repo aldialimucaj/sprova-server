@@ -9,6 +9,7 @@ executionContextRouter.get('/execution-contexts', getExecutionContexts);
 executionContextRouter.get('/execution-contexts/:id', getExecutionContext);
 executionContextRouter.post('/execution-contexts', postExecutionContext);
 executionContextRouter.put('/execution-contexts/:id', putExecutionContext);
+executionContextRouter.put('/execution-contexts/:id/status', putExecutionContextStatus);
 executionContextRouter.del('/execution-contexts/:id', deleteExecutionContext);
 
 /**
@@ -94,6 +95,28 @@ async function putExecutionContext(ctx) {
     const value = ctx.request.body;
 
     ctx.body = await executionContextService.putExecutionContext(_id, formatIDs(value));
+}
+
+/**
+ * @api {put} /execution-contexts/:id Edit execution context
+ * 
+ * @apiExample {curl} Example usage:
+ *     curl -X PUT -d '{"key1":"value2"}' -H "Content-Type: application/json" http://localhost/api/execution-contexts/5af582d1dccd6600137334a0 
+ * 
+ * @apiName putExecutionContext
+ * @apiGroup ExecutionContexts
+ * 
+ * @apiParam {Number} id execution context's unique ID.
+ * 
+ * @apiSuccess {Number} ok 1 if successful; 0 if  unsuccessful
+ * @apiSuccess {String} _id ID of edited element
+ */
+async function putExecutionContextStatus(ctx) {
+    const { id } = ctx.params;
+    const _id = ObjectId(id);
+    const { status } = ctx.request.body;
+
+    ctx.body = await executionContextService.putExecutionContextStatus(_id, status);
 }
 
 /**
