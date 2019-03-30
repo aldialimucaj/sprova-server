@@ -9,6 +9,7 @@ const reportApi = require('../api/report.api');
 const searchApi = require('../api/search.api');
 const testCaseApi = require('../api/testcase.api');
 const userApi = require('../api/user.api');
+const generatorApi = require('../api/generator.api');
 
 const apiRouter = new Router({
     prefix: '/api'
@@ -23,5 +24,6 @@ apiRouter.use('/reports', reportApi.routes(), reportApi.allowedMethods());
 apiRouter.use('/search', searchApi.routes(), searchApi.allowedMethods());
 apiRouter.use(testCaseApi.routes(), testCaseApi.allowedMethods());
 apiRouter.use(userApi.routes(), userApi.allowedMethods());
+apiRouter.use(generatorApi.routes(), generatorApi.allowedMethods());
 
 module.exports = apiRouter;
