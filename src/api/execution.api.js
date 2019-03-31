@@ -102,13 +102,15 @@ async function getExecutionSteps(ctx) {
 async function postExecutions(ctx) {
     const value = ctx.request.body;
     if (Array.isArray(value)) {
-        const mapped = value.map(item => {
-            item.createdAt = Date.now();
-            return formatIDs(item);
-        });
-        ctx.body = await executionService.postExecutions(mapped);    
+        const executions = await Promise.all(value.map(async execution => {
+            execution.createdAt = Date.now();
+            execution.steps = await executionService.resolveSteps(ObjectId(execution.testCaseId));
+            return formatIDs(execution);
+        }));
+        ctx.body = await executionService.postExecutions(executions);    
     } else {
         value.createdAt = Date.now();
+        value.steps = await executionService.resolveSteps(ObjectId(value.testCaseId));
         ctx.body = await executionService.postExecution(formatIDs(value));
     }
     ctx.status = 201;

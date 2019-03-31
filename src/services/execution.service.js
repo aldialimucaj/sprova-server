@@ -188,6 +188,31 @@ class ExecutionService {
         return formatDelete(response, _id);
     }
 
+    async resolveSteps(testCaseId) {
+        let testCase = await this.TestCases.findOne({_id: testCaseId});
+        let steps = testCase.steps.map(step => ({
+            ...step,
+            result: "PENDING"
+        }));
+
+        let parent = testCase.parentId && await this.TestCases.findOne({ _id: testCase.parentId });
+        
+        while (parent) {
+            const parentId = parent._id;
+            const parentSteps = parent.steps.map(step => ({
+                ...step,
+                result: "PENDING",
+                inheritedFrom: parentId
+            }));
+            steps = [
+                ...parentSteps, 
+                ...steps
+            ];
+            parent = parent.parentId && await this.TestCases.findOne({ _id: parent.parentId });
+        }
+        return steps.map((step, index) => ({...step, key: index}));
+    }
+
     /* ************************************************************************* */
     /*                                 NON PUBLIC                                */
     /* ************************************************************************* */

@@ -112,7 +112,7 @@ function formatIDs(value) {
             result[key] = ObjectId(result[key]);
         } else if (key.endsWith('Id') && result[key] === 'null') {
             result[key] = null;
-        } else if (_.isObject(result[key]) && !_.isArray(result[key])) {
+        } else if (_.isObject(result[key]) && !_.isArray(result[key]) && key !== 'inheritedFrom') {
             result[key] = formatIDs(result[key]);
         } else if (_.isArray(result[key])) {
             result[key] = result[key].map(e => formatIDs(e));
