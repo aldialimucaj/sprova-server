@@ -25,7 +25,7 @@ async function getGenerator(ctx) {
                 "outputDir": randomDir
             },
             () => {
-                resolve({ content: fs.readFileSync(path.join(randomDir, 'test.java'), 'utf8') });
+                resolve({ content: fs.readFileSync(path.join(randomDir, 'test.java'), 'utf8'), ok: 1 });
             });
     });
 }
