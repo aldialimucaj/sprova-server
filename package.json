@@ -22,7 +22,7 @@
     "@koa/cors": "^2.2.3",
     "bunyan": "^2.0.2",
     "fs-extra": "^7.0.0",
-    "generator-sprova": "^0.0.6",
+    "generator-sprova": "^0.0.7",
     "graphql": "^14.0.2",
     "graphql-iso-date": "^3.5.0",
     "jsonwebtoken": "^8.3.0",

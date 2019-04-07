@@ -16,7 +16,7 @@ async function getGenerator(ctx) {
     const randomDir = fs.mkdtempSync(path.join(os.tmpdir(), 'sprova-generator-'));
 
     const token = ctx.request.headers.authorization.split(' ')[1];
-    ctx.body = await new Promise((resolve) => {
+    ctx.body = await new Promise((resolve, reject) => {
         env.run(`sprova:${lang}`,
             {
                 "url": `${ctx.protocol}://${ctx.host}`,
@@ -25,7 +25,12 @@ async function getGenerator(ctx) {
                 "outputDir": randomDir
             },
             () => {
-                resolve({ content: fs.readFileSync(path.join(randomDir, 'test.java'), 'utf8'), ok: 1 });
+                const testFilePath = path.join(randomDir, 'test.java');
+                if (fs.existsSync(testFilePath)) {
+                    resolve({ content: fs.readFileSync(testFilePath, 'utf8'), ok: 1 });
+                } else {
+                    reject(new Error('Could not generate test file. Please check your syntax.'));
+                }
             });
     });
 }
