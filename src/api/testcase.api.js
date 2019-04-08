@@ -71,12 +71,12 @@ async function postTestCases(ctx) {
     const value = ctx.request.body;
     if (Array.isArray(value)) {
         const mapped = value.map(item => {
-            item.createdAt = Date.now();
+            item.createdAt = new Date();
             return formatIDs(item);
         });
         ctx.body = await testCaseService.postTestCases(mapped);    
     } else {
-        value.createdAt = Date.now();
+        value.createdAt = new Date();
         ctx.body = await testCaseService.postTestCase(formatIDs(value));
     }
     ctx.status = 201;

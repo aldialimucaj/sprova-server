@@ -104,13 +104,13 @@ async function postExecutions(ctx) {
     const value = ctx.request.body;
     if (Array.isArray(value)) {
         const executions = await Promise.all(value.map(async execution => {
-            execution.createdAt = Date.now();
+            execution.createdAt = new Date();
             execution.steps = await executionService.resolveSteps(ObjectId(execution.testCaseId));
             return formatIDs(execution);
         }));
         ctx.body = await executionService.postExecutions(executions);    
     } else {
-        value.createdAt = Date.now();
+        value.createdAt = new Date();
         value.steps = await executionService.resolveSteps(ObjectId(value.testCaseId));
         ctx.body = await executionService.postExecution(formatIDs(value));
     }

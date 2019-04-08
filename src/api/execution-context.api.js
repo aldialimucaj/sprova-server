@@ -69,10 +69,10 @@ async function getExecutionContext(ctx) {
  */
 async function postExecutionContext(ctx) {
     const value = ctx.request.body;
-    value.createdAt = Date.now();
+    value.createdAt = new Date();
 
     if (value.status === "ACTIVE") {
-        value.startedAt = Date.now();
+        value.startedAt = new Date();
     }
 
     ctx.body = await executionContextService.postExecutionContext(formatIDs(value));
