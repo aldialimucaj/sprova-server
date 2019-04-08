@@ -40,6 +40,7 @@ async function getExecutions(ctx) {
         delete query.withTitle;
         ctx.body = await executionService.getExecutionsWithTitle(query, options);
     } else {
+        delete query.withTitle;
         ctx.body = await executionService.getExecutions(query, options);
     }
     
