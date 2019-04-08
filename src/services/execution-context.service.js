@@ -33,7 +33,13 @@ class ExecutionContextService {
     }
 
     async putExecutionContextStatus(_id, status) {
-        const response = await this.ExecutionContexts.updateOne({ _id }, { $set: { status } });
+        const update = { 
+            status,
+            ...status === "ACTIVE" && { startedAt: Date.now() },
+            ...status === "FINISHED" && { finishedAt: Date.now() }
+        };
+
+        const response = await this.ExecutionContexts.updateOne({ _id }, { $set: update });
         return formatUpdate(response, _id);
     }
 
