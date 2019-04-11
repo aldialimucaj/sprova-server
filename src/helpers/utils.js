@@ -108,7 +108,7 @@ function formatIDs(value) {
     const result = Object.assign({}, value);
     const keys = Object.keys(value);
     for (const key of keys) {
-        if ((key.endsWith('Id') || key === '_id') && isValidObjectId(result[key])) {
+        if ((key.endsWith('Id') || key.endsWith('Ids') ||key === '_id') && isValidObjectId(result[key])) {
             result[key] = ObjectId(result[key]);
         } else if (key.endsWith('Id') && result[key] === 'null') {
             result[key] = null;

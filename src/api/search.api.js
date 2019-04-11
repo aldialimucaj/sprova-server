@@ -99,7 +99,8 @@ searchRouter.post('/executions', async (ctx) => {
  */
 searchRouter.post('/testcases', async (ctx) => {
     const value = ctx.request.body;
-    ctx.body = await testCaseService.findTestCases(value);
+    const query = formatIDs(value.query);
+    ctx.body = await testCaseService.getTestCases(query);
 });
 
 module.exports = searchRouter;
