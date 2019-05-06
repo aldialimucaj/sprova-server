@@ -17,6 +17,20 @@ class TestCaseService {
         return await this.TestCases.findOne({ _id });
     }
 
+    async getTestCaseSteps(_id, includeInherited) {
+        const testCase = await this.TestCases.findOne({ _id });
+
+        let inheritedSteps = [];
+        if (includeInherited) {
+            inheritedSteps = await this.resolveInheritance(testCase);
+        }
+
+        return [
+            ...inheritedSteps, 
+            ...testCase.steps
+        ];
+    }
+
     async postTestCase(value) {
         const result = await this.TestCases.insertOne(value);
         return result.ops[0];
@@ -40,6 +54,26 @@ class TestCaseService {
     async delTestCase(_id) {
         const result = await this.TestCases.deleteOne({ _id });
         return formatDelete(result, _id);
+    }
+
+    async resolveInheritance(testCase) {
+        log.info('Resolve inheritance');
+        let inheritedSteps = [];
+        let parent = testCase.parentId && await this.TestCases.findOne({ _id: testCase.parentId });
+        
+        while (parent) {
+            const title = parent.title;
+            const parentSteps = parent.steps.map(step => ({
+                ...step,
+                inheritedFrom: title
+            }));
+            inheritedSteps = [
+                ...parentSteps, 
+                ...inheritedSteps
+            ];
+            parent = parent.parentId && await this.TestCases.findOne({ _id: parent.parentId });
+        }
+        return inheritedSteps;
     }
 
 }

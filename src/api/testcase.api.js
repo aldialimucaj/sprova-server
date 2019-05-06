@@ -7,6 +7,7 @@ const testCaseRouter = new Router();
 
 testCaseRouter.get('/testcases', getTestCases);
 testCaseRouter.get('/testcases/:id', getTestCase);
+testCaseRouter.get('/testcases/:id/steps', getTestCaseSteps);
 testCaseRouter.post('/testcases', postTestCases);
 testCaseRouter.put('/testcases/:id', putTestCase);
 testCaseRouter.del('/testcases/:id', deleteTestCase);
@@ -53,6 +54,27 @@ async function getTestCase(ctx) {
     const _id = ObjectId(id);
     
     ctx.body = await testCaseService.getTestCase(_id);
+}
+
+/**
+ * @api {get} /testcases/:id/steps Request testcase steps
+ * 
+ * @apiExample {curl} Example usage:
+ *     curl -i http://localhost/api/testcases/5af582d1dccd6600137334a0/steps
+ * 
+ * @apiName getTestCaseSteps
+ * @apiGroup TestCases
+ * 
+ * @apiParam {Number} id testcase's unique ID.
+ * @apiParam {Boolean} resolveInheritance if inherited test steps should be included
+ * 
+ */
+async function getTestCaseSteps(ctx) {
+    const { id } = ctx.params;
+    const { resolveInheritance } = formatQueryFromParams(ctx.query);
+    const _id = ObjectId(id);
+    
+    ctx.body = await testCaseService.getTestCaseSteps(_id, resolveInheritance);
 }
 
 /**
